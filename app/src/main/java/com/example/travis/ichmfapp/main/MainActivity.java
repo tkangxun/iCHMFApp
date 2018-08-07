@@ -1,4 +1,4 @@
-package com.example.travis.ichmfapp;
+package com.example.travis.ichmfapp.main;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -9,12 +9,19 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.travis.ichmfapp.R;
+
 public class MainActivity extends AppCompatActivity {
+
+    private WriteView writeView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        writeView = (WriteView) findViewById(R.id.writeView);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
