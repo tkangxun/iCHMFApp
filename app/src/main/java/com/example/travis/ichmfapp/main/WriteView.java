@@ -16,6 +16,9 @@ import com.example.travis.ichmfapp.symbollib.StrokePoint;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Travis on 7/8/2018.
@@ -35,22 +38,23 @@ public class WriteView extends View {
     private double delay = 0.01;
     private Instant starts = Instant.now();
 
-    public int _strokeSize = 1;
+//    public int _strokeSize;
 
     private StrokePoint _startPoint, _endPoint;
     private StrokeList _strokes;
     private Stroke _currentStroke;
 
+
     public WriteView(Context context, AttributeSet attrs){
         super(context, attrs);
-        setupDrawing();
+        init();
     }
 
-    private void setupDrawing(){
+    private void init(){
 
         // initialise paint display
         mPaint = new Paint();
-        mPaint.setColor(Color.BLACK);
+        mPaint.setColor(Color.BLUE);
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
@@ -85,7 +89,7 @@ public class WriteView extends View {
         if (duration.getSeconds() >= delay) {
             mPath = new Path();
             _strokes = new StrokeList();
-            _strokeSize = 1;
+
         }
         mPath.moveTo(x, y);
         mX = x;
@@ -112,7 +116,6 @@ public class WriteView extends View {
 
         switch(event.getAction()) {
             case MotionEvent.ACTION_DOWN :
-                _strokeSize++;
                 touchStart(x, y);
                 _startPoint = new StrokePoint(x,y);
                 _currentStroke = new Stroke();
@@ -142,32 +145,39 @@ public class WriteView extends View {
     //widgets
     public void clear() {
         mPath.reset();
-        _strokeSize = 0;
+
         invalidate();
     }
 
-    public void setStrokeSize(int ss) {
+    /*public void setStrokeSize(int ss) {
         _strokeSize = ss;
-    }
+    }*/
 
     public int getStrokeSize() {
-        return _strokeSize;
+        return _strokes.size();
     }
 
     public void setStrokeList(StrokeList sl) {
         _strokes = sl;
     }
 
-    //public Stroke getLastStroke() {
-    //    return this._strokes.get(_strokes.size() - 1);
-    //}
+    public Stroke getLastStroke() {
+        return this._strokes.get(_strokes.size() - 1);
+    }
 
     public StrokeList getStrokes() {
         return _strokes;
     }
 
     public void undoLastStroke() {
+        if (this.getStrokeSize()<2){
+            mPath.reset();
+            this.clear();
+        }
         this._strokes.remove(_strokes.size() - 1);
+        mPath.setLastPoint(mX,mY);
+
+
         invalidate();
     }
 }

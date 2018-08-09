@@ -45,21 +45,23 @@ public class Symbol implements Cloneable, Serializable {
     /**
      * To get the HEX code of symbol chracter
      * @return HEX formatted string.
+     */
 
     public String getSymbolCharHex() {
         return SymbolLib.getCharToHex(_charSymbol);
     }
-    */
+
 
 
     /**
      * To get decimal value of symbol character
      * @return Decimal value
+     *
+     */
 
     public int getSymbolCharDecimal() {
         return SymbolLib.getCharToDecimal(_charSymbol);
     }
-     */
 
     @Override
     public String toString() {
