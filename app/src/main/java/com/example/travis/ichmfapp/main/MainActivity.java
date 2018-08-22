@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         writeView = (WriteView) findViewById(R.id.writeView);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
