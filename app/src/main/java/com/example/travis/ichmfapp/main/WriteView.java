@@ -180,4 +180,8 @@ public class WriteView extends View {
 
         invalidate();
     }
+
+
+
+
 }

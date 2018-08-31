@@ -10,10 +10,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.travis.ichmfapp.R;
+import com.example.travis.ichmfapp.preprocessor.Recognizer;
+import com.example.travis.ichmfapp.symbollib.*;
+
+import java.util.StringTokenizer;
 
 public class MainActivity extends AppCompatActivity {
 
     private WriteView writeView;
+    static Recognizer objreg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +27,32 @@ public class MainActivity extends AppCompatActivity {
 
 
         writeView = (WriteView) findViewById(R.id.writeView);
+
+        ////////////////////////
+        /**
+        try {
+            objreg = new Recognizer(
+                    SymbolLib.Load(ConstantData.ElasticFileString,
+                            SymbolLib.LibraryTypes.Binary));
+
+            String pointList = "";
+            Stroke receivedStroke = new Stroke();
+            int pointNum = Integer.parseInt(st.nextToken());
+
+            for (int i = 0; i < pointNum; i++) {
+                StrokePoint sp = new StrokePoint(Double.parseDouble(st2.nextToken()), Double.parseDouble(st2.nextToken()));
+                receivedStroke.addStrokePoint(sp);
+            }
+            objreg.Recognize(receivedStroke);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+
+        */
+        ///////////////////////
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

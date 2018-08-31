@@ -11,7 +11,7 @@ import java.io.File;
  */
 public class ConstantData {
 
-    static File dir = new File(System.getProperty("user.dir"));
+    static File dir = new File(("user.dir"));
     static String parentpath = dir.getParent();
     public static String trainFile = parentpath + "\\sample.dat";
     public static String modelFile = parentpath + "\\model.dat";
