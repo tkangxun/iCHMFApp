@@ -1,13 +1,13 @@
 package com.example.travis.ichmfapp.preprocessor;
 
 import com.example.travis.ichmfapp.symbollib.*;
+import java.util.*;
 
-import java.util.ArrayList;
+import symbolFeature.*;
 
-/**
- * Created by Travis on 23/8/2018.
+//* Created by Travis on 23/8/2018.
 
-public class SymbolRecogniser_SVM {
+public class SymbolRecognizer_SVM {
 
     public ArrayList recognizing(StrokeList _strokeListMemory) throws Exception {
         ArrayList result = new ArrayList();
@@ -276,4 +276,3 @@ public class SymbolRecogniser_SVM {
         return false;
     }
 }
-*/

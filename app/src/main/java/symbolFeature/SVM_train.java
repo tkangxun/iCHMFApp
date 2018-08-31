@@ -4,6 +4,7 @@ package symbolFeature;
 import com.example.travis.ichmfapp.symbollib.*;
 
 import libsvm.*;
+
 import java.util.*;
 import java.io.*;
 
@@ -175,4 +176,3 @@ public class SVM_train {
         }
     }
 }
-

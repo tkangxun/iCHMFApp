@@ -35,7 +35,7 @@ public class WriteView extends View {
 
 
     private static final float TOUCH_TOLERANCE = 4;
-    private double delay = 0.01;
+    private double delay = 0.001;
     private Instant starts = Instant.now();
 
 //    public int _strokeSize;
