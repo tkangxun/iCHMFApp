@@ -298,18 +298,17 @@ public class Recognizer {
                 doAnalysis(_aryLMemoryRecognizedString.subList(0, i + 1), false);
             }
         }
-         */
 
         int pos = rc.getNumberOfStrokes();
         while (pos > 1) {
             _recognitionList = doRecognition(
                     sepcialTypeCast(_strokeListMemory.subList(0, _strokeListMemory.size() - pos + 1)),
                     _aryLMemoryRecognizedString, _manualRecognizer, _svmRecognizer);
-            //result = doAnalysis(_aryLMemoryRecognizedString, true);
+            result = doAnalysis(_aryLMemoryRecognizedString, true);
             pos--;
         }
         _strokeListMemory.remove(_strokeListMemory.size() - 1);
-
+*/
         return result;
     }
 
@@ -430,11 +429,12 @@ public class Recognizer {
                 st.add(tempStrokeList1.get(i));
             }
             doRecognition(st, list, _manualRecognizer, _svmRecognizer);
-            //doAnalysis(list, true);
+            //          doAnalysis(list, true);
             strokes++;
         }
         //modified by quxi 2009.12.29
-        /*
+    return true;}
+    /*
         if (list.size() == 0 || verifyContext(recognizedChar, (RecognizedSymbol) list.get(list.size() - 1))) {
             RecognizedSymbol pre = new RecognizedSymbol('0');
             if (list.size() != 0) {
@@ -448,10 +448,10 @@ public class Recognizer {
                 System.out.println("Blocked by checkContext!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             }
             return false;
-        }*/
-        return true;
-    }
+        }
 
+    }
+*/
     //added by quxi 2010.1.15
     //check if the symbol is similar symbol and choose the correct one
     private RecognizedSymbol checkSimilarSymbols(RecognizedSymbol recognizedChar, RecognizedSymbol previous, List<RecognizedSymbol> candidate) {
@@ -510,7 +510,7 @@ public class Recognizer {
         System.out.println("Time after SVM is" + (System.currentTimeMillis() - startTime));
         mResult = mRecognizer.recognizing(mResult);
         System.out.println("Time after elastic is" + (System.currentTimeMillis() - startTime));
-        ////mResult = verifyContext(mResult);
+        //mResult = verifyContext(mResult);
 
         /// Take the first (with closet similarity distance) character
         /// as recognized symbol.

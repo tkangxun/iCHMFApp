@@ -1,5 +1,8 @@
 package com.example.travis.ichmfapp.main;
 
+
+import android.content.Context;
+import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -8,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.example.travis.ichmfapp.R;
 import com.example.travis.ichmfapp.preprocessor.Recognizer;
@@ -19,6 +23,11 @@ public class MainActivity extends AppCompatActivity {
 
     private WriteView writeView;
     static Recognizer objreg;
+    public String filenames;
+    public Context context;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +36,13 @@ public class MainActivity extends AppCompatActivity {
 
 
         writeView = (WriteView) findViewById(R.id.writeView);
+
+        TextView txtcontent = (TextView)findViewById(R.id.tv1);
+
+        ConstantData constant = new ConstantData(context);
+
+
+
 
         ////////////////////////
         /**
@@ -53,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
         */
         ///////////////////////
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
