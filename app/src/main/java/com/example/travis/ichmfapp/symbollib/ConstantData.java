@@ -7,7 +7,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
 
 
 /**
@@ -18,6 +18,7 @@ import java.util.*;
 public class ConstantData {
 
     private AssetManager am;
+    private ArrayList<File> allFiles = new ArrayList<>();
 
 
     public ConstantData(Context context){
@@ -25,38 +26,33 @@ public class ConstantData {
         am = context.getAssets();
         String[] filenames = {"elastic.dat", "elasticDefault.dat", "model.dat","sample.dat","sample_original.dat"};
 
-        try {
-
-
-            for (int i = 0; i<filenames.length; i++) {
+        for (int i = 0; i<filenames.length; i++) {
+            try {
                 String file = "file/" + filenames[i];
                 InputStream inputStream = am.open(file);
-                File f = new File(filenames[i]);
-                OutputStream outputStream = new FileOutputStream(f);
-                byte buffer[] = new byte[1024];
-                int length = 0;
+                allFiles.add(new File(filenames[i]));
+                /** OutputStream outputStream = new FileOutputStream(f);
+                 byte buffer[] = new byte[1024];
+                 int length = 0;
 
-                while((length=inputStream.read(buffer)) > 0) {
-                    outputStream.write(buffer, 0, length);
-                }
-                outputStream.close();
-                inputStream.close();
+                 while((length=inputStream.read(buffer)) > 0) {
+                 outputStream.write(buffer, 0, length);
+                 }
+                 outputStream.close();
+                 inputStream.close();
+                 */
+            } catch (Exception e) {
+                System.out.print(filenames[i] + "not changed to file.");
+                e.printStackTrace();
             }
-
-
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-
-    }
-    public void CreateData() {
-        return;
-    }
+        }}
 
     static File dir = new File(("user.dir"));
     static String parentpath = dir.getParent();
     public static String trainFile = parentpath + "\\sample.dat";
-    public static String modelFile = parentpath + "\\model.dat";
+
+    //model file past to svm_predict, sp.run then to svm file to create buffer
+    public  File modelFile = new File(allFiles[2]);
     public static String ElasticFileString = parentpath + "\\elastic.dat";
     public static String ElasticFileDefaultString = parentpath + "\\elasticDefault.dat";
     public static File ElasticFile = new File(ElasticFileString);

@@ -506,8 +506,11 @@ public class Recognizer {
 
         System.out.println("Time is" + System.currentTimeMillis());
         long startTime = System.currentTimeMillis();
+        //using svm to recognise
         ArrayList mResult = svmRecognizer.recognizing(_strokeListMemory.GetLast4Strokes());
         System.out.println("Time after SVM is" + (System.currentTimeMillis() - startTime));
+
+        //using elastic match
         mResult = mRecognizer.recognizing(mResult);
         System.out.println("Time after elastic is" + (System.currentTimeMillis() - startTime));
         //mResult = verifyContext(mResult);

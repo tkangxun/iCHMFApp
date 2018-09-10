@@ -4,14 +4,14 @@ package symbolFeature;
  * Created by Travis on 23/8/2018.
  */
 
-        import com.example.travis.ichmfapp.symbollib.*;
+import com.example.travis.ichmfapp.symbollib.*;
 
-        import libsvm.*;
-        import java.io.*;
-        import java.util.Collections;
-        import java.util.ArrayList;
-        import java.util.List;
-        import java.util.StringTokenizer;
+import libsvm.*;
+import java.io.*;
+import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 
 public class SVM_predict {
