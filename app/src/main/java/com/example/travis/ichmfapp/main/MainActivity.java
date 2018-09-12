@@ -22,9 +22,9 @@ import java.util.StringTokenizer;
 public class MainActivity extends AppCompatActivity {
 
     private WriteView writeView;
+    private static Context context;
     static Recognizer objreg;
-    public String filenames;
-    public Context context;
+
 
 
 
@@ -32,16 +32,29 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MainActivity.context = getApplicationContext();
+
+
+
         setContentView(R.layout.activity_main);
 
-
+        System.out.print("hello");
         writeView = (WriteView) findViewById(R.id.writeView);
+
 
         TextView txtcontent = (TextView)findViewById(R.id.tv1);
 
-        ConstantData constant = new ConstantData(context);
-
-
+        //ConstantData constant = new ConstantData(this.context);
+        try {
+            System.out.print("hello1");
+            Recognizer objreg = new Recognizer(
+                    SymbolLib.Load(ConstantData.ElasticFileString,
+                            SymbolLib.LibraryTypes.Binary));
+        } catch (Exception e) {
+            System.out.print("hello2");
+            e.printStackTrace();
+        }
+        System.out.print("hello3");
 
 
         ////////////////////////
@@ -85,6 +98,10 @@ public class MainActivity extends AppCompatActivity {
                 writeView.undoLastStroke();
             }
         });
+    }
+
+    public static Context getAppContext(){
+        return MainActivity.context;
     }
 
     @Override

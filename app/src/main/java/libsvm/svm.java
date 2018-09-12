@@ -1,5 +1,7 @@
 package libsvm;
 
+import com.example.travis.ichmfapp.symbollib.ConstantData;
+
 import java.io.*;
 import java.util.*;
 
@@ -2497,7 +2499,8 @@ public class svm {
 
     public static svm_model svm_load_model(String model_file_name) throws IOException
     {
-        BufferedReader fp = new BufferedReader(new FileReader(model_file_name));
+
+        BufferedReader fp = new BufferedReader(new FileReader (ConstantData.getFile(model_file_name)));
 
         // read parameters
 

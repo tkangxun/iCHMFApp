@@ -305,9 +305,10 @@ public class SymbolLib implements Serializable {
             throws Exception {
 
         if (libType == LibraryTypes.Binary) {
+
             java.io.FileInputStream fis =
                     new java.io.FileInputStream(
-                            new File(filePathLibrary));
+                            new File(ConstantData.getFile(filePathLibrary)));
 
             ObjectInputStream ois = new ObjectInputStream(fis);
             SymbolLib sbl = (SymbolLib) ois.readObject();
