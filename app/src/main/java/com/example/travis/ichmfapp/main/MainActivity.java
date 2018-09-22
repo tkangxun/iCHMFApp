@@ -11,19 +11,29 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.example.travis.ichmfapp.R;
+import com.example.travis.ichmfapp.preprocessor.PreprocessorSVM;
 import com.example.travis.ichmfapp.preprocessor.Recognizer;
 import com.example.travis.ichmfapp.symbollib.*;
 
 import java.util.StringTokenizer;
+
+import symbolFeature.SVM_predict;
+import symbolFeature.SymbolFeature;
 
 public class MainActivity extends AppCompatActivity {
 
     private WriteView writeView;
     private static Context context;
     static Recognizer objreg;
+    private Boolean training = Boolean.FALSE;
+    Button button;
 
 
 
@@ -41,20 +51,53 @@ public class MainActivity extends AppCompatActivity {
         System.out.print("hello");
         writeView = (WriteView) findViewById(R.id.writeView);
 
+        button = (Button) findViewById(R.id.button1);
+        button.setVisibility(View.GONE);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                writeView.getStrokes();
+
+            }
+        });
+
+        Switch simpleswitch = (Switch) findViewById(R.id.simpleswitch);
+        simpleswitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    training = Boolean.TRUE;
+                    button.setVisibility(View.VISIBLE);
+
+                }else{
+                    button.setVisibility(View.GONE);
+                }
+            }
+        });
+
+
+
+
+
 
         TextView txtcontent = (TextView)findViewById(R.id.tv1);
 
-        //ConstantData constant = new ConstantData(this.context);
         try {
-            System.out.print("hello1");
+            /**StrokeList preProcessedStrokeList = PreprocessorSVM.preProcessing(writeView.getStrokes());
+            //compare storkelist with each symbol in symbol library _quxi
+            String featureString = SymbolFeature.getFeature(0, preProcessedStrokeList);
+            SVM_predict sp = new SVM_predict();
+            sp.run(featureString,1);
+             */
+
+
             Recognizer objreg = new Recognizer(
                     SymbolLib.Load(ConstantData.ElasticFileString,
                             SymbolLib.LibraryTypes.Binary));
         } catch (Exception e) {
-            System.out.print("hello2");
             e.printStackTrace();
         }
-        System.out.print("hello3");
+
 
 
         ////////////////////////

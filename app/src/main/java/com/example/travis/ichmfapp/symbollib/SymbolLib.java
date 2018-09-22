@@ -297,7 +297,7 @@ public class SymbolLib implements Serializable {
     /**
      * Read the symbol library file from the give  location.
      * @param filePathLibrary Location of symbol library file to read.
-     * @param libType The type symbol libray file to read.
+     * @param libType The type symbol library file to read.
      * @return Newly create symbol library object from read file.
      * @throws java.lang.Exception
      */
@@ -311,6 +311,14 @@ public class SymbolLib implements Serializable {
                             new File(ConstantData.getFile(filePathLibrary)));
 
             ObjectInputStream ois = new ObjectInputStream(fis);
+
+            /* System.out.println("" + (String) ois.readObject());
+
+             // read and print an object and cast it as string
+            byte[] read = (byte[]) ois.readObject();
+            String s2 = new String(read);
+            System.out.println("" + s2);*/
+
             SymbolLib sbl = (SymbolLib) ois.readObject();
             ois.close();
             fis.close();

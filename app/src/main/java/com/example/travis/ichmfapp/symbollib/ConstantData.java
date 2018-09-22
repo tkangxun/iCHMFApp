@@ -28,29 +28,6 @@ public class ConstantData {
 
     public ConstantData() {
 
-        //context = MainActivity.getAppContext();
-
-        /**String[] filenames = {"elastic.dat", "elasticDefault.dat", "model.dat","sample.dat","sample_original.dat"};
-
-        for (int i = 0; i<filenames.length; i++) {
-            try {
-                String file = "file/" + filenames[i];
-                InputStream inputStream = am.open(file);
-                allFiles.add(new File(filenames[i]));
-                OutputStream outputStream = new FileOutputStream(f);
-         byte buffer[] = new byte[1024];
-         int length = 0;
-
-         while((length=inputStream.read(buffer)) > 0) {
-         outputStream.write(buffer, 0, length);
-         }
-         outputStream.close();
-         inputStream.close();
-            } catch (Exception e) {
-                System.out.print(filenames[i] + "not changed to file.");
-                e.printStackTrace();
-            }
-        }}*/
     }
 
     static File dir = new File(("user.dir"));
@@ -59,7 +36,7 @@ public class ConstantData {
 
     //model file past to svm_predict, sp.run then to svm file to create buffer
     public static String modelFile = "model.dat";
-    public static String ElasticFileString = "elastic.dat";
+    public static String ElasticFileString = "model.dat";
     public static String ElasticFileDefaultString = parentpath + "\\elasticDefault.dat";
     public static File ElasticFile = new File(ElasticFileString);
     public static File ElasticFileDefault = new File(ElasticFileDefaultString);
