@@ -1,10 +1,8 @@
 package com.example.travis.ichmfapp.symbollib;
 
-import com.example.travis.ichmfapp.main.WriteView;
 
 import java.io.File;
-import java.util.List;
-import java.util.Objects;
+
 
 /**
  * Created by Travis on 13/9/2018.
@@ -12,7 +10,7 @@ import java.util.Objects;
 
 public class Trainer{
 
-    private SymbolLib objsymbolLib;
+    private SymbolLib objSymbolLib;
     private File fileSymbolLib = null;
     private SymbolList jList1 = null;
 
@@ -25,8 +23,8 @@ public class Trainer{
 
     private void generateDefaultSetSVM() {
         try {
-            this.objsymbolLib = SymbolLib.GenerateDefaultSetSVM(SymbolLib.LibraryTypes.Binary);
-            jList1 = objsymbolLib.getSymbols();
+            this.objSymbolLib = SymbolLib.GenerateDefaultSetSVM(SymbolLib.LibraryTypes.Binary);
+            jList1 = objSymbolLib.getSymbols();
             //jList1.setSelectedIndex(0);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -34,48 +32,46 @@ public class Trainer{
     }
 
     private void generateDefaultSetElastic() {
-        JFileChooser jfc = new JFileChooser();
-        jfc.setSelectedFile(ConstantData.ElasticFileDefault);
-        if (jfc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-            fileSymbolLib = jfc.getSelectedFile();
-            try {
-                fileSymbolLib.createNewFile();
-                SymbolLib.GenerateDefaultSetElastic(fileSymbolLib.getAbsolutePath(), SymbolLib.LibraryTypes.Binary);
-                objSymbolLib = SymbolLib.Load(fileSymbolLib.getAbsolutePath(), SymbolLib.LibraryTypes.Binary);
-                jList1.setListData(objSymbolLib.getSymbols().toArray());
-                jList1.setSelectedIndex(0);
-            } catch (Exception ex) {
-                ex.printStackTrace();
+        //JFileChooser jfc = new JFileChooser();
+        //jfc.setSelectedFile(ConstantData.ElasticFileDefault);
+        fileSymbolLib = ConstantData.ElasticFileDefault;
+        try {
+            SymbolLib.GenerateDefaultSetElastic(ConstantData.ElasticFileDefaultString, SymbolLib.LibraryTypes.Binary);
+            this.objSymbolLib = SymbolLib.Load(ConstantData.ElasticFileDefaultString, SymbolLib.LibraryTypes.Binary);
+            jList1=objSymbolLib.getSymbols();
+        } catch (Exception ex) {
+            ex.printStackTrace();
             }
+        }
+
+
+    private void openSymbolLib() {
+        //JFileChooser jfc = new JFileChooser();
+        //jfc.setMultiSelectionEnabled(false);
+        //jfc.setSelectedFile(ConstantData.ElasticFile);
+        //if (jfc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+        fileSymbolLib = ConstantData.ElasticFile;
+        try {
+            objSymbolLib = SymbolLib.Load( ConstantData.ElasticFileString,
+                    SymbolLib.LibraryTypes.Binary);
+            jList1 = objSymbolLib.getSymbols();
+            //jList1.setSelectedIndex(0);
+        } catch (Exception ex) {
+            objSymbolLib = null;
+            System.out.print("Error in loading Elastic file library.");
+            ex.printStackTrace();
         }
     }
 
-    private void openSymbolLib() {
-        JFileChooser jfc = new JFileChooser();
-        jfc.setMultiSelectionEnabled(false);
-        jfc.setSelectedFile(ConstantData.ElasticFile);
-        if (jfc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            fileSymbolLib = jfc.getSelectedFile();
-            try {
-                objSymbolLib = SymbolLib.Load(fileSymbolLib.getAbsolutePath(),
-                        SymbolLib.LibraryTypes.Binary);
-                jList1.setListData(objSymbolLib.getSymbols().toArray());
-                jList1.setSelectedIndex(0);
-            } catch (Exception ex) {
-                objSymbolLib = null;
-                JOptionPane.showMessageDialog(this, "Error in loading library.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }
 
     private void saveSymbolLib() {
         if (fileSymbolLib != null && objSymbolLib != null) {
             try {
-                objSymbolLib.setTitle(this.jTextField1.getText().trim());
-                objSymbolLib.Save(fileSymbolLib.getAbsolutePath(), SymbolLib.LibraryTypes.Binary);
-                JOptionPane.showMessageDialog(this, "Library is saved!.", "OK", JOptionPane.INFORMATION_MESSAGE);
+                objSymbolLib.setTitle(objSymbolLib.getTitle());
+                objSymbolLib.Save(ConstantData.ElasticFileString, SymbolLib.LibraryTypes.Binary);
+                System.out.print("Elastic file Library is saved!.");
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Error in saving library.", "Error", JOptionPane.ERROR_MESSAGE);
+                System.out.print("Error in saving Elastic file library.");
             }
         }
     }

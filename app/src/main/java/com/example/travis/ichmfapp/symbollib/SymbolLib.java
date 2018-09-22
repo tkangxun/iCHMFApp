@@ -22,6 +22,11 @@ public class SymbolLib implements Serializable {
      */
     protected String _title = "";
 
+    /**
+     * Name of the symbol library file.
+     */
+    protected String _filename ="";
+
 
     /**
      * Default constructor of the SymbolLibrary
@@ -37,6 +42,7 @@ public class SymbolLib implements Serializable {
     public SymbolLib(String title) {
         _Symbols = new SymbolList();
         _title = title;
+        _filename= new String();
     }
 
     public int getTotalSymbol() {
@@ -55,8 +61,14 @@ public class SymbolLib implements Serializable {
         return _title;
     }
 
+    public String getfilename(){return _filename;}
+
     public void setTitle(String value) {
         _title = value;
+    }
+
+    public void setFilename(String value) {
+        _filename = value;
     }
 
     public void addSymbol(Symbol s) throws Exception {
@@ -124,6 +136,7 @@ public class SymbolLib implements Serializable {
     //added by quxi 2009.10.21 :for the symbol trainer
     public static boolean GenerateDefaultSetElastic(String filePathLibrary, LibraryTypes type) throws Exception {
         SymbolLib basic = new SymbolLib("Basic Symbol Library for Elastic matching");
+        basic.setFilename(filePathLibrary);
         int[] operators = {
                 0x2192,// right arrow
                 0x2192,// right arrow

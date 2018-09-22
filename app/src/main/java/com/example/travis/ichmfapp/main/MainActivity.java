@@ -75,11 +75,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-
-
-
-
         TextView txtcontent = (TextView)findViewById(R.id.tv1);
 
         try {
@@ -142,6 +137,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
     public static Context getAppContext(){
         return MainActivity.context;

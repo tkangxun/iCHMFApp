@@ -36,8 +36,8 @@ public class ConstantData {
 
     //model file past to svm_predict, sp.run then to svm file to create buffer
     public static String modelFile = "model.dat";
-    public static String ElasticFileString = "model.dat";
-    public static String ElasticFileDefaultString = parentpath + "\\elasticDefault.dat";
+    public static String ElasticFileString = "elastic.dat";
+    public static String ElasticFileDefaultString = "file\\elasticDefault.dat";
     public static File ElasticFile = new File(ElasticFileString);
     public static File ElasticFileDefault = new File(ElasticFileDefaultString);
     public static String exeDir = parentpath + "\\php\\mathml.exe ";
