@@ -15,7 +15,7 @@ public class PreprocessorSVM {
     private static int thresHold = 5;
     private static int desiredPointNum = 50;
     private static int closePoint = 20;
-    private static Rectangle standardRec = new Rectangle(0, 0, 100, 100);
+//    private static Rectangle standardRec = new Rectangle(0, 0, -1, -1);
 
     public PreprocessorSVM() {
     }
@@ -223,6 +223,7 @@ public class PreprocessorSVM {
      */
     private static StrokeList normalizing(StrokeList _inputStrokeList) {
         double left = 10000, right = -10000, top = 10000, bottom = -10000;
+        //Rectangle standardRec = new Rectangle(0, 0, 100, 100);
         Stroke _strokeTemp;
 
         for (int i = 0; i < _inputStrokeList.size(); i++) {
@@ -246,7 +247,8 @@ public class PreprocessorSVM {
 
         double width = right - left + 1;
         double height = bottom - top + 1;
-        double scale = Math.max(width, height) / standardRec.getWidth();
+        double scale = Math.max(width, height) / 100;
+                //standardRec.getWidth();
 
         StrokeList result = new StrokeList();
         Stroke tempStroke;

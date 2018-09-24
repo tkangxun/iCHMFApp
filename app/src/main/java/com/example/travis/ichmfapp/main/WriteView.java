@@ -35,7 +35,8 @@ public class WriteView extends View {
     private Paint mPaint;
     private float mX, mY;
     private Context context = MainActivity.getAppContext();
-    private EventListenerList writeViewListenerList = new EventListenerList();
+    //private EventListenerList writeViewListenerList = new EventListenerList();
+    private WriteViewListener wvlistener;
 
 
     private static final float TOUCH_TOLERANCE = 4;
@@ -139,6 +140,7 @@ public class WriteView extends View {
                 _currentStroke = null;
                 _startPoint = null;
                 _endPoint = null;
+                wvlistener.StrokeEnd();
                 invalidate();
                 break;
         }
@@ -186,24 +188,8 @@ public class WriteView extends View {
         invalidate();
     }
 
-    public void addWriteViewListener(WriteViewListener listener) {
-        writeViewListenerList.add(WriteViewListener.class,
-                listener);
+    public void addWriteViewListener(WriteViewListener eventListener){
+        wvlistener = eventListener;
     }
-
-    void fireEndStroking(WriteViewEvent evt) {
-        Object[] listeners = writeViewListenerList.getListenerList();
-        for (int i = 0; i
-                < listeners.length; i += 2) {
-            if (listeners[i] == WriteViewListener.class) {
-                ((WriteViewListener) listeners[i + 1]).StrokeEnd(evt);
-            }
-        }
-    }
-
-
-
-
-
 
 }

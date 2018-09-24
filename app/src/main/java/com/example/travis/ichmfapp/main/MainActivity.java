@@ -10,8 +10,10 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
+
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -31,7 +33,9 @@ import com.example.travis.ichmfapp.symbollib.*;
 import symbolFeature.SVM_predict;
 import symbolFeature.SymbolFeature;
 
-public class MainActivity extends AppCompatActivity implements WriteViewListener{
+public class MainActivity extends AppCompatActivity
+ //       implements WriteViewListener
+{
 
     private WriteView writeView;
     private static Context context;
@@ -49,8 +53,18 @@ public class MainActivity extends AppCompatActivity implements WriteViewListener
         setContentView(R.layout.activity_main);
 
 
+
         writeView = (WriteView) findViewById(R.id.writeView);
-        writeView.addWriteViewListener(this);
+        //writeView.addWriteViewListener(this);
+        writeView.addWriteViewListener(new WriteViewListener() {
+            @Override
+            public void StrokeEnd() {
+                Toast.makeText(MainActivity.this, "Getting strokes", Toast.LENGTH_SHORT).show();
+                writeView.getStrokes();
+            }
+        });
+
+
 
 
 
@@ -132,16 +146,24 @@ public class MainActivity extends AppCompatActivity implements WriteViewListener
 
 
         TextView txtcontent = (TextView)findViewById(R.id.tv1);
+/**
+        try {
 
-        /**try {
+
+
             StrokeList preProcessedStrokeList = PreprocessorSVM.preProcessing(writeView.getStrokes());
-            //compare storkelist with each symbol in symbol library _quxi
+            Toast.makeText(context, "preprocessed", Toast.LENGTH_SHORT).show();
+            //compare storkelist with each symbol in symbol library
             String featureString = SymbolFeature.getFeature(0, preProcessedStrokeList);
             SVM_predict sp = new SVM_predict();
-            sp.run(featureString,1);
+            sp.run(featureString, 1);
 
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
-
+*/
+        /**
             Recognizer objreg = new Recognizer(
                     SymbolLib.Load(ConstantData.ElasticFileString,
                             SymbolLib.LibraryTypes.Binary));
@@ -221,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements WriteViewListener
 
         return super.onOptionsItemSelected(item);
     }
-    public void StrokeEnd(WriteViewEvent evt) {
+    /**public void StrokeEnd(WriteViewEvent evt) {
         Toast.makeText(context, ("maybe can get my strokes"), Toast.LENGTH_SHORT).show();
-    }
+    }*/
 }
