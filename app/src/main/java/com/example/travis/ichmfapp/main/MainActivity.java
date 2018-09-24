@@ -52,21 +52,15 @@ public class MainActivity extends AppCompatActivity
         MainActivity.context = getApplicationContext();
         setContentView(R.layout.activity_main);
 
-
-
         writeView = (WriteView) findViewById(R.id.writeView);
         //writeView.addWriteViewListener(this);
         writeView.addWriteViewListener(new WriteViewListener() {
             @Override
             public void StrokeEnd() {
-                Toast.makeText(MainActivity.this, "Getting strokes", Toast.LENGTH_SHORT).show();
-                writeView.getStrokes();
+                Toast.makeText(MainActivity.getAppContext(), "Getting strokes", Toast.LENGTH_SHORT).show();
+                currentstrokes = writeView.getStrokes();
             }
         });
-
-
-
-
 
 
         final Switch simpleswitch = (Switch) findViewById(R.id.simpleswitch);
@@ -243,7 +237,5 @@ public class MainActivity extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
-    /**public void StrokeEnd(WriteViewEvent evt) {
-        Toast.makeText(context, ("maybe can get my strokes"), Toast.LENGTH_SHORT).show();
-    }*/
+
 }

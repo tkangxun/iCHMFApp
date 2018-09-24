@@ -140,6 +140,12 @@ public class WriteView extends View {
                 _currentStroke = null;
                 _startPoint = null;
                 _endPoint = null;
+                wvlistener = new WriteViewListener() {
+                    @Override
+                    public void StrokeEnd() {
+                        Toast.makeText(MainActivity.getAppContext(), "writeview", Toast.LENGTH_SHORT).show();
+                    }
+                };
                 wvlistener.StrokeEnd();
                 invalidate();
                 break;
@@ -189,7 +195,8 @@ public class WriteView extends View {
     }
 
     public void addWriteViewListener(WriteViewListener eventListener){
-        wvlistener = eventListener;
+        this.wvlistener = eventListener;
+        Toast.makeText(MainActivity.getAppContext(), "listener added", Toast.LENGTH_SHORT).show();
     }
 
 }
