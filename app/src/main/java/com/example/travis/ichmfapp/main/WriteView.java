@@ -9,6 +9,7 @@ import android.graphics.Path;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.travis.ichmfapp.symbollib.Stroke;
 import com.example.travis.ichmfapp.symbollib.StrokeList;
@@ -19,6 +20,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import javax.swing.event.EventListenerList;
 
 /**
  * Created by Travis on 7/8/2018.
@@ -31,7 +34,8 @@ public class WriteView extends View {
     private Path mPath;
     private Paint mPaint;
     private float mX, mY;
-    private Context context;
+    private Context context = MainActivity.getAppContext();
+    private EventListenerList writeViewListenerList = new EventListenerList();
 
 
     private static final float TOUCH_TOLERANCE = 4;
@@ -117,6 +121,7 @@ public class WriteView extends View {
         switch(event.getAction()) {
             case MotionEvent.ACTION_DOWN :
                 touchStart(x, y);
+                //Toast.makeText(context, ("Coordinates x: "+ x+ "  y:" + y), Toast.LENGTH_SHORT).show();
                 _startPoint = new StrokePoint(x,y);
                 _currentStroke = new Stroke();
                 _currentStroke.addStrokePoint(_startPoint);
@@ -180,6 +185,23 @@ public class WriteView extends View {
 
         invalidate();
     }
+
+    public void addWriteViewListener(WriteViewListener listener) {
+        writeViewListenerList.add(WriteViewListener.class,
+                listener);
+    }
+
+    void fireEndStroking(WriteViewEvent evt) {
+        Object[] listeners = writeViewListenerList.getListenerList();
+        for (int i = 0; i
+                < listeners.length; i += 2) {
+            if (listeners[i] == WriteViewListener.class) {
+                ((WriteViewListener) listeners[i + 1]).StrokeEnd(evt);
+            }
+        }
+    }
+
+
 
 
 

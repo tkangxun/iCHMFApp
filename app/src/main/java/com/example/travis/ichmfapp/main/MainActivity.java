@@ -1,89 +1,145 @@
 package com.example.travis.ichmfapp.main;
 
 
+import android.app.AlertDialog;
 import android.content.Context;
-import android.content.res.AssetManager;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.ToggleButton;
+import android.widget.Toast;
+
 
 import com.example.travis.ichmfapp.R;
 import com.example.travis.ichmfapp.preprocessor.PreprocessorSVM;
 import com.example.travis.ichmfapp.preprocessor.Recognizer;
 import com.example.travis.ichmfapp.symbollib.*;
 
-import java.util.StringTokenizer;
+
 
 import symbolFeature.SVM_predict;
 import symbolFeature.SymbolFeature;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements WriteViewListener{
 
     private WriteView writeView;
     private static Context context;
     static Recognizer objreg;
+    private StrokeList currentstrokes;
     private Boolean training = Boolean.FALSE;
-    Button button;
-
-
-
+    private Button  trainButton;
+    //private EditText result;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         MainActivity.context = getApplicationContext();
-
-
-
         setContentView(R.layout.activity_main);
 
-        System.out.print("hello");
+
         writeView = (WriteView) findViewById(R.id.writeView);
+        writeView.addWriteViewListener(this);
 
-        button = (Button) findViewById(R.id.button1);
-        button.setVisibility(View.GONE);
 
-        button.setOnClickListener(new View.OnClickListener() {
+
+
+        final Switch simpleswitch = (Switch) findViewById(R.id.simpleswitch);
+
+
+        //Training button
+        trainButton = (Button) findViewById(R.id.button1);
+        trainButton.setVisibility(View.GONE);
+
+        trainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 writeView.getStrokes();
+                Toast.makeText(MainActivity.getAppContext(), "Training symbol", Toast.LENGTH_SHORT).show();
+                simpleswitch.setChecked(false);
+
 
             }
         });
+        //training mode
 
-        Switch simpleswitch = (Switch) findViewById(R.id.simpleswitch);
+        //result = (EditText) findViewById(R.id.editTextResult);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                this);
+
+        LayoutInflater li = LayoutInflater.from(context);
+        View promptsView = li.inflate(R.layout.prompts, null);
+        builder.setTitle("Symbol Trainer");
+        builder.setMessage("Please insert  symbol to train");
+        builder.setView(promptsView);
+        final EditText userInput = (EditText) promptsView
+                .findViewById(R.id.editTextDialogUserInput);
+
+        // set dialog message
+        builder
+                .setCancelable(false)
+                .setPositiveButton("SUBMIT",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                // get user input and set it to result
+                                // edit text
+
+                                String toTrain = userInput.getText().toString();
+
+                                //do not know why but toast is not working, might be something to do with the view or final
+                                Toast.makeText(MainActivity.getAppContext(), "training " + toTrain, Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+        // create alert dialog
+        final AlertDialog alertDialog = builder.create();
+
+
         simpleswitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     training = Boolean.TRUE;
-                    button.setVisibility(View.VISIBLE);
+                    trainButton.setVisibility(View.VISIBLE);
+
+                    alertDialog.show();
 
                 }else{
-                    button.setVisibility(View.GONE);
+                    trainButton.setVisibility(View.GONE);
                 }
             }
         });
 
+
+
+
+
         TextView txtcontent = (TextView)findViewById(R.id.tv1);
 
-        try {
-            /**StrokeList preProcessedStrokeList = PreprocessorSVM.preProcessing(writeView.getStrokes());
+        /**try {
+            StrokeList preProcessedStrokeList = PreprocessorSVM.preProcessing(writeView.getStrokes());
             //compare storkelist with each symbol in symbol library _quxi
             String featureString = SymbolFeature.getFeature(0, preProcessedStrokeList);
             SVM_predict sp = new SVM_predict();
             sp.run(featureString,1);
-             */
+
 
 
             Recognizer objreg = new Recognizer(
@@ -92,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+         */
 
 
         ////////////////////////
@@ -164,5 +220,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    public void StrokeEnd(WriteViewEvent evt) {
+        Toast.makeText(context, ("maybe can get my strokes"), Toast.LENGTH_SHORT).show();
     }
 }

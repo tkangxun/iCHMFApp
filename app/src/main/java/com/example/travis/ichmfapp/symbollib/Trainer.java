@@ -1,6 +1,11 @@
 package com.example.travis.ichmfapp.symbollib;
 
 
+import android.content.Context;
+import android.widget.Toast;
+
+import com.example.travis.ichmfapp.main.MainActivity;
+
 import java.io.File;
 
 
@@ -13,6 +18,7 @@ public class Trainer{
     private SymbolLib objSymbolLib;
     private File fileSymbolLib = null;
     private SymbolList jList1 = null;
+    private Context context = MainActivity.getAppContext();
 
     public Trainer (StrokeList s1){
         this.generateDefaultSetSVM();
@@ -22,6 +28,8 @@ public class Trainer{
     }
 
     private void generateDefaultSetSVM() {
+
+
         try {
             this.objSymbolLib = SymbolLib.GenerateDefaultSetSVM(SymbolLib.LibraryTypes.Binary);
             jList1 = objSymbolLib.getSymbols();
@@ -58,8 +66,7 @@ public class Trainer{
             //jList1.setSelectedIndex(0);
         } catch (Exception ex) {
             objSymbolLib = null;
-            System.out.print("Error in loading Elastic file library.");
-            ex.printStackTrace();
+            Toast.makeText(context, "Error in loading Elastic file library.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -69,9 +76,45 @@ public class Trainer{
             try {
                 objSymbolLib.setTitle(objSymbolLib.getTitle());
                 objSymbolLib.Save(ConstantData.ElasticFileString, SymbolLib.LibraryTypes.Binary);
-                System.out.print("Elastic file Library is saved!.");
+                Toast.makeText(context, "Elastic file Library is saved!.", Toast.LENGTH_SHORT).show();
             } catch (Exception ex) {
-                System.out.print("Error in saving Elastic file library.");
+                Toast.makeText(context, "Error in saving Elastic file library.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    public void removeSymbol(int removedIndex) {
+        if (objSymbolLib == null) {
+            return;
+        }
+
+        objSymbolLib.removeSymbol(removedIndex);
+        jList1.clear();
+        jList1= objSymbolLib.getSymbols();
+        if (removedIndex != 0) {
+            //jList1.setSelectedIndex(removedIndex - 1);
+        } else {
+            //jList1.setSelectedIndex(0);
+        }
+
+    }
+
+    public void addSymbol(char code) {
+        if (objSymbolLib == null) {
+            return;
+        }
+
+        int unicode = ((int)code);
+        if (code != 0) {
+            try {
+                Symbol sbl = new Symbol(SymbolLib.getHexToChar(unicode));
+                objSymbolLib.addSymbol(sbl);
+                jList1.clear();
+                jList1 = objSymbolLib.getSymbols();
+                //jList1.setSelectedIndex(objSymbolLib.getSymbols().size() - 1);
+                //invalidate();
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
     }

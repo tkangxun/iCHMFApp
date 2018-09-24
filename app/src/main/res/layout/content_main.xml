@@ -37,10 +37,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:text="Submit"
+        android:text="Train"
         android:textSize="15sp"
         android:textStyle="bold"
         android:thumbTint="@color/colorPrimary" />
+
 
     <com.example.travis.ichmfapp.main.WriteView
         android:id="@+id/writeView"
