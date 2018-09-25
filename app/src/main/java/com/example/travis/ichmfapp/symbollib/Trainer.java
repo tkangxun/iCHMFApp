@@ -7,6 +7,7 @@ import android.widget.Toast;
 import com.example.travis.ichmfapp.main.MainActivity;
 
 import java.io.File;
+import java.util.List;
 
 
 /**
@@ -20,12 +21,15 @@ public class Trainer{
     private SymbolList jList1 = null;
     private Context context = MainActivity.getAppContext();
 
-    public Trainer (StrokeList s1){
+    public Trainer (){
         this.generateDefaultSetSVM();
 
 
 
     }
+
+
+
 
     private void generateDefaultSetSVM() {
 
@@ -33,6 +37,7 @@ public class Trainer{
         try {
             this.objSymbolLib = SymbolLib.GenerateDefaultSetSVM(SymbolLib.LibraryTypes.Binary);
             jList1 = objSymbolLib.getSymbols();
+            Toast.makeText(context, "help", Toast.LENGTH_SHORT).show();
             //jList1.setSelectedIndex(0);
         } catch (Exception ex) {
             ex.printStackTrace();

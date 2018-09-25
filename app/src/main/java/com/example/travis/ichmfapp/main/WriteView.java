@@ -142,9 +142,13 @@ public class WriteView extends View {
                 _endPoint = null;
                 wvlistener = new WriteViewListener() {
                     @Override
+                    //don want to run through here
                     public void StrokeEnd() {
-                        Toast.makeText(MainActivity.getAppContext(), "writeview", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.getAppContext(),
+                                "running from writeview",
+                                Toast.LENGTH_SHORT).show();
                     }
+
                 };
                 wvlistener.StrokeEnd();
                 invalidate();

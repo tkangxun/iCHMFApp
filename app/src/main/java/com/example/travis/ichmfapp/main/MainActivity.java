@@ -41,8 +41,10 @@ public class MainActivity extends AppCompatActivity
     private static Context context;
     static Recognizer objreg;
     private StrokeList currentstrokes;
-    private Boolean training = Boolean.FALSE;
+    public Boolean training = Boolean.FALSE;
     private Button  trainButton;
+    private String toTrain;
+
     //private EditText result;
 
 
@@ -57,10 +59,12 @@ public class MainActivity extends AppCompatActivity
         writeView.addWriteViewListener(new WriteViewListener() {
             @Override
             public void StrokeEnd() {
+                //i want the code to run through here.
                 Toast.makeText(MainActivity.getAppContext(), "Getting strokes", Toast.LENGTH_SHORT).show();
                 currentstrokes = writeView.getStrokes();
             }
         });
+
 
 
         final Switch simpleswitch = (Switch) findViewById(R.id.simpleswitch);
@@ -73,10 +77,10 @@ public class MainActivity extends AppCompatActivity
         trainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                writeView.getStrokes();
-                Toast.makeText(MainActivity.getAppContext(), "Training symbol", Toast.LENGTH_SHORT).show();
-                simpleswitch.setChecked(false);
+                currentstrokes = writeView.getStrokes();
 
+                Toast.makeText(MainActivity.getAppContext(), "to be passed :" + toTrain, Toast.LENGTH_SHORT).show();
+                simpleswitch.setChecked(false);
 
             }
         });
@@ -104,7 +108,7 @@ public class MainActivity extends AppCompatActivity
                                 // get user input and set it to result
                                 // edit text
 
-                                String toTrain = userInput.getText().toString();
+                                toTrain = userInput.getText().toString();
 
                                 //do not know why but toast is not working, might be something to do with the view or final
                                 Toast.makeText(MainActivity.getAppContext(), "training " + toTrain, Toast.LENGTH_SHORT).show();
@@ -114,6 +118,7 @@ public class MainActivity extends AppCompatActivity
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog,int id) {
                                 dialog.cancel();
+                                simpleswitch.setChecked(false);
                             }
                         });
 
@@ -142,9 +147,6 @@ public class MainActivity extends AppCompatActivity
         TextView txtcontent = (TextView)findViewById(R.id.tv1);
 /**
         try {
-
-
-
             StrokeList preProcessedStrokeList = PreprocessorSVM.preProcessing(writeView.getStrokes());
             Toast.makeText(context, "preprocessed", Toast.LENGTH_SHORT).show();
             //compare storkelist with each symbol in symbol library
@@ -205,7 +207,7 @@ public class MainActivity extends AppCompatActivity
                         .setAction("Action", null).show();
 
                 /** place icon action here! */
-                writeView.undoLastStroke();
+                writeView.clear();
             }
         });
     }

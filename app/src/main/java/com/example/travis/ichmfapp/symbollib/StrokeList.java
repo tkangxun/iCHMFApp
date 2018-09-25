@@ -3,6 +3,7 @@ package com.example.travis.ichmfapp.symbollib;
 import java.awt.*;
 import java.io.Serializable;
 import java.util.*;
+import java.util.List;
 
 /**
  * Created by Travis on 7/8/2018.
@@ -44,6 +45,8 @@ public class StrokeList
         }
         return newSl;
     }
+
+
 
     /**
      * To retrive last four items from the list.
