@@ -33,9 +33,7 @@ import com.example.travis.ichmfapp.symbollib.*;
 import symbolFeature.SVM_predict;
 import symbolFeature.SymbolFeature;
 
-public class MainActivity extends AppCompatActivity
- //       implements WriteViewListener
-{
+public class MainActivity extends AppCompatActivity {
 
     private WriteView writeView;
     private static Context context;
@@ -55,7 +53,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         writeView = (WriteView) findViewById(R.id.writeView);
-        //writeView.addWriteViewListener(this);
+
         writeView.addWriteViewListener(new WriteViewListener() {
             @Override
             public void StrokeEnd() {
@@ -64,6 +62,7 @@ public class MainActivity extends AppCompatActivity
                 currentstrokes = writeView.getStrokes();
             }
         });
+
 
 
 

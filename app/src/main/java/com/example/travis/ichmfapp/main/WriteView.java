@@ -18,6 +18,7 @@ import com.example.travis.ichmfapp.symbollib.StrokePoint;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -29,19 +30,19 @@ import javax.swing.event.EventListenerList;
 
 public class WriteView extends View {
 
+    private List _listeners = new ArrayList();
     private Bitmap mBitmap;
     private Canvas mCanvas;
     private Path mPath;
     private Paint mPaint;
     private float mX, mY;
     private Context context = MainActivity.getAppContext();
-    //private EventListenerList writeViewListenerList = new EventListenerList();
-    private WriteViewListener wvlistener;
+    private static WriteViewListener wvlistener;
 
 
     private static final float TOUCH_TOLERANCE = 4;
-    private double delay = 0.001;
-    private Instant starts = Instant.now();
+    //private double delay = 0.001;
+    //private Instant starts = Instant.now();
 
 //    public int _strokeSize;
 
@@ -88,14 +89,16 @@ public class WriteView extends View {
     }
 
     private void touchStart(float x, float y) {
-        Instant ends = Instant.now();
-        Duration duration = Duration.between(starts, ends);
+        //Instant ends = Instant.now();
+        //Duration duration = Duration.between(starts, ends);
         // new symbol created if more than delay
-        if (duration.getSeconds() >= delay) {
-            mPath = new Path();
-            _strokes = new StrokeList();
+        //if (duration.getSeconds() >= delay) {
+        //    mPath = new Path();
+         //   _strokes = new StrokeList();
 
-        }
+        //}
+        mPath = new Path();
+        _strokes = new StrokeList();
         mPath.moveTo(x, y);
         mX = x;
         mY = y;
@@ -115,7 +118,7 @@ public class WriteView extends View {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public synchronized boolean  onTouchEvent(MotionEvent event) {
         float x = event.getX();
         float y = event.getY();
 
@@ -140,21 +143,14 @@ public class WriteView extends View {
                 _currentStroke = null;
                 _startPoint = null;
                 _endPoint = null;
-                wvlistener = new WriteViewListener() {
-                    @Override
-                    //don want to run through here
-                    public void StrokeEnd() {
-                        Toast.makeText(MainActivity.getAppContext(),
-                                "running from writeview",
-                                Toast.LENGTH_SHORT).show();
-                    }
 
-                };
+                //fire end of stroke
                 wvlistener.StrokeEnd();
+
                 invalidate();
                 break;
         }
-        starts = Instant.now();
+        //starts = Instant.now();
         return true;
     }
 
@@ -202,5 +198,6 @@ public class WriteView extends View {
         this.wvlistener = eventListener;
         Toast.makeText(MainActivity.getAppContext(), "listener added", Toast.LENGTH_SHORT).show();
     }
+
 
 }
