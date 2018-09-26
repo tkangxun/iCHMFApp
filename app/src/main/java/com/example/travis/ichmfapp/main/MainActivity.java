@@ -55,11 +55,10 @@ public class MainActivity extends AppCompatActivity
 
 
         writeView = (WriteView) findViewById(R.id.writeView);
-        //writeView.addWriteViewListener(this);
         writeView.addWriteViewListener(new WriteViewListener() {
             @Override
             public void StrokeEnd() {
-                Toast.makeText(MainActivity.this, "Getting strokes: " + writeView.getStrokes().size(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "Getting strokes: " + writeView.getStrokes().size(), Toast.LENGTH_SHORT).show();
                 writeView.getStrokes();
             }
         });
@@ -79,8 +78,14 @@ public class MainActivity extends AppCompatActivity
         trainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                writeView.getStrokes();
-                Toast.makeText(MainActivity.getAppContext(), "Training symbol", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.getAppContext(), "Training symbol, strokes: " + writeView.getStrokes().size(), Toast.LENGTH_SHORT).show();
+                //send for processing
+                StrokeList processedStrokes = PreprocessorSVM.preProcessing(writeView.getStrokes());
+                Toast.makeText(MainActivity.this, "Before: "+ PreprocessorSVM.countTotalPoint(writeView.getStrokes())
+                + ". After: " + PreprocessorSVM.countTotalPoint(processedStrokes), Toast.LENGTH_SHORT).show();
+
+
+
                 simpleswitch.setChecked(false);
 
 

@@ -35,7 +35,7 @@ public class WriteView extends View {
     private float mX, mY;
     private Context context = MainActivity.getAppContext();
     //private EventListenerList writeViewListenerList = new EventListenerList();
-    private WriteViewListener wvlistener;
+    private static WriteViewListener wvlistener;
 
 
     private static final float TOUCH_TOLERANCE = 4;
@@ -44,7 +44,7 @@ public class WriteView extends View {
 //    public int _strokeSize;
 
     private StrokePoint _startPoint, _endPoint;
-    private StrokeList _strokes;
+    private static StrokeList _strokes;
     private Stroke _currentStroke;
 
 
@@ -132,12 +132,6 @@ public class WriteView extends View {
                 _currentStroke = null;
                 _startPoint = null;
                 _endPoint = null;
-                wvlistener = new WriteViewListener() {
-                    @Override
-                    public void StrokeEnd() {
-                        Toast.makeText(context, "stroke write view: " + _strokes.size(), Toast.LENGTH_SHORT).show();
-                    }
-                };
                 wvlistener.StrokeEnd();
                 invalidate();
                 break;
