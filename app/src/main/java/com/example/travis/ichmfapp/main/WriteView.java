@@ -48,7 +48,7 @@ public class WriteView extends View {
 
     private StrokePoint _startPoint, _endPoint;
     private StrokeList _strokes;
-    private Stroke _currentStroke;
+    private Stroke _currentStroke = new Stroke();
 
 
     public WriteView(Context context, AttributeSet attrs){
@@ -97,11 +97,19 @@ public class WriteView extends View {
          //   _strokes = new StrokeList();
 
         //}
-        mPath = new Path();
-        _strokes = new StrokeList();
+
+
+        // the 4 stroke thingu might be captured in strokelist class
+
+        //mPath = new Path();
+        //_strokes = new StrokeList();
+
+
+
+
         mPath.moveTo(x, y);
-        mX = x;
-        mY = y;
+        this.mX = x;
+        this.mY = y;
     }
     private void touchMove(float x, float y) {
         float dx = Math.abs(x - mX);
@@ -126,20 +134,20 @@ public class WriteView extends View {
             case MotionEvent.ACTION_DOWN :
                 touchStart(x, y);
                 //Toast.makeText(context, ("Coordinates x: "+ x+ "  y:" + y), Toast.LENGTH_SHORT).show();
-                _startPoint = new StrokePoint(x,y);
-                _currentStroke = new Stroke();
-                _currentStroke.addStrokePoint(_startPoint);
+                this._startPoint = new StrokePoint(x,y);
+                this._currentStroke = new Stroke();
+                this._currentStroke.addStrokePoint(this._startPoint);
                 invalidate();
                 break;
             case MotionEvent.ACTION_MOVE :
                 touchMove(x, y);
-                _endPoint = new StrokePoint(x,y);
-                _currentStroke.addStrokePoint(_endPoint);
+                this._endPoint = new StrokePoint(x,y);
+                this._currentStroke.addStrokePoint(this._endPoint);
                 invalidate();
                 break;
             case MotionEvent.ACTION_UP :
                 touchUp();
-                _strokes.add(_currentStroke);
+                this._strokes.add(_currentStroke);
                 _currentStroke = null;
                 _startPoint = null;
                 _endPoint = null;
@@ -158,7 +166,7 @@ public class WriteView extends View {
     //widgets
     public void clear() {
         mPath.reset();
-
+        mPath = new Path();
         invalidate();
     }
 

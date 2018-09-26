@@ -53,15 +53,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         writeView = (WriteView) findViewById(R.id.writeView);
-
         writeView.addWriteViewListener(new WriteViewListener() {
             @Override
             public void StrokeEnd() {
-                //i want the code to run through here.
-                Toast.makeText(MainActivity.getAppContext(), "Getting strokes", Toast.LENGTH_SHORT).show();
+
+                //Toast.makeText(MainActivity.getAppContext(), "Getting strokes", Toast.LENGTH_SHORT).show();
                 currentstrokes = writeView.getStrokes();
+                //carry on to do preprocessing
             }
         });
+
+
+
 
 
 
