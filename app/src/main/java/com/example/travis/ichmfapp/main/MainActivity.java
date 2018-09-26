@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity
         writeView.addWriteViewListener(new WriteViewListener() {
             @Override
             public void StrokeEnd() {
-                Toast.makeText(MainActivity.this, "Getting strokes", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Getting strokes: " + writeView.getStrokes().size(), Toast.LENGTH_SHORT).show();
                 writeView.getStrokes();
             }
         });
@@ -243,7 +243,5 @@ public class MainActivity extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
-    /**public void StrokeEnd(WriteViewEvent evt) {
-        Toast.makeText(context, ("maybe can get my strokes"), Toast.LENGTH_SHORT).show();
-    }*/
+
 }

@@ -15,13 +15,12 @@ import com.example.travis.ichmfapp.symbollib.Stroke;
 import com.example.travis.ichmfapp.symbollib.StrokeList;
 import com.example.travis.ichmfapp.symbollib.StrokePoint;
 
-import java.time.Duration;
-import java.time.Instant;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.event.EventListenerList;
+
 
 /**
  * Created by Travis on 7/8/2018.
@@ -40,8 +39,7 @@ public class WriteView extends View {
 
 
     private static final float TOUCH_TOLERANCE = 4;
-    private double delay = 0.001;
-    private Instant starts = Instant.now();
+
 
 //    public int _strokeSize;
 
@@ -68,6 +66,7 @@ public class WriteView extends View {
 
         mPath = new Path();
         mCanvas = new Canvas();
+        _strokes = new StrokeList();
         //DisplayMetrics metrics = this.context.getResources().getDisplayMetrics();
 
     }
@@ -88,14 +87,7 @@ public class WriteView extends View {
     }
 
     private void touchStart(float x, float y) {
-        Instant ends = Instant.now();
-        Duration duration = Duration.between(starts, ends);
-        // new symbol created if more than delay
-        if (duration.getSeconds() >= delay) {
-            mPath = new Path();
-            _strokes = new StrokeList();
 
-        }
         mPath.moveTo(x, y);
         mX = x;
         mY = y;
@@ -140,11 +132,16 @@ public class WriteView extends View {
                 _currentStroke = null;
                 _startPoint = null;
                 _endPoint = null;
+                wvlistener = new WriteViewListener() {
+                    @Override
+                    public void StrokeEnd() {
+                        Toast.makeText(context, "stroke write view: " + _strokes.size(), Toast.LENGTH_SHORT).show();
+                    }
+                };
                 wvlistener.StrokeEnd();
                 invalidate();
                 break;
         }
-        starts = Instant.now();
         return true;
     }
 
