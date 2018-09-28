@@ -34,6 +34,7 @@ public class Symbol implements Cloneable, Serializable {
         _charSymbol = symbolChar;
     }
 
+    //return the symbol
     public char getSymbolChar() {
         return _charSymbol;
     }

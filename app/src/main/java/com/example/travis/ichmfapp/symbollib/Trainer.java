@@ -5,8 +5,11 @@ import android.content.Context;
 import android.widget.Toast;
 
 import com.example.travis.ichmfapp.main.MainActivity;
+import com.example.travis.ichmfapp.preprocessor.SymbolRecognizer_SVM;
 
 import java.io.File;
+
+import symbolFeature.*;
 
 
 /**
@@ -20,7 +23,7 @@ public class Trainer{
     private SymbolList jList1 = null;
     private Context context = MainActivity.getAppContext();
 
-    public Trainer (StrokeList s1){
+    public Trainer (){
         this.generateDefaultSetSVM();
 
 
@@ -32,10 +35,28 @@ public class Trainer{
 
         try {
             this.objSymbolLib = SymbolLib.GenerateDefaultSetSVM(SymbolLib.LibraryTypes.Binary);
+            //An array of all the basic symbols
             jList1 = objSymbolLib.getSymbols();
-            //jList1.setSelectedIndex(0);
+            Toast.makeText(context, "trainer size: " + jList1.size() +"   symbol: " + objSymbolLib.getSymbolFromChar('='), Toast.LENGTH_SHORT).show();
+
+
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+    }
+
+    private void trainSymbolSVM( int index) {
+        if (jList1.get(index) == null) {
+            return;
+        }
+        Symbol sbl = (Symbol) jList1.get(index);
+        if (SymbolRecognizer_SVM.checkStrokeNO(sbl.getSymbolCharDecimal(), sbl.getStrokes().size())) {
+
+            SymbolFeature.writeFeatures(SymbolFeature.getFeature(sbl.getSymbolCharDecimal(), sbl.getStrokes()));
+
+            Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(context, "Invalid Stroke Number", Toast.LENGTH_SHORT).show();
         }
     }
 

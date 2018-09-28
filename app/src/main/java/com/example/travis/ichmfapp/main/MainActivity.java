@@ -45,6 +45,10 @@ public class MainActivity extends AppCompatActivity
     private Button  trainButton;
     //private EditText result;
 
+    private Trainer trainer;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +70,13 @@ public class MainActivity extends AppCompatActivity
 
 
 
+        trainer = new Trainer();
+        //for SVM, Sampling is collected, preprocessed , feature extraction, then train and model created
+        //input symbol only feature extraction then SVM classification
+
+
+
+
 
 
         final Switch simpleswitch = (Switch) findViewById(R.id.simpleswitch);
@@ -78,22 +89,34 @@ public class MainActivity extends AppCompatActivity
         trainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                //for SVM, Sampling is collected, preprocessed , feature extraction, then train and model created
+                //input symbol only feature extraction then SVM classification
+
+                training = true;
                 Toast.makeText(MainActivity.getAppContext(), "Training symbol, strokes: " + writeView.getStrokes().size(), Toast.LENGTH_SHORT).show();
-                //send for processing
-                StrokeList processedStrokes = PreprocessorSVM.preProcessing(writeView.getStrokes());
+
+                //send for processing, should account for symbol training only 4 strokes (not added yet)
+                StrokeList processedStrokes = getprocessed(writeView.getStrokes());
                 Toast.makeText(MainActivity.this, "Before: "+ PreprocessorSVM.countTotalPoint(writeView.getStrokes())
                 + ". After: " + PreprocessorSVM.countTotalPoint(processedStrokes), Toast.LENGTH_SHORT).show();
+
+                //send for feature extraction
+
+
+                //built SVM model
 
 
 
                 simpleswitch.setChecked(false);
+                training = false;
 
 
             }
         });
         //training mode
 
-        //result = (EditText) findViewById(R.id.editTextResult);
+
 
         AlertDialog.Builder builder = new AlertDialog.Builder(
                 this);
@@ -101,7 +124,7 @@ public class MainActivity extends AppCompatActivity
         LayoutInflater li = LayoutInflater.from(context);
         View promptsView = li.inflate(R.layout.prompts, null);
         builder.setTitle("Symbol Trainer");
-        builder.setMessage("Please insert  symbol to train");
+        builder.setMessage("Please key unicode of new symbol");
         builder.setView(promptsView);
         final EditText userInput = (EditText) promptsView
                 .findViewById(R.id.editTextDialogUserInput);
@@ -114,10 +137,14 @@ public class MainActivity extends AppCompatActivity
                             public void onClick(DialogInterface dialog,int id) {
                                 // get user input and set it to result
                                 // edit text
+                                String s = "\\";
 
                                 String toTrain = userInput.getText().toString();
+                                toTrain= s + toTrain;
 
-                                //do not know why but toast is not working, might be something to do with the view or final
+                                Toast.makeText(MainActivity.this, "unicode was " + toTrain + " char is " + "\u003d" , Toast.LENGTH_SHORT).show();
+
+
                                 Toast.makeText(MainActivity.getAppContext(), "training " + toTrain, Toast.LENGTH_SHORT).show();
                             }
                         })
@@ -247,6 +274,11 @@ public class MainActivity extends AppCompatActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public StrokeList getprocessed (StrokeList rawStroke){
+        StrokeList processed = PreprocessorSVM.preProcessing(rawStroke);
+        return processed;
     }
 
 }

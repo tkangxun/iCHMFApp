@@ -79,6 +79,8 @@ public class SymbolLib implements Serializable {
         return _Symbols.get(index);
     }
 
+
+    //get a list since some char may have more than one samples
     public ArrayList getSymbolFromChar(char character) {
         ArrayList<Symbol> result = new ArrayList();
         for (int index = 0; index < _Symbols.size(); index++) {
@@ -101,6 +103,7 @@ public class SymbolLib implements Serializable {
         _Symbols.remove(index);
     }
 
+    //find the index of the symbol by providing the decimal
     public int findSymbol(int SymbolDecimalChar) {
         for (int index = 0; index < _Symbols.size(); index++) {
             if (SymbolDecimalChar == ((Symbol) _Symbols.get(index)).getSymbolCharDecimal()) {
