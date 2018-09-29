@@ -40,12 +40,13 @@ public class Trainer{
             Toast.makeText(context, "trainer size: " + jList1.size() +"   symbol: " + objSymbolLib.getSymbolFromChar('='), Toast.LENGTH_SHORT).show();
 
 
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    private void trainSymbolSVM( int index) {
+    public void trainSymbolSVM( int index) {
         if (jList1.get(index) == null) {
             return;
         }
@@ -92,7 +93,7 @@ public class Trainer{
     }
 
 
-    private void saveSymbolLib() {
+    public void saveSymbolLib() {
         if (fileSymbolLib != null && objSymbolLib != null) {
             try {
                 objSymbolLib.setTitle(objSymbolLib.getTitle());

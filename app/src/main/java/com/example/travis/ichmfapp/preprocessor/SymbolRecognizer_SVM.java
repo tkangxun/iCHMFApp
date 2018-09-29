@@ -1,5 +1,8 @@
 package com.example.travis.ichmfapp.preprocessor;
 
+import android.widget.Toast;
+
+import com.example.travis.ichmfapp.main.MainActivity;
 import com.example.travis.ichmfapp.symbollib.*;
 import java.util.*;
 
@@ -15,7 +18,8 @@ public class SymbolRecognizer_SVM {
         char symbolChar;
         long startTime = System.currentTimeMillis();
         boolean[] validStroke = oneSymbol(_strokeListMemory);
-        System.out.println("Time after oneSymbol is" + (System.currentTimeMillis() - startTime));
+        //Toast.makeText(MainActivity.getAppContext(), "created SVM", Toast.LENGTH_SHORT).show();
+
         for (int count = _strokeListMemory.size(); count > 0; count--) {
             if (validStroke[count - 1] == false) {
                 continue;
@@ -29,9 +33,10 @@ public class SymbolRecognizer_SVM {
             StrokeList preProcessedStrokeList = PreprocessorSVM.preProcessing(_strokeListLocal);
             //compare storkelist with each symbol in symbol library _quxi
             String featureString = SymbolFeature.getFeature(0, preProcessedStrokeList);
+            Toast.makeText(MainActivity.getAppContext(), "processed and get featured", Toast.LENGTH_SHORT).show();
 
             List<SVMResult> svmResult = sp.run(featureString, 1);
-            System.out.println("For round" + count + " Time after SVM is" + (System.currentTimeMillis() - startTime));
+            //System.out.println("For round" + count + " Time after SVM is" + (System.currentTimeMillis() - startTime));
             for (int j = 0; j < svmResult.size(); j++) {
                 if (checkStrokeNO(svmResult.get(j).getIndex(), preProcessedStrokeList.size())) {
                     symbolChar = (char) svmResult.get(j).getIndex();

@@ -24,11 +24,11 @@ import android.widget.Toast;
 
 
 import com.example.travis.ichmfapp.R;
-import com.example.travis.ichmfapp.preprocessor.PreprocessorSVM;
-import com.example.travis.ichmfapp.preprocessor.Recognizer;
+import com.example.travis.ichmfapp.preprocessor.*;
 import com.example.travis.ichmfapp.symbollib.*;
 
 
+import java.util.ArrayList;
 
 import symbolFeature.SVM_predict;
 import symbolFeature.SymbolFeature;
@@ -40,9 +40,16 @@ public class MainActivity extends AppCompatActivity
     private WriteView writeView;
     private static Context context;
     static Recognizer objreg;
+    private char toTrain;
     private StrokeList currentstrokes;
     private Boolean training = Boolean.FALSE;
     private Button  trainButton;
+    private Button  saveButton;
+    private String recognizedSymbol;
+
+    //private SymbolRecognizer _manualRecognizer;
+    private SymbolRecognizer_SVM _svmRecognizer;
+
     //private EditText result;
 
     private Trainer trainer;
@@ -56,6 +63,7 @@ public class MainActivity extends AppCompatActivity
         MainActivity.context = getApplicationContext();
         setContentView(R.layout.activity_main);
 
+        //SVM_predict sp = new SVM_predict();
 
 
         writeView = (WriteView) findViewById(R.id.writeView);
@@ -73,6 +81,17 @@ public class MainActivity extends AppCompatActivity
         trainer = new Trainer();
         //for SVM, Sampling is collected, preprocessed , feature extraction, then train and model created
         //input symbol only feature extraction then SVM classification
+
+
+        /**
+        saveButton = (Button) findViewById(R.id.button2);
+
+
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }*/
 
 
 
@@ -96,15 +115,24 @@ public class MainActivity extends AppCompatActivity
                 training = true;
                 Toast.makeText(MainActivity.getAppContext(), "Training symbol, strokes: " + writeView.getStrokes().size(), Toast.LENGTH_SHORT).show();
 
+                /** for training
                 //send for processing, should account for symbol training only 4 strokes (not added yet)
                 StrokeList processedStrokes = getprocessed(writeView.getStrokes());
                 Toast.makeText(MainActivity.this, "Before: "+ PreprocessorSVM.countTotalPoint(writeView.getStrokes())
                 + ". After: " + PreprocessorSVM.countTotalPoint(processedStrokes), Toast.LENGTH_SHORT).show();
 
                 //send for feature extraction
+                String featureString = SymbolFeature.getFeature(0, processedStrokes);
+                Toast.makeText(context, featureString, Toast.LENGTH_SHORT).show();
+                 */
 
 
-                //built SVM model
+
+                //run SVM
+                recognizedSymbol = recognize(writeView.getStrokes());
+                Toast.makeText(MainActivity.this, recognizedSymbol, Toast.LENGTH_LONG).show();
+
+
 
 
 
@@ -137,15 +165,13 @@ public class MainActivity extends AppCompatActivity
                             public void onClick(DialogInterface dialog,int id) {
                                 // get user input and set it to result
                                 // edit text
-                                String s = "\\";
-
-                                String toTrain = userInput.getText().toString();
-                                toTrain= s + toTrain;
-
-                                Toast.makeText(MainActivity.this, "unicode was " + toTrain + " char is " + "\u003d" , Toast.LENGTH_SHORT).show();
 
 
-                                Toast.makeText(MainActivity.getAppContext(), "training " + toTrain, Toast.LENGTH_SHORT).show();
+                                toTrain = SymbolLib.unicodeToChar(userInput.getText().toString());
+                                Toast.makeText(MainActivity.this, "Symbol to train: " + toTrain , Toast.LENGTH_SHORT).show();
+                                //writeView.getStrokes();
+                                //trainer.trainSymbolSVM(toTrain);
+
                             }
                         })
                 .setNegativeButton("Cancel",
@@ -239,11 +265,13 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "undo", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "clear", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
 
                 /** place icon action here! */
-                writeView.undoLastStroke();
+                writeView.clear();
+                //trainer.addSymbol(toTrain);
+                //trainer.saveSymbolLib();
             }
         });
     }
@@ -278,7 +306,31 @@ public class MainActivity extends AppCompatActivity
 
     public StrokeList getprocessed (StrokeList rawStroke){
         StrokeList processed = PreprocessorSVM.preProcessing(rawStroke);
+
         return processed;
+    }
+
+    private String recognize (StrokeList memory){
+        SymbolRecognizer_SVM svmRecognizer = _svmRecognizer;
+        if (svmRecognizer == null) {
+            svmRecognizer = new SymbolRecognizer_SVM();
+        }
+        _svmRecognizer = svmRecognizer;
+        ArrayList mResult =null;
+        String result = "";
+
+        try{
+            mResult = svmRecognizer.recognizing(memory);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
+        for (int i =0; i < mResult.size(); i++){
+            result += mResult.get(i);
+        }
+
+        return result;
     }
 
 }

@@ -30,7 +30,7 @@ public class WriteView extends View {
 
     private Bitmap mBitmap;
     private Canvas mCanvas;
-    private Path mPath;
+    private static Path mPath;
     private Paint mPaint;
     private float mX, mY;
     private Context context = MainActivity.getAppContext();
@@ -141,9 +141,12 @@ public class WriteView extends View {
 
 
     //widgets
-    public void clear() {
-        mPath.reset();
 
+    // can clear but doesn't reset the canvas. not shown visually
+    public void clear() {
+        mPath = new Path();
+        mCanvas = new Canvas();
+        _strokes = new StrokeList();
         invalidate();
     }
 

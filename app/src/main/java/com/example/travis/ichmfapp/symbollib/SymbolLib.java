@@ -125,6 +125,14 @@ public class SymbolLib implements Serializable {
         return (char) hexCode;
     }
 
+    public static char unicodeToChar(String unicode){
+        unicode = unicode.replace("\\","");
+        unicode = unicode.replace("u","");
+        int hexVal = Integer.parseInt(unicode, 16);
+        char _charSymbol = (char)hexVal;
+        return _charSymbol;
+    }
+
     public static char getDecimalToChar(int number) {
         return (char) number;
     }
