@@ -37,7 +37,7 @@ public class Trainer{
             this.objSymbolLib = SymbolLib.GenerateDefaultSetSVM(SymbolLib.LibraryTypes.Binary);
             //An array of all the basic symbols
             jList1 = objSymbolLib.getSymbols();
-            Toast.makeText(context, "trainer size: " + jList1.size() +"   symbol: " + objSymbolLib.getSymbolFromChar('='), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "trainer size: " + jList1.size(), Toast.LENGTH_SHORT).show();
 
 
 
@@ -61,14 +61,15 @@ public class Trainer{
         }
     }
 
-    private void generateDefaultSetElastic() {
-        //JFileChooser jfc = new JFileChooser();
-        //jfc.setSelectedFile(ConstantData.ElasticFileDefault);
+    public void generateDefaultSetElastic() {
+
         fileSymbolLib = ConstantData.ElasticFileDefault;
         try {
             SymbolLib.GenerateDefaultSetElastic(ConstantData.ElasticFileDefaultString, SymbolLib.LibraryTypes.Binary);
-            this.objSymbolLib = SymbolLib.Load(ConstantData.ElasticFileDefaultString, SymbolLib.LibraryTypes.Binary);
+            this.objSymbolLib = SymbolLib.Load(ConstantData.ElasticFileDefault.toString(), SymbolLib.LibraryTypes.Binary);
             jList1=objSymbolLib.getSymbols();
+            Toast.makeText(context, "trainer for elastic size: " + jList1.size() + jList1.get(120), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Default Elastic File Generated!", Toast.LENGTH_SHORT).show();
         } catch (Exception ex) {
             ex.printStackTrace();
             }

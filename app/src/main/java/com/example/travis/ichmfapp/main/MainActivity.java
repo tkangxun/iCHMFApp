@@ -10,7 +10,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
 
@@ -30,11 +29,8 @@ import com.example.travis.ichmfapp.symbollib.*;
 
 import java.util.ArrayList;
 
-import symbolFeature.SVM_predict;
-import symbolFeature.SymbolFeature;
 
 public class MainActivity extends AppCompatActivity
- //       implements WriteViewListener
 {
 
     private WriteView writeView;
@@ -47,7 +43,7 @@ public class MainActivity extends AppCompatActivity
     private Button  saveButton;
     private String recognizedSymbol;
 
-    //private SymbolRecognizer _manualRecognizer;
+    private SymbolRecognizer _manualRecognizer;
     private SymbolRecognizer_SVM _svmRecognizer;
 
     //private EditText result;
@@ -81,6 +77,9 @@ public class MainActivity extends AppCompatActivity
         trainer = new Trainer();
         //for SVM, Sampling is collected, preprocessed , feature extraction, then train and model created
         //input symbol only feature extraction then SVM classification
+
+        //generate default Elastic
+        trainer.generateDefaultSetElastic();
 
 
         /**
@@ -125,6 +124,9 @@ public class MainActivity extends AppCompatActivity
                 String featureString = SymbolFeature.getFeature(0, processedStrokes);
                 Toast.makeText(context, featureString, Toast.LENGTH_SHORT).show();
                  */
+
+
+
 
 
 
@@ -331,6 +333,16 @@ public class MainActivity extends AppCompatActivity
         }
 
         return result;
+    }
+
+    private String mrecognize (StrokeList memory){
+        SymbolRecognizer manualRecognizer = _manualRecognizer;
+        if (manualRecognizer == null) {
+            //manualRecognizer = new SymbolRecognizer(_symbolLib);
+        }
+        String s = " ";
+
+        return s;
     }
 
 }

@@ -3,14 +3,21 @@ package com.example.travis.ichmfapp.symbollib;
 /**
  * Created by Travis on 23/8/2018.
  */
+
+import android.Manifest;
 import android.content.Context;
+
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 
 
 import com.example.travis.ichmfapp.main.MainActivity;
 
 import java.io.*;
-import java.util.ArrayList;
+
 
 
 /**
@@ -25,27 +32,34 @@ public class ConstantData {
     private static Context context = MainActivity.getAppContext();
 
 
-
     public ConstantData() {
 
     }
 
-    static File dir = new File(("user.dir"));
-    static String parentpath = dir.getParent();
-    public static String trainFile = parentpath + "\\sample.dat";
 
-    //model file past to svm_predict, sp.run then to svm file to create buffer
+    //To save files in external storage
+    static String root = Environment.getExternalStorageDirectory().toString();
+    static File mydir = new File (root + "/iCHMF/");
+
+
+
+    //These strings are use to read files from the assets folder
+    public static String trainFile = "sample.dat";
     public static String modelFile = "model.dat";
-    public static String ElasticFileString = "elastic.dat";
-    public static String ElasticFileDefaultString = "file\\elasticDefault.dat";
-    public static File ElasticFile = new File(ElasticFileString);
-    public static File ElasticFileDefault = new File(ElasticFileDefaultString);
-    public static String exeDir = parentpath + "\\php\\mathml.exe ";
+
+
+    public static String ElasticFileString = "/elastic.dat";
+    public static String ElasticFileDefaultString = "/elasticDefault.dat";
+
+
+    public static File ElasticFile = new File(mydir + ElasticFileString);
+    public static File ElasticFileDefault = new File(mydir + ElasticFileDefaultString);
+    //public static String exeDir = parentpath + "\\php\\mathml.exe ";
     public static boolean doTest = false;
 
-    public static String getFile (String filename) {
+    public static String getAssest(String filename) {
 
-        File f = new File(context.getCacheDir() + "/" +filename);
+        File f = new File(context.getCacheDir() + "/" + filename);
         if (!f.exists()) try {
             // if file does not exist, create cache file
             am = MainActivity.getAppContext().getAssets();
@@ -62,28 +76,36 @@ public class ConstantData {
             fos.close();
         } catch (Exception e) {
             System.out.print("file: " + filename + "ERROR!!!");
-            throw new RuntimeException(e); }
-
+            throw new RuntimeException(e);
+        }
         return f.getPath();
     }
 
-    /*public  static InputStream gentFile(String fileName) {
-        InputStream is = null;
-        //BufferedReader br = null;
 
-        try {
-            is = am.open(fileName);
-            //br = new BufferedReader(new InputStreamReader(is));
-            System.out.print("file: " + fileName + "loaded");
-            is.close();
 
-        } catch (IOException e) {
-            System.out.print("file: " + fileName + "ERROR!!!");
+
+
+
+
+    /**public void saveFile (File savefile, String fname){
+
+        if (!mydir.exists()){
+            mydir.mkdirs();
+        }
+        fname = fname + ".dat";
+        File file = new File(mydir, fname);
+        if (file.exists()){
+            file.delete();
+        }
+        try{
+            FileOutputStream out = new FileOutputStream(file);
+
+            out.flush();
+            out.close();
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return is;*/
 
-    }
-
-
-
+    }*/
+}

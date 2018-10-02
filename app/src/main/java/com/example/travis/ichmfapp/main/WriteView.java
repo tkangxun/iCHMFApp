@@ -16,9 +16,7 @@ import com.example.travis.ichmfapp.symbollib.StrokeList;
 import com.example.travis.ichmfapp.symbollib.StrokePoint;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+
 
 
 
@@ -114,7 +112,6 @@ public class WriteView extends View {
         switch(event.getAction()) {
             case MotionEvent.ACTION_DOWN :
                 touchStart(x, y);
-                //Toast.makeText(context, ("Coordinates x: "+ x+ "  y:" + y), Toast.LENGTH_SHORT).show();
                 _startPoint = new StrokePoint(x,y);
                 _currentStroke = new Stroke();
                 _currentStroke.addStrokePoint(_startPoint);
