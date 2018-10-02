@@ -10,7 +10,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
 
@@ -24,26 +23,36 @@ import android.widget.Toast;
 
 
 import com.example.travis.ichmfapp.R;
-import com.example.travis.ichmfapp.preprocessor.PreprocessorSVM;
-import com.example.travis.ichmfapp.preprocessor.Recognizer;
+import com.example.travis.ichmfapp.preprocessor.*;
 import com.example.travis.ichmfapp.symbollib.*;
 
 
+import java.util.ArrayList;
 
-import symbolFeature.SVM_predict;
-import symbolFeature.SymbolFeature;
+
 
 public class MainActivity extends AppCompatActivity {
+
 
     private WriteView writeView;
     private static Context context;
     static Recognizer objreg;
+    private char toTrain;
     private StrokeList currentstrokes;
     public Boolean training = Boolean.FALSE;
     private Button  trainButton;
-    private String toTrain;
+    private Button  saveButton;
+    private String recognizedSymbol;
+
+    private SymbolRecognizer _manualRecognizer;
+    private SymbolRecognizer_SVM _svmRecognizer;
+
 
     //private EditText result;
+
+    private Trainer trainer;
+
+
 
 
     @Override
@@ -52,21 +61,42 @@ public class MainActivity extends AppCompatActivity {
         MainActivity.context = getApplicationContext();
         setContentView(R.layout.activity_main);
 
+
+        //SVM_predict sp = new SVM_predict();
+
+
+
         writeView = (WriteView) findViewById(R.id.writeView);
         writeView.addWriteViewListener(new WriteViewListener() {
             @Override
             public void StrokeEnd() {
 
-                //Toast.makeText(MainActivity.getAppContext(), "Getting strokes", Toast.LENGTH_SHORT).show();
-                currentstrokes = writeView.getStrokes();
-                //carry on to do preprocessing
+                //Toast.makeText(MainActivity.this, "Getting strokes: " + writeView.getStrokes().size(), Toast.LENGTH_SHORT).show();
+                writeView.getStrokes();
+
             }
         });
 
 
 
 
+        trainer = new Trainer();
+        //for SVM, Sampling is collected, preprocessed , feature extraction, then train and model created
+        //input symbol only feature extraction then SVM classification
 
+        //generate default Elastic
+        trainer.generateDefaultSetElastic();
+
+
+        /**
+        saveButton = (Button) findViewById(R.id.button2);
+
+
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }*/
 
 
         final Switch simpleswitch = (Switch) findViewById(R.id.simpleswitch);
@@ -79,7 +109,41 @@ public class MainActivity extends AppCompatActivity {
         trainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                currentstrokes = writeView.getStrokes();
+
+
+                //for SVM, Sampling is collected, preprocessed , feature extraction, then train and model created
+                //input symbol only feature extraction then SVM classification
+
+                training = true;
+                Toast.makeText(MainActivity.getAppContext(), "Training symbol, strokes: " + writeView.getStrokes().size(), Toast.LENGTH_SHORT).show();
+
+                /** for training
+                //send for processing, should account for symbol training only 4 strokes (not added yet)
+                StrokeList processedStrokes = getprocessed(writeView.getStrokes());
+                Toast.makeText(MainActivity.this, "Before: "+ PreprocessorSVM.countTotalPoint(writeView.getStrokes())
+                + ". After: " + PreprocessorSVM.countTotalPoint(processedStrokes), Toast.LENGTH_SHORT).show();
+
+                //send for feature extraction
+                String featureString = SymbolFeature.getFeature(0, processedStrokes);
+                Toast.makeText(context, featureString, Toast.LENGTH_SHORT).show();
+                 */
+
+
+
+
+
+
+                //run SVM
+                recognizedSymbol = recognize(writeView.getStrokes());
+                Toast.makeText(MainActivity.this, recognizedSymbol, Toast.LENGTH_LONG).show();
+
+
+
+
+
+                simpleswitch.setChecked(false);
+                training = false;
+
 
                 Toast.makeText(MainActivity.getAppContext(), "to be passed :" + toTrain, Toast.LENGTH_SHORT).show();
                 simpleswitch.setChecked(false);
@@ -88,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
         });
         //training mode
 
-        //result = (EditText) findViewById(R.id.editTextResult);
+
 
         AlertDialog.Builder builder = new AlertDialog.Builder(
                 this);
@@ -96,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
         LayoutInflater li = LayoutInflater.from(context);
         View promptsView = li.inflate(R.layout.prompts, null);
         builder.setTitle("Symbol Trainer");
-        builder.setMessage("Please insert  symbol to train");
+        builder.setMessage("Please key unicode of new symbol");
         builder.setView(promptsView);
         final EditText userInput = (EditText) promptsView
                 .findViewById(R.id.editTextDialogUserInput);
@@ -110,10 +174,11 @@ public class MainActivity extends AppCompatActivity {
                                 // get user input and set it to result
                                 // edit text
 
-                                toTrain = userInput.getText().toString();
+                                toTrain = SymbolLib.unicodeToChar(userInput.getText().toString());
+                                Toast.makeText(MainActivity.this, "Symbol to train: " + toTrain , Toast.LENGTH_SHORT).show();
+                                //writeView.getStrokes();
+                                //trainer.trainSymbolSVM(toTrain);
 
-                                //do not know why but toast is not working, might be something to do with the view or final
-                                Toast.makeText(MainActivity.getAppContext(), "training " + toTrain, Toast.LENGTH_SHORT).show();
                             }
                         })
                 .setNegativeButton("Cancel",
@@ -205,11 +270,15 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "undo", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "clear", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
 
                 /** place icon action here! */
                 writeView.clear();
+
+                //trainer.addSymbol(toTrain);
+                //trainer.saveSymbolLib();
+
             }
         });
     }
@@ -241,5 +310,46 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
+    public StrokeList getprocessed (StrokeList rawStroke){
+        StrokeList processed = PreprocessorSVM.preProcessing(rawStroke);
+
+        return processed;
+    }
+
+    private String recognize (StrokeList memory){
+        SymbolRecognizer_SVM svmRecognizer = _svmRecognizer;
+        if (svmRecognizer == null) {
+            svmRecognizer = new SymbolRecognizer_SVM();
+        }
+        _svmRecognizer = svmRecognizer;
+        ArrayList mResult =null;
+        String result = "";
+
+        try{
+            mResult = svmRecognizer.recognizing(memory);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
+        for (int i =0; i < mResult.size(); i++){
+            result += mResult.get(i);
+        }
+
+        return result;
+    }
+
+    private String mrecognize (StrokeList memory){
+        SymbolRecognizer manualRecognizer = _manualRecognizer;
+        if (manualRecognizer == null) {
+            //manualRecognizer = new SymbolRecognizer(_symbolLib);
+        }
+        String s = " ";
+
+        return s;
+    }
+
 
 }

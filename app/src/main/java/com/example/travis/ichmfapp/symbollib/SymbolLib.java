@@ -1,7 +1,17 @@
 package com.example.travis.ichmfapp.symbollib;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.support.v4.content.ContextCompat;
+import android.widget.Toast;
+
+import com.example.travis.ichmfapp.main.MainActivity;
+
 import java.io.*;
 import java.util.ArrayList;
+
+import static com.example.travis.ichmfapp.symbollib.ConstantData.mydir;
+
 
 /**
  * Created by Travis on 9/8/2018.
@@ -79,6 +89,8 @@ public class SymbolLib implements Serializable {
         return _Symbols.get(index);
     }
 
+
+    //get a list since some char may have more than one samples
     public ArrayList getSymbolFromChar(char character) {
         ArrayList<Symbol> result = new ArrayList();
         for (int index = 0; index < _Symbols.size(); index++) {
@@ -101,6 +113,7 @@ public class SymbolLib implements Serializable {
         _Symbols.remove(index);
     }
 
+    //find the index of the symbol by providing the decimal
     public int findSymbol(int SymbolDecimalChar) {
         for (int index = 0; index < _Symbols.size(); index++) {
             if (SymbolDecimalChar == ((Symbol) _Symbols.get(index)).getSymbolCharDecimal()) {
@@ -120,6 +133,14 @@ public class SymbolLib implements Serializable {
 
     public static char getHexToChar(int hexCode) {
         return (char) hexCode;
+    }
+
+    public static char unicodeToChar(String unicode){
+        unicode = unicode.replace("\\","");
+        unicode = unicode.replace("u","");
+        int hexVal = Integer.parseInt(unicode, 16);
+        char _charSymbol = (char)hexVal;
+        return _charSymbol;
     }
 
     public static char getDecimalToChar(int number) {
@@ -289,23 +310,51 @@ public class SymbolLib implements Serializable {
     /**
      * To save current library object into a
      * given file location, with given type.
-     * @param filePathLibrary Location to save the library.
+     * @param fname file name to save the library.
      * @param libType Type of file to save.
      * @return True for successful saving/ False otherwise.
      * @throws java.lang.Exception
      */
-    public boolean Save(String filePathLibrary, LibraryTypes libType)
+    public boolean Save(String fname, LibraryTypes libType)
             throws Exception {
         //---- Serialize in Binary Format
         if (libType == LibraryTypes.Binary) {
-            FileOutputStream fos = new FileOutputStream(new File(filePathLibrary));
+            if (ContextCompat.checkSelfPermission(MainActivity.getAppContext(),
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(MainActivity.getAppContext(), "permission denied, please enable it", Toast.LENGTH_SHORT).show();
+            } else{
+                Toast.makeText(MainActivity.getAppContext(), "permission granted", Toast.LENGTH_SHORT).show();
+            }
+
+
+            if (!mydir.exists()) {
+                mydir.mkdirs();
+                Toast.makeText(MainActivity.getAppContext(), "ll", Toast.LENGTH_SHORT).show();
+                if (!mydir.mkdirs()) {
+                    Toast.makeText(MainActivity.getAppContext(), "dir not made", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            File file = new File(mydir, fname);
+            String s = file.getPath().toString();
+            Toast.makeText(MainActivity.getAppContext(), s, Toast.LENGTH_SHORT).show();
+
+            if (file.exists()){
+                file.delete();
+                Toast.makeText(MainActivity.getAppContext(), "file recreated", Toast.LENGTH_SHORT).show();
+            }
+            FileOutputStream fos = new FileOutputStream(file);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(this);
             oos.close();
             fos.close();
+            } return true;
+
+
         }
-        return true;
-    }
+
+
 
     /**
      * Read the symbol library file from the give  location.
@@ -321,7 +370,7 @@ public class SymbolLib implements Serializable {
 
             java.io.FileInputStream fis =
                     new java.io.FileInputStream(
-                            new File(ConstantData.getFile(filePathLibrary)));
+                            new File(filePathLibrary));
 
             ObjectInputStream ois = new ObjectInputStream(fis);
 

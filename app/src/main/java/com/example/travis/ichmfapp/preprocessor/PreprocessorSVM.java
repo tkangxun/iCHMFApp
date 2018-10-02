@@ -186,7 +186,7 @@ public class PreprocessorSVM {
         return _inputStrokeList;
     }
 
-    private static int countTotalPoint(StrokeList _inputStrokeList) {
+    public static int countTotalPoint(StrokeList _inputStrokeList) {
         int totalPoint = 0;
         for (int k = 0; k < _inputStrokeList.size(); k++) {
             totalPoint += _inputStrokeList.get(k).getTotalStrokePoints();

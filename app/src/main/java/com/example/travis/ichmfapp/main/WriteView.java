@@ -15,14 +15,15 @@ import com.example.travis.ichmfapp.symbollib.Stroke;
 import com.example.travis.ichmfapp.symbollib.StrokeList;
 import com.example.travis.ichmfapp.symbollib.StrokePoint;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
-import javax.swing.event.EventListenerList;
+import java.util.ArrayList;
+
+import java.util.List;
+
+
+
+
+
 
 /**
  * Created by Travis on 7/8/2018.
@@ -30,25 +31,24 @@ import javax.swing.event.EventListenerList;
 
 public class WriteView extends View {
 
-    private List _listeners = new ArrayList();
+
     private Bitmap mBitmap;
     private Canvas mCanvas;
-    private Path mPath;
+    private static Path mPath;
     private Paint mPaint;
     private float mX, mY;
-    private Context context = MainActivity.getAppContext();
     private static WriteViewListener wvlistener;
 
 
     private static final float TOUCH_TOLERANCE = 4;
-    //private double delay = 0.001;
-    //private Instant starts = Instant.now();
+
 
 //    public int _strokeSize;
 
     private StrokePoint _startPoint, _endPoint;
-    private StrokeList _strokes;
-    private Stroke _currentStroke = new Stroke();
+    private static StrokeList _strokes;
+    private Stroke _currentStroke;
+
 
 
     public WriteView(Context context, AttributeSet attrs){
@@ -69,6 +69,7 @@ public class WriteView extends View {
 
         mPath = new Path();
         mCanvas = new Canvas();
+        _strokes = new StrokeList();
         //DisplayMetrics metrics = this.context.getResources().getDisplayMetrics();
 
     }
@@ -89,23 +90,6 @@ public class WriteView extends View {
     }
 
     private void touchStart(float x, float y) {
-        //Instant ends = Instant.now();
-        //Duration duration = Duration.between(starts, ends);
-        // new symbol created if more than delay
-        //if (duration.getSeconds() >= delay) {
-        //    mPath = new Path();
-         //   _strokes = new StrokeList();
-
-        //}
-
-
-        // the 4 stroke thingu might be captured in strokelist class
-
-        //mPath = new Path();
-        //_strokes = new StrokeList();
-
-
-
 
         mPath.moveTo(x, y);
         this.mX = x;
@@ -133,10 +117,11 @@ public class WriteView extends View {
         switch(event.getAction()) {
             case MotionEvent.ACTION_DOWN :
                 touchStart(x, y);
-                //Toast.makeText(context, ("Coordinates x: "+ x+ "  y:" + y), Toast.LENGTH_SHORT).show();
-                this._startPoint = new StrokePoint(x,y);
-                this._currentStroke = new Stroke();
-                this._currentStroke.addStrokePoint(this._startPoint);
+
+                _startPoint = new StrokePoint(x,y);
+                _currentStroke = new Stroke();
+                _currentStroke.addStrokePoint(_startPoint);
+
                 invalidate();
                 break;
             case MotionEvent.ACTION_MOVE :
@@ -158,15 +143,19 @@ public class WriteView extends View {
                 invalidate();
                 break;
         }
-        //starts = Instant.now();
+
         return true;
     }
 
 
     //widgets
+
+
+    // can clear but doesn't reset the canvas. not shown visually
     public void clear() {
-        mPath.reset();
         mPath = new Path();
+        mCanvas = new Canvas();
+        _strokes = new StrokeList();
         invalidate();
     }
 

@@ -1,7 +1,8 @@
 package com.example.travis.ichmfapp.symbollib;
 
-import java.awt.*;
+
 import java.io.Serializable;
+
 
 /**
  * Created by Travis on 7/8/2018.
@@ -65,7 +66,7 @@ public class Stroke implements Cloneable, Serializable {
     }
 
     public StrokePoint getCenter(){
-        Rectangle rect = this.CalculateBoundingBox();
+        Box rect = this.CalculateBoundingBox();
         int centerX = rect.x+rect.width/2;
         int centerY = rect.y+rect.height/2;
         StrokePoint sp = new StrokePoint(centerX,centerY );
@@ -73,7 +74,7 @@ public class Stroke implements Cloneable, Serializable {
         return sp;
     }
 
-    public Rectangle CalculateBoundingBox() {
+    public Box CalculateBoundingBox() {
         double _boundingBoxWidth = -1;
         double _boundingBoxHeight = -1;
         double leftMostX = Integer.MAX_VALUE;
@@ -101,8 +102,10 @@ public class Stroke implements Cloneable, Serializable {
         _boundingBoxWidth = rightMostX - leftMostX + 1;//Add 1 to meet the accuracy
         _boundingBoxHeight = bottomMostY - topMostY + 1;//Add 1 to Meet the accuracy
 
-        Rectangle _boundingBox = new Rectangle((int)leftMostX, (int)topMostY,
+        Box _boundingBox = new Box((int)leftMostX, (int)topMostY,
                 (int)_boundingBoxWidth, (int)_boundingBoxHeight);
+
+
         return _boundingBox;
     }
 
