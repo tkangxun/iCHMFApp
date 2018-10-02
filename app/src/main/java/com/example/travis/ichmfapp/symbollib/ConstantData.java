@@ -4,14 +4,11 @@ package com.example.travis.ichmfapp.symbollib;
  * Created by Travis on 23/8/2018.
  */
 
-import android.Manifest;
+
 import android.content.Context;
 
-import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 
 
 import com.example.travis.ichmfapp.main.MainActivity;
