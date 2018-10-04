@@ -25,7 +25,6 @@ import java.io.*;
 public class ConstantData {
 
     private static AssetManager am;
-    //private ArrayList<File> allFiles = new ArrayList<>();
     private static Context context = MainActivity.getAppContext();
 
 

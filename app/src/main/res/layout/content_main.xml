@@ -27,7 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintRight_toRightOf="parent"
-        android:text="Training mode    "
+        android:text="Training  "
         android:textSize="20sp"
         android:textStyle="bold"
         android:thumbTint="@color/colorPrimary" />
@@ -38,6 +38,25 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
         android:text="Train"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:thumbTint="@color/colorPrimary" />
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:text="SAVE"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:thumbTint="@color/colorPrimary" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/button1"
+        android:text="Add Symbol"
         android:textSize="15sp"
         android:textStyle="bold"
         android:thumbTint="@color/colorPrimary" />
