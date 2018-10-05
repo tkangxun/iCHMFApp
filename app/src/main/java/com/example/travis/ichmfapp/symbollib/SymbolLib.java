@@ -9,6 +9,7 @@ import com.example.travis.ichmfapp.main.MainActivity;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.example.travis.ichmfapp.symbollib.ConstantData.mydir;
 
@@ -114,13 +115,14 @@ public class SymbolLib implements Serializable {
     }
 
     //find the index of the symbol by providing the decimal
-    public int findSymbol(int SymbolDecimalChar) {
+    public List<Integer> findSymbol(int SymbolDecimalChar) {
+        List<Integer> list = new ArrayList<Integer>();
         for (int index = 0; index < _Symbols.size(); index++) {
             if (SymbolDecimalChar == ((Symbol) _Symbols.get(index)).getSymbolCharDecimal()) {
-                return index;
+                list.add(index);
             }
         }
-        return -1;
+        return list;
     }
 
     public static int getCharToDecimal(char _charSymbol) {
@@ -373,13 +375,6 @@ public class SymbolLib implements Serializable {
                             new File(ConstantData.mydir.toString()+filePathLibrary));
 
             ObjectInputStream ois = new ObjectInputStream(fis);
-
-            /* System.out.println("" + (String) ois.readObject());
-
-             // read and print an object and cast it as string
-            byte[] read = (byte[]) ois.readObject();
-            String s2 = new String(read);
-            System.out.println("" + s2);*/
 
             SymbolLib sbl = (SymbolLib) ois.readObject();
             ois.close();

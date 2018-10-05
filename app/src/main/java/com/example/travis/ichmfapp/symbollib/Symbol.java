@@ -107,18 +107,6 @@ public class Symbol implements Cloneable, Serializable {
         _Strokes.remove(index);
     }
 
-    /**
-     * Get a SymbolDisplay object for Symbol object.
-     * @return GUI component.
-     * @deprecated
-     * see SymbolDisplay
-
-    @Deprecated
-    public SymbolDisplay getSymbolDisplay() {
-        //return new SymbolDisplay(this);
-        return null;
-    }
-    */
 
     public String ToString() {
         return String.valueOf(_charSymbol);

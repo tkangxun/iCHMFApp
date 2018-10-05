@@ -9,6 +9,7 @@ import com.example.travis.ichmfapp.preprocessor.PreprocessorSVM;
 import com.example.travis.ichmfapp.preprocessor.SymbolRecognizer_SVM;
 
 
+import java.util.List;
 
 import symbolFeature.*;
 
@@ -127,17 +128,28 @@ public class Trainer{
 
     }
 
-    public void trainElasticSymbol(char sym, StrokeList strokes){
+    public void addElasticSymbol(char sym, StrokeList strokes){
         if (objSymbolLib == null) {
             return;
         }
-
         int unicode = ((int)sym);
         Symbol sbl = new Symbol(SymbolLib.getHexToChar(unicode));
         sbl.setStrokes(PreprocessorSVM.preProcessing(strokes));
-        objSymbolLib.setSymbol(sbl, objSymbolLib.findSymbol(unicode));
+        List<Integer> indexes = objSymbolLib.findSymbol(unicode);
+        if (indexes.size() == 0){
+            Toast.makeText(context, "Symbol not found, try again", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        for (int i = 0; i< indexes.size(); i++){
+            if (objSymbolLib.getSymbol(i).getStrokes().size() == 0){
+                objSymbolLib.getSymbol(i).setStrokes(strokes);
+                Toast.makeText(context, "Symbol added to index: " + indexes.get(i), Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+        Toast.makeText(context, "library for symbol already added", Toast.LENGTH_SHORT).show();
 
-        Toast.makeText(context, "Symbol: " + sym + "ädded", Toast.LENGTH_SHORT).show();
+
     }
 
     // adds a brand new symbol apart from the default list

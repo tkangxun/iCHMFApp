@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //Training for elastic matching
                 saved = Boolean.FALSE;
-                trainer.trainElasticSymbol(toTrain, writeView.getStrokes());
+                trainer.addElasticSymbol(toTrain, writeView.getStrokes());
 
 
 
