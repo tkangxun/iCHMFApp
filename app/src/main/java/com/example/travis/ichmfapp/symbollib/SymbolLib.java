@@ -162,31 +162,55 @@ public class SymbolLib implements Serializable {
         basic.setFilename(filePathLibrary);
         int[] operators = {
                 0x2192,// right arrow
-                0x2192,// right arrow
                 0x220F,// multiply all
-                0x2211,// sum all
-                0x2211,// sum all
-                0x2211,// sum all
+                0x2211,// sum all 1 stroke
+                0x2211,// sum all 2 stroke
+                0x2211,// sum all 4 stroke
                 0x2212,// minus sign
                 0x221A,// sqrt
-                0x221D,// proportion to
-                0x221D,// proportion to
-                0x221E,// infinity
-                0x221E,// infinity
+                0x221D,// proportion to top to bottom
+                0x221D,// proportion to bottom to top
+                0x221E,// infinity clockwise
+                0x221E,// infinity anticlockwise
                 0x222B,// integral
                 0x2248,// almost equal to
-                0x2260,// not equal to
-                0x2260,// not equal to
+                0x2260,// not equal to strike first
+                0x2260,// not equal to equal first
                 0x2264,// less or equal
                 0x2265,// larger or equal
         }; //207 - 138 = 69
-        int[] numberSet = {48, 49, 49, 50, 51, 52, 52, 52, 53, 53, 54, 55, 56, 56, 57, 57};
+        int[] numberSet = {
+                48, //0 clockwise
+                48, //0 anticlockwise
+                49, //1
+                49, //1 with hook on top
+                50, //2
+                51, //3
+                52, //4 2 strokes, line first
+                52, //4 2 strokes
+                52, //4 1 stroke
+                53, //5 1 stroke
+                53, //5 2 strokes - first
+                53, //5 2 strokes - last
+                54, //6 clockwise
+                54, //6 anticlockwise
+                55, //7 1 stroke
+                55, //7 2 strokes
+                56, //8 clockwise
+                56, //8 anticlockwise
+                57, //9 1 stroke
+                57};//9 2 stroke
 
-        int[] letterSet = {65, 65, 66, 66, 67, 68, 68, 69, 69, 70, 70, 71, 71, 72, 72, 73,
-                74, 74, 75, 76, 77, 77, 77, 78, 78, 78, 79, 80, 81, 82, 83, 84, 84, 85, 86, 86,
-                87, 87, 87, 88, 89, 90, 90, 97, 98, 99, 100, 101, 102, 102, 103, 104, 105,
-                105, 106, 106, 107, 107, 108, 109, 110, 111, 112, 112, 113, 114, 115, 116,
-                116, 117, 118, 118, 119, 120, 121, 121, 122, 122};
+        int[] letterSet = {
+                //capital letters
+                65, 66, 66, 67, 68, 68, 69, 70, 71, 71, 72, 72, 73,
+                74, 74, 75, 75, 76, 77, 77, 77, 78, 78, 79, 79, 80, 80, 81, 82, 82, 83, 84, 84, 85, 86, 86,
+                87, 87, 88, 89, 89, 90, 90,
+
+                //small letters
+                97, 98, 98, 99, 100, 100, 101, 102, 102, 103, 104, 105,
+                105, 106, 106, 107, 108, 109, 110, 111, 112, 112, 113, 114, 115, 116,
+                116, 117, 118, 118, 119, 120, 121, 122, 122};
 
         int[] greekSet = {0x03B1, 0x03B2, 0x03B5, 0x03B8, 0x03BB,
                 0x03BC, 0x03BC, 0x03C1, 0x03C3, 0x03C6};
@@ -196,6 +220,8 @@ public class SymbolLib implements Serializable {
                 40, //(
                 41, //)
                 42, //* Asterisk
+                42,
+                42,
                 43, //+
                 43, //+
                 46, //.
@@ -209,7 +235,7 @@ public class SymbolLib implements Serializable {
                 93, //]
                 93, //]
                 94, //^
-                94, //^
+                94, //^ 2 strokes
                 123,//{
                 125,//}
                 126,//~
@@ -326,13 +352,13 @@ public class SymbolLib implements Serializable {
                     != PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(MainActivity.getAppContext(), "permission denied, please enable it", Toast.LENGTH_SHORT).show();
             } else{
-                Toast.makeText(MainActivity.getAppContext(), "permission granted", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.getAppContext(), "permission granted", Toast.LENGTH_SHORT).show();
             }
 
 
             if (!mydir.exists()) {
                 mydir.mkdirs();
-                Toast.makeText(MainActivity.getAppContext(), "ll", Toast.LENGTH_SHORT).show();
+
                 if (!mydir.mkdirs()) {
                     Toast.makeText(MainActivity.getAppContext(), "dir not made", Toast.LENGTH_SHORT).show();
                 }
@@ -340,11 +366,11 @@ public class SymbolLib implements Serializable {
 
             File file = new File(mydir, fname);
             String s = file.getPath().toString();
-            Toast.makeText(MainActivity.getAppContext(), s, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(MainActivity.getAppContext(), s, Toast.LENGTH_SHORT).show();
 
             if (file.exists()){
                 file.delete();
-                Toast.makeText(MainActivity.getAppContext(), "file recreated", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.getAppContext(), s + " is overwritten", Toast.LENGTH_SHORT).show();
             }
             FileOutputStream fos = new FileOutputStream(file);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -379,6 +405,8 @@ public class SymbolLib implements Serializable {
             SymbolLib sbl = (SymbolLib) ois.readObject();
             ois.close();
             fis.close();
+
+            Toast.makeText(MainActivity.getAppContext(), filePathLibrary+ " loaded", Toast.LENGTH_SHORT).show();
             return sbl;
         }
         return null;

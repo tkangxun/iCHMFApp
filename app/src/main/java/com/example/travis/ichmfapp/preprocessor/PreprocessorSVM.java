@@ -27,8 +27,16 @@ public class PreprocessorSVM {
      * @see StrokeList
      */
     public static StrokeList preProcessing(StrokeList _inputStrokeList) {
+        int pts =0 ;
+        for (int i = 0; i < _inputStrokeList.size(); i++) {
+            pts +=_inputStrokeList.get(i).getTotalStrokePoints();
+        }
+        if (pts<10){
+            return _inputStrokeList;
+        }
+
         return normallizePoint(reSampling(smoothing(normalizing(_inputStrokeList))));
-    }
+        }
 
     /**
      * Classify two StrokeList based on their closeness.

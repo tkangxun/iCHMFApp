@@ -40,7 +40,7 @@ public class Trainer{
             //An array of all the basic symbols
             jList1 = objSymbolLib.getSymbols();
 
-            Toast.makeText(context, "trainer size: " + jList1.size(), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(context, "trainer size: " + jList1.size(), Toast.LENGTH_SHORT).show();
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -69,9 +69,9 @@ public class Trainer{
         fileSymbolLib = ConstantData.ElasticFileDefaultString;
         try {
             SymbolLib.GenerateDefaultSetElastic(fileSymbolLib, SymbolLib.LibraryTypes.Binary);
-            Toast.makeText(context, " New Default Elastic File Generated!", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(context, " New Default Elastic File Generated!", Toast.LENGTH_SHORT).show();
             this.objSymbolLib = SymbolLib.Load(fileSymbolLib, SymbolLib.LibraryTypes.Binary);
-            Toast.makeText(context, " Default Elastic File loaded", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, " New Default Elastic File loaded", Toast.LENGTH_SHORT).show();
             jList1=objSymbolLib.getSymbols();
             //Toast.makeText(context, "trainer for elastic size: " + jList1.size() + jList1.get(120), Toast.LENGTH_SHORT).show();
 
@@ -81,17 +81,19 @@ public class Trainer{
         }
 
 
-    private void openSymbolLib() {
+    public  void openSymbolLib() throws Exception{
         //Choose Elastic file
-        fileSymbolLib = ConstantData.ElasticFileString;
+
         try {
+            fileSymbolLib = ConstantData.ElasticFileString;
             objSymbolLib = SymbolLib.Load( fileSymbolLib,
                     SymbolLib.LibraryTypes.Binary);
             jList1 = objSymbolLib.getSymbols();
-            //jList1.setSelectedIndex(0);
+
         } catch (Exception ex) {
             objSymbolLib = null;
-            Toast.makeText(context, "Error in loading Elastic file library.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Elastic file library not found.", Toast.LENGTH_SHORT).show();
+            throw ex;
         }
     }
 
@@ -112,19 +114,27 @@ public class Trainer{
         }
     }
 
-    public void removeSymbol(int removedIndex) {
+    public void removeSymbol(char sym) {
         if (objSymbolLib == null) {
             return;
         }
 
-        objSymbolLib.removeSymbol(removedIndex);
-        jList1.clear();
-        jList1= objSymbolLib.getSymbols();
-        if (removedIndex != 0) {
-            //jList1.setSelectedIndex(removedIndex - 1);
-        } else {
-            //jList1.setSelectedIndex(0);
+        int unicode = ((int)sym);
+        List<Integer> indexes = objSymbolLib.findSymbol(unicode);
+        if (indexes.size() == 0){
+            Toast.makeText(context, "Symbol not found, try again", Toast.LENGTH_SHORT).show();
+            return;
         }
+        StrokeList empty = new StrokeList();
+        for (int i = 0; i< indexes.size(); i++){
+            objSymbolLib.getSymbol(indexes.get(i)).setStrokes(empty);
+        }
+        Toast.makeText(context, "symbol strokes have been removed from : " + indexes, Toast.LENGTH_SHORT).show();
+
+
+
+
+
 
     }
 
@@ -133,21 +143,19 @@ public class Trainer{
             return;
         }
         int unicode = ((int)sym);
-        Symbol sbl = new Symbol(SymbolLib.getHexToChar(unicode));
-        sbl.setStrokes(PreprocessorSVM.preProcessing(strokes));
         List<Integer> indexes = objSymbolLib.findSymbol(unicode);
         if (indexes.size() == 0){
             Toast.makeText(context, "Symbol not found, try again", Toast.LENGTH_SHORT).show();
             return;
         }
         for (int i = 0; i< indexes.size(); i++){
-            if (objSymbolLib.getSymbol(i).getStrokes().size() == 0){
-                objSymbolLib.getSymbol(i).setStrokes(strokes);
+            if (objSymbolLib.getSymbol(indexes.get(i)).getStrokes().size() == 0){
+                objSymbolLib.getSymbol(indexes.get(i)).setStrokes(PreprocessorSVM.preProcessing(strokes));
                 Toast.makeText(context, "Symbol added to index: " + indexes.get(i), Toast.LENGTH_SHORT).show();
                 return;
             }
         }
-        Toast.makeText(context, "library for symbol already added", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "library for symbol already added to indexes: " + indexes, Toast.LENGTH_SHORT).show();
 
 
     }

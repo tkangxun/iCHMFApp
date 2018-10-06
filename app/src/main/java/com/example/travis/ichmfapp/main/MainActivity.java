@@ -45,6 +45,9 @@ public class MainActivity extends AppCompatActivity {
     private Button  trainButton;
     private Button  saveButton;
     private Button addSymbolButton;
+    private Button removeButton;
+
+
     private String recognizedSymbol;
 
     private SymbolRecognizer _manualRecognizer;
@@ -62,12 +65,17 @@ public class MainActivity extends AppCompatActivity {
 
         trainer = new Trainer();
 
+
         try{
-         Recognizer objreg = new Recognizer(
+         /*Recognizer objreg = new Recognizer(
          SymbolLib.Load(ConstantData.ElasticFileString,
-         SymbolLib.LibraryTypes.Binary));
+         SymbolLib.LibraryTypes.Binary));**/
+            trainer.openSymbolLib();
+
+
+
          } catch (Exception e) {
-            Toast.makeText(context, "No elastic file found, please create new one if possible.", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(context, "New Default elastic file created", Toast.LENGTH_SHORT).show();
             trainer.generateDefaultSetElastic();
          }
 
@@ -101,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
         saveButton = (Button) findViewById(R.id.button2);
         //add symbol add symbols on top of the default list
         addSymbolButton = (Button) findViewById(R.id.button3);
+        removeButton = (Button) findViewById(R.id.button4);
         trainButton.setVisibility(View.GONE);
         addSymbolButton.setVisibility(View.GONE);
         if (saved) {
@@ -176,6 +185,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        removeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO: need create another dialog box
+
+                trainer.removeSymbol(toTrain);
+
+
+            }
+        });
+
 
 
 
@@ -229,6 +249,7 @@ public class MainActivity extends AppCompatActivity {
                     trainButton.setVisibility(View.VISIBLE);
                     addSymbolButton.setVisibility(View.VISIBLE);
                     saveButton.setVisibility(View.GONE);
+                    removeButton.setVisibility(View.GONE);
 
                     //TODO: tidy up diff btw train and add symbol, remove symbol
                     //TODO: also control input, currently only accept unicode
@@ -242,6 +263,7 @@ public class MainActivity extends AppCompatActivity {
                     if (saved) {
                         saveButton.setVisibility(View.GONE);
                     }else{saveButton.setVisibility(View.VISIBLE);}
+                    removeButton.setVisibility(View.VISIBLE);
                 }
             }
         });
