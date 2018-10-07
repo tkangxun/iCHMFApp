@@ -37,9 +37,8 @@ public class MainActivity extends AppCompatActivity {
 
     private WriteView writeView;
     private static Context context;
-    static Recognizer objreg;
+
     private char toTrain;
-    private StrokeList currentstrokes;
     private Boolean training = Boolean.FALSE;
     private Boolean saved = Boolean.TRUE;
     private Button  trainButton;
@@ -49,7 +48,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     private String recognizedSymbol;
+    private Stroke currentstroke;
 
+
+
+    static Recognizer objreg;
     private SymbolRecognizer _manualRecognizer;
     private SymbolRecognizer_SVM _svmRecognizer;
 
@@ -67,16 +70,20 @@ public class MainActivity extends AppCompatActivity {
 
 
         try{
-         /*Recognizer objreg = new Recognizer(
-         SymbolLib.Load(ConstantData.ElasticFileString,
-         SymbolLib.LibraryTypes.Binary));**/
             trainer.openSymbolLib();
+            /**Recognizer objreg = new Recognizer(
+                SymbolLib.Load(ConstantData.ElasticFileString,
+                SymbolLib.LibraryTypes.Binary));
+             */
+
 
 
 
          } catch (Exception e) {
             //Toast.makeText(context, "New Default elastic file created", Toast.LENGTH_SHORT).show();
             trainer.generateDefaultSetElastic();
+
+            //TODO: if elastic file not found maybe use SVM only?
          }
 
      writeView = (WriteView) findViewById(R.id.writeView);
@@ -85,7 +92,17 @@ public class MainActivity extends AppCompatActivity {
             public void StrokeEnd() {
 
                 //Toast.makeText(MainActivity.this, "Getting strokes: " + writeView.getStrokes().size(), Toast.LENGTH_SHORT).show();
-                writeView.getStrokes();
+                currentstroke = writeView.getLastStroke();
+
+
+                try{
+                    //objreg might not be initialise
+                    recognizedSymbol = objreg.Recognize(currentstroke);
+                    Toast.makeText(MainActivity.this, recognizedSymbol, Toast.LENGTH_SHORT).show();
+                }catch(Exception e){
+                    e.printStackTrace();
+                    //maybe use SVM only
+                }
 
             }
         });
@@ -103,13 +120,15 @@ public class MainActivity extends AppCompatActivity {
         final Switch simpleswitch = (Switch) findViewById(R.id.simpleswitch);
 
 
-        //train symbol add strokes to the current list of symbol
+        //train elastic symbol add strokes to the current list of symbol
         trainButton = (Button) findViewById(R.id.button1);
         //save current library
         saveButton = (Button) findViewById(R.id.button2);
         //add symbol add symbols on top of the default list
         addSymbolButton = (Button) findViewById(R.id.button3);
+        //remove current symbol
         removeButton = (Button) findViewById(R.id.button4);
+
         trainButton.setVisibility(View.GONE);
         addSymbolButton.setVisibility(View.GONE);
         if (saved) {

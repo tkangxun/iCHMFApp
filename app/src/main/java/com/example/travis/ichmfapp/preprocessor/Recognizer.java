@@ -1,5 +1,8 @@
 package com.example.travis.ichmfapp.preprocessor;
 
+import android.widget.Toast;
+
+import com.example.travis.ichmfapp.main.MainActivity;
 import com.example.travis.ichmfapp.symbollib.*;
 
 import org.w3c.dom.Node;
@@ -135,6 +138,8 @@ public class Recognizer {
      */
     public String Recognize(Stroke newStroke) throws Exception {
 
+        Toast.makeText(MainActivity.getAppContext(), "in here", Toast.LENGTH_SHORT).show();
+
         /// Initialize the _strokeListMemory if not yet been done so.
         if (_strokeListMemory == null) {
             _strokeListMemory = new StrokeList();
@@ -195,6 +200,7 @@ public class Recognizer {
         ArrayList recognitionList = doRecognition(recognizedStringList,
                 manualRecognizer, svmRecognizer);
         System.out.println("Time after recognition is" + (System.currentTimeMillis() - startTime));
+        Toast.makeText(MainActivity.getAppContext(), "Time after recognition is" + (System.currentTimeMillis() - startTime), Toast.LENGTH_SHORT).show();
         //FOR TESTING
         //for (int c = 0; c < recognizedStringList.size(); c++)
         //{
