@@ -71,10 +71,10 @@ public class MainActivity extends AppCompatActivity {
 
         try{
             trainer.openSymbolLib();
-            /**Recognizer objreg = new Recognizer(
+            objreg = new Recognizer(
                 SymbolLib.Load(ConstantData.ElasticFileString,
                 SymbolLib.LibraryTypes.Binary));
-             */
+
 
 
 
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
                 try{
                     //objreg might not be initialise
-                    recognizedSymbol = objreg.Recognize(currentstroke);
+                    recognizedSymbol += objreg.Recognize(currentstroke);
                     Toast.makeText(MainActivity.this, recognizedSymbol, Toast.LENGTH_SHORT).show();
                 }catch(Exception e){
                     e.printStackTrace();

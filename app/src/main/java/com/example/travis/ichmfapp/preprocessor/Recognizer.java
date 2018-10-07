@@ -1,5 +1,6 @@
 package com.example.travis.ichmfapp.preprocessor;
 
+import android.content.Context;
 import android.widget.Toast;
 
 import com.example.travis.ichmfapp.main.MainActivity;
@@ -15,6 +16,8 @@ import java.util.*;
  */
 
 public class Recognizer {
+
+    private Context context = MainActivity.getAppContext();
 
     SymbolLib _symbolLib;
     /// The collection of strokes drawn by user for recognition.
@@ -199,8 +202,9 @@ public class Recognizer {
 
         ArrayList recognitionList = doRecognition(recognizedStringList,
                 manualRecognizer, svmRecognizer);
-        System.out.println("Time after recognition is" + (System.currentTimeMillis() - startTime));
-        Toast.makeText(MainActivity.getAppContext(), "Time after recognition is" + (System.currentTimeMillis() - startTime), Toast.LENGTH_SHORT).show();
+
+        //System.out.println("Time after recognition is" + (System.currentTimeMillis() - startTime));
+        Toast.makeText(MainActivity.getAppContext(), "Time after Symbol recognition is" + (System.currentTimeMillis() - startTime), Toast.LENGTH_SHORT).show();
         //FOR TESTING
         //for (int c = 0; c < recognizedStringList.size(); c++)
         //{
@@ -215,7 +219,7 @@ public class Recognizer {
         //}
         String result = "";//MathML String
         //result = doAnalysis(recognizedStringList, true);
-        System.out.println("Time after analyser is" + (System.currentTimeMillis() - startTime));
+        //Toast.makeText(MainActivity.getAppContext(), "Time after analyser is" + (System.currentTimeMillis() - startTime), Toast.LENGTH_SHORT).show();
 
         _recognitionList = recognitionList;
         _aryLMemoryRecognizedString = recognizedStringList;
@@ -510,26 +514,28 @@ public class Recognizer {
             List<RecognizedSymbol> recognizedStringList,
             SymbolRecognizer mRecognizer, SymbolRecognizer_SVM svmRecognizer) throws Exception {
 
-        System.out.println("Time is" + System.currentTimeMillis());
-        long startTime = System.currentTimeMillis();
+
+        long SVMStartTime = System.currentTimeMillis();
         //using svm to recognise
         ArrayList mResult = svmRecognizer.recognizing(_strokeListMemory.GetLast4Strokes());
-        System.out.println("Time after SVM is" + (System.currentTimeMillis() - startTime));
-
+        long elasticStartTime = System.currentTimeMillis() - SVMStartTime;
+        Toast.makeText(context, "Time after SVM recognition is : " + elasticStartTime , Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "Result from SVM: " + mResult, Toast.LENGTH_LONG).show();
         //using elastic match
         mResult = mRecognizer.recognizing(mResult);
-        System.out.println("Time after elastic is" + (System.currentTimeMillis() - startTime));
+        Toast.makeText(context, "Time after elastic is" + (System.currentTimeMillis() - elasticStartTime), Toast.LENGTH_SHORT).show();
         //mResult = verifyContext(mResult);
 
         /// Take the first (with closet similarity distance) character
         /// as recognized symbol.
-        RecognizedSymbol recognizedChar = (RecognizedSymbol) mResult.get(0);
+        /**RecognizedSymbol recognizedChar = (RecognizedSymbol) mResult.get(0);
         int i = 0;
 
         while (i < mResult.size() && !addToList(recognizedChar, mResult, recognizedStringList)) {
             recognizedChar = (RecognizedSymbol) mResult.get(++i);
         }
         System.out.println("Time after addToList is" + (System.currentTimeMillis() - startTime));
+         */
         return mResult;
     }
 
@@ -548,7 +554,7 @@ public class Recognizer {
 
         /// Call the manual recognizer's process
         /// by passing (Last 4 Strokes) from memory stroke list collection.
-        /// And keep the result. The reture result the list of all
+        /// And keep the result. The return result the list of all
         /// symbols (same as in trained symbol list) tagged with similarity distance
         /// in increasing order.
 
