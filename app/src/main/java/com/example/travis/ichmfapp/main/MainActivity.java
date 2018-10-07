@@ -355,6 +355,7 @@ public class MainActivity extends AppCompatActivity {
 
                 /** place icon action here! */
                 writeView.clear();
+                objreg.ClearRecognitionMemory();
 
             }
         });

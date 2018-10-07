@@ -102,6 +102,7 @@ public class SymbolLib implements Serializable {
         if (result.size() > 0 && result.size() < 4) {
             return result;
         } else {
+            Toast.makeText(MainActivity.getAppContext(), "is null here", Toast.LENGTH_SHORT).show();
             return null;
         }
     }

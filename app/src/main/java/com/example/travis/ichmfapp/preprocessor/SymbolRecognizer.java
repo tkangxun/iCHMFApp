@@ -1,5 +1,8 @@
 package com.example.travis.ichmfapp.preprocessor;
 
+import android.widget.Toast;
+
+import com.example.travis.ichmfapp.main.MainActivity;
 import com.example.travis.ichmfapp.symbollib.*;
 
 import java.util.*;
@@ -28,9 +31,12 @@ public class SymbolRecognizer {
         for (int i = 0; i < recognizedList.size(); i++) {
             distance = Double.MAX_VALUE;
             symbolChar = recognizedList.get(i).getSymbolChar();
+
             elasticSymbol = _symbolLib.getSymbolFromChar(symbolChar);
+            //Toast.makeText(MainActivity.getAppContext(), "Elastic list fetch: " + elasticSymbol.get(0).getSymbolChar(), Toast.LENGTH_SHORT).show();
             sList = recognizedList.get(i).getStrokes();
             for (int j = 0; j < elasticSymbol.size(); j++) {
+                //error after here, return null
                 temp = ElasticMatch(elasticSymbol.get(j), recognizedList.get(i));
                 if (distance > temp) {
                     distance = temp;
@@ -41,8 +47,8 @@ public class SymbolRecognizer {
 
             resultList.add(new RecognizedSymbol(symbolChar, sList, finalDistance));
             if (ConstantData.doTest) {
-                System.out.println("The symbol " + symbolChar + ". With distance :" + distance + " and Stroke number: " + sList.size() +
-                        " and possibility: " + recognizedList.get(i).getError() + " and finalDistance : " + finalDistance);
+                Toast.makeText(MainActivity.getAppContext(), "The symbol " + symbolChar + ". With distance :" + distance + " and Stroke number: " + sList.size() +
+                        " and possibility: " + recognizedList.get(i).getError() + " and finalDistance : " + finalDistance, Toast.LENGTH_SHORT).show();
             }
         }
         Collections.sort(resultList, new ByDistance());
@@ -63,6 +69,7 @@ public class SymbolRecognizer {
                 slSymbol.add(sSymbol.get(i).getStrokePoint(j));
             }
         }
+        //i think the size don tally here
         if (slModel.size() == slSymbol.size()) {
             for (int i = 0; i < slModel.size(); i++) {
                 finalDistance += distance(slModel.get(i), slSymbol.get(i));
