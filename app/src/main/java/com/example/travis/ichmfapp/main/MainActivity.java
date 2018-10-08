@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
                 try{
                     //objreg might not be initialise
-                    recognizedSymbol += objreg.Recognize(currentstroke);
+                    recognizedSymbol = objreg.Recognize(currentstroke);
                     Toast.makeText(MainActivity.this, recognizedSymbol, Toast.LENGTH_SHORT).show();
                 }catch(Exception e){
                     e.printStackTrace();

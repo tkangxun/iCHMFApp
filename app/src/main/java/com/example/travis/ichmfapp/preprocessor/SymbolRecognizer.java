@@ -33,10 +33,10 @@ public class SymbolRecognizer {
             symbolChar = recognizedList.get(i).getSymbolChar();
 
             elasticSymbol = _symbolLib.getSymbolFromChar(symbolChar);
-            //Toast.makeText(MainActivity.getAppContext(), "Elastic list fetch: " + elasticSymbol.get(0).getSymbolChar(), Toast.LENGTH_SHORT).show();
+
             sList = recognizedList.get(i).getStrokes();
             for (int j = 0; j < elasticSymbol.size(); j++) {
-                //error after here, return null
+
                 temp = ElasticMatch(elasticSymbol.get(j), recognizedList.get(i));
                 if (distance > temp) {
                     distance = temp;
@@ -52,6 +52,7 @@ public class SymbolRecognizer {
             }
         }
         Collections.sort(resultList, new ByDistance());
+
         if (resultList.size() > 10) {
             resultList.remove(resultList.size() - 1);
         }
@@ -68,8 +69,8 @@ public class SymbolRecognizer {
             for (int j = 0; j < sSymbol.get(i).getTotalStrokePoints(); j++) {
                 slSymbol.add(sSymbol.get(i).getStrokePoint(j));
             }
-        }
-        //i think the size don tally here
+        }//get all the stroke point of candidate symbol
+
         if (slModel.size() == slSymbol.size()) {
             for (int i = 0; i < slModel.size(); i++) {
                 finalDistance += distance(slModel.get(i), slSymbol.get(i));

@@ -67,7 +67,7 @@ public class Recognizer {
      * So the primary purpose of this list is to store all the symbol in order
      * of decreasing similarity after (symbol) recognition process.
      */
-    ArrayList _recognitionList = new ArrayList();
+    ArrayList<RecognizedSymbol> _recognitionList = new ArrayList();
     /**
      * Object to create Document Builder Object for
      * XML document creation.
@@ -217,7 +217,8 @@ public class Recognizer {
         //        }
         //    }
         //}
-        String result = "";//MathML String
+        //String result = "";//MathML String
+
         //result = doAnalysis(recognizedStringList, true);
         //Toast.makeText(MainActivity.getAppContext(), "Time after analyser is" + (System.currentTimeMillis() - startTime), Toast.LENGTH_SHORT).show();
 
@@ -226,6 +227,10 @@ public class Recognizer {
         _manualRecognizer = manualRecognizer;
         _svmRecognizer = svmRecognizer;
         //_structuralAnalyser = structuralAnalyser;
+
+
+        String result = Character.toString(_recognitionList.get(0).getSymbolChar());
+
 
         return result;
     }
@@ -528,14 +533,15 @@ public class Recognizer {
 
         /// Take the first (with closet similarity distance) character
         /// as recognized symbol.
-        /**RecognizedSymbol recognizedChar = (RecognizedSymbol) mResult.get(0);
-        int i = 0;
+        RecognizedSymbol recognizedChar = (RecognizedSymbol) mResult.get(0);
 
+       /** int i = 0;
         while (i < mResult.size() && !addToList(recognizedChar, mResult, recognizedStringList)) {
             recognizedChar = (RecognizedSymbol) mResult.get(++i);
         }
-        System.out.println("Time after addToList is" + (System.currentTimeMillis() - startTime));
-         */
+        System.out.println("Time after addToList is" + (System.currentTimeMillis() - elasticStartTime));
+        */
+
         return mResult;
     }
 
