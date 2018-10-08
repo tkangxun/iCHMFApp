@@ -1,9 +1,9 @@
 package com.example.travis.ichmfapp.symbollib;
 
-import java.awt.*;
+
 import java.io.Serializable;
 import java.util.*;
-import java.util.List;
+
 
 /**
  * Created by Travis on 7/8/2018.
@@ -24,7 +24,7 @@ public class StrokeList
      * To get the bounding box rectangle of current stroke list.
      * @return
      */
-    public Rectangle getBoundingBox() {
+    public Box getBoundingBox() {
         return CalculateBoundingBox();
     }
 
@@ -134,7 +134,7 @@ public class StrokeList
         return pointLists;
     }
 
-    private Rectangle CalculateBoundingBox() {
+    private Box CalculateBoundingBox() {
         Stroke temp;
         double _boundingBoxWidth = -1;
         double _boundingBoxHeight = -1;
@@ -168,7 +168,7 @@ public class StrokeList
         _boundingBoxWidth = rightMostX - leftMostX + 1;//Add 1 to meet the accuracy
         _boundingBoxHeight = bottomMostY - topMostY + 1;//Add 1 to Meet the accuracy
 
-        Rectangle _boundingBox = new Rectangle((int)leftMostX, (int)topMostY,
+        Box _boundingBox = new Box((int)leftMostX, (int)topMostY,
                 (int)_boundingBoxWidth, (int)_boundingBoxHeight);
         return _boundingBox;
     }

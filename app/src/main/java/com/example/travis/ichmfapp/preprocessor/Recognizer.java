@@ -6,9 +6,8 @@ import android.widget.Toast;
 import com.example.travis.ichmfapp.main.MainActivity;
 import com.example.travis.ichmfapp.symbollib.*;
 
-import org.w3c.dom.Node;
+import org.w3c.dom.*;
 
-import java.io.*;
 import java.util.*;
 
 /**
@@ -39,11 +38,11 @@ public class Recognizer {
      * XML Tree to store the Math Expression Tree as the result of Structural
      *  Analysis. This tree is ammended as necessary upon symbol recognition results.
      */
-    //Document _rawExpressionTree;
+    Document _rawExpressionTree;
     /**
      * XML Tree to store Math ML as result of recognition.
      */
-    //Document _mathMLDocTree;
+    Document _mathMLDocTree;
     /**
      * The object which is resposible for recognizing the "symbols",
      * (NOT MATH EXPRESSION) based on the trained symbol library.
@@ -55,7 +54,7 @@ public class Recognizer {
      * The object which is responbislbe for analyzing the symbol relations
      * and to meaningful mathematic expressions.
      */
-    //StructuralAnalyser _structuralAnalyser;
+    StructuralAnalyser _structuralAnalyser;
     /**
      * This collection is the collection of symbols from the trained library,
      * each symbol tagged with recognition distance from identified symbol,
@@ -97,9 +96,9 @@ public class Recognizer {
             xmlDocBuilder = objDocumentBuilderFactory.newDocumentBuilder();
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
-        }
+        }*/
         _structuralAnalyser = new StructuralAnalyser(baseLineList);
-         */
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="Public Methods">
@@ -141,8 +140,6 @@ public class Recognizer {
      */
     public String Recognize(Stroke newStroke) throws Exception {
 
-        Toast.makeText(MainActivity.getAppContext(), "in here", Toast.LENGTH_SHORT).show();
-
         /// Initialize the _strokeListMemory if not yet been done so.
         if (_strokeListMemory == null) {
             _strokeListMemory = new StrokeList();
@@ -159,15 +156,16 @@ public class Recognizer {
         if (recognizedStringList == null) {
             recognizedStringList = new ArrayList();
         }
-        /**
+
         /// Initialize expression tree, if not yet been done so
         /// and create a Method wide local reference object.
 
+        /**
         if (_rawExpressionTree == null) {
             _rawExpressionTree = xmlDocBuilder.newDocument();
             _rawExpressionTree.appendChild(_rawExpressionTree.createElement("root"));
         }
-         */
+        */
 
         /// Initialize manual recognizer object, providing the loaded
         /// trained symbol library, if not yet been done so.
@@ -182,12 +180,11 @@ public class Recognizer {
             svmRecognizer = new SymbolRecognizer_SVM();
         }
 
-        /**
+
         StructuralAnalyser structuralAnalyser = _structuralAnalyser;
         if (structuralAnalyser == null) {
             structuralAnalyser = new StructuralAnalyser(baseLineList);
         }
-         */
 
         /// Add the latest drawn stroke into stroke list memory collection.
         _strokeListMemory.add(newStroke);
@@ -226,7 +223,7 @@ public class Recognizer {
         _aryLMemoryRecognizedString = recognizedStringList;
         _manualRecognizer = manualRecognizer;
         _svmRecognizer = svmRecognizer;
-        //_structuralAnalyser = structuralAnalyser;
+        _structuralAnalyser = structuralAnalyser;
 
 
         String result = Character.toString(_recognitionList.get(0).getSymbolChar());
@@ -447,9 +444,9 @@ public class Recognizer {
             //          doAnalysis(list, true);
             strokes++;
         }
+
         //modified by quxi 2009.12.29
-    return true;}
-    /*
+
         if (list.size() == 0 || verifyContext(recognizedChar, (RecognizedSymbol) list.get(list.size() - 1))) {
             RecognizedSymbol pre = new RecognizedSymbol('0');
             if (list.size() != 0) {
@@ -460,13 +457,14 @@ public class Recognizer {
             return true;
         } else {
             if (list.size() != 0 && ConstantData.doTest) {
-                System.out.println("Blocked by checkContext!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                Toast.makeText(context, "Blocked by checkContext!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", Toast.LENGTH_SHORT).show();
             }
             return false;
         }
 
     }
-*/
+
+
     //added by quxi 2010.1.15
     //check if the symbol is similar symbol and choose the correct one
     private RecognizedSymbol checkSimilarSymbols(RecognizedSymbol recognizedChar, RecognizedSymbol previous, List<RecognizedSymbol> candidate) {
@@ -529,18 +527,17 @@ public class Recognizer {
         //using elastic match
         mResult = mRecognizer.recognizing(mResult);
         Toast.makeText(context, "Time after elastic is" + (System.currentTimeMillis() - elasticStartTime), Toast.LENGTH_SHORT).show();
-        //mResult = verifyContext(mResult);
+       // mResult = verifyContext(mResult); wasn't used
 
         /// Take the first (with closet similarity distance) character
         /// as recognized symbol.
         RecognizedSymbol recognizedChar = (RecognizedSymbol) mResult.get(0);
 
-       /** int i = 0;
+        int i = 0;
         while (i < mResult.size() && !addToList(recognizedChar, mResult, recognizedStringList)) {
             recognizedChar = (RecognizedSymbol) mResult.get(++i);
         }
         System.out.println("Time after addToList is" + (System.currentTimeMillis() - elasticStartTime));
-        */
 
         return mResult;
     }
@@ -578,14 +575,14 @@ public class Recognizer {
         return mResult;
     }
 
-    /**
+
     //added by quxi 2009.12.29
     private boolean verifyContext(RecognizedSymbol result, RecognizedSymbol last) {
         int pos = _structuralAnalyser.boundingBoxDetermination(last, result);
         return SymbolClassifier.checkContext(pos, last, result);
 
      }
-     */
+
 
     /**
      * Internal method to perform structural analysis of

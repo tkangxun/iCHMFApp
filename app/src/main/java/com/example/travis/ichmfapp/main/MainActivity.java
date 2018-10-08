@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
          } catch (Exception e) {
             //Toast.makeText(context, "New Default elastic file created", Toast.LENGTH_SHORT).show();
+
             trainer.generateDefaultSetElastic();
 
             //TODO: if elastic file not found maybe use SVM only?
@@ -355,7 +356,7 @@ public class MainActivity extends AppCompatActivity {
 
                 /** place icon action here! */
                 writeView.clear();
-                objreg.ClearRecognitionMemory();
+                //objreg.ClearRecognitionMemory();
 
             }
         });

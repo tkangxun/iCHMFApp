@@ -1,6 +1,6 @@
 package com.example.travis.ichmfapp.symbollib;
 
-import java.awt.*;
+//import java.awt.*;
 import java.util.*;
 import java.util.List;
 
@@ -15,7 +15,7 @@ public class Baseline {
     protected int height;
     protected List<RecognizedSymbol> symbolList = new ArrayList();
     protected StrokePoint center;
-    protected Rectangle rec;
+    protected Box rec;
 
     public Baseline(RecognizedSymbol symbol, StrokePoint center) {
         this.rec = symbol.getBox();
@@ -47,7 +47,7 @@ public class Baseline {
         startX = x;
     }
 
-    public Rectangle getRect() {
+    public Box getRect() {
         return rec;
     }
 

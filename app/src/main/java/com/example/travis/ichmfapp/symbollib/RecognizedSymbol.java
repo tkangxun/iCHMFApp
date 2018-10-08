@@ -2,7 +2,7 @@ package com.example.travis.ichmfapp.symbollib;
 
 import org.w3c.dom.*;
 
-import java.awt.*;
+
 
 /**
  * Created by Travis on 9/8/2018.
@@ -74,7 +74,7 @@ public class RecognizedSymbol extends Symbol {
          *
          * @return The bounding box
          */
-        public Rectangle getBox() {
+        public Box getBox() {
             return this._Strokes.getBoundingBox();
         }
 

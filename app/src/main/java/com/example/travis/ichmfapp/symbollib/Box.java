@@ -20,4 +20,12 @@ public class Box {
 
     }
 
+    public double getX(){return x;}
+    public double getY(){return y;}
+    public double getWidth(){return width;}
+    public double getHeight(){return height;}
+    public double getCenterX() {return ((width/2)+x);}
+    public double getCenterY() {return ((height/2)-y);}
+
+
 }

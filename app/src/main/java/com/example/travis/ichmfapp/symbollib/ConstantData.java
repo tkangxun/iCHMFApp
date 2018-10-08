@@ -51,7 +51,7 @@ public class ConstantData {
     public static File ElasticFile = new File(mydir + ElasticFileString);
     public static File ElasticFileDefault = new File(mydir + ElasticFileDefaultString);
     //public static String exeDir = parentpath + "\\php\\mathml.exe ";
-    public static boolean doTest = false;
+    public static boolean doTest = true;
 
     public static String getAssest(String filename) {
 
@@ -77,31 +77,4 @@ public class ConstantData {
         return f.getPath();
     }
 
-
-
-
-
-
-
-    /**public void saveFile (File savefile, String fname){
-
-        if (!mydir.exists()){
-            mydir.mkdirs();
-        }
-        fname = fname + ".dat";
-        File file = new File(mydir, fname);
-        if (file.exists()){
-            file.delete();
-        }
-        try{
-            FileOutputStream out = new FileOutputStream(file);
-
-            out.flush();
-            out.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }*/
 }
