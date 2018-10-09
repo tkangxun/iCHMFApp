@@ -10,6 +10,8 @@ import org.w3c.dom.*;
 
 import java.util.*;
 
+import javax.xml.parsers.*;
+
 /**
  * Created by Travis on 31/8/2018.
  */
@@ -71,11 +73,11 @@ public class Recognizer {
      * Object to create Document Builder Object for
      * XML document creation.
      */
-    //DocumentBuilderFactory objDocumentBuilderFactory;
+    DocumentBuilderFactory objDocumentBuilderFactory;
     /**
      * Document builder object to create XML document.
      */
-    //DocumentBuilder xmlDocBuilder;
+    DocumentBuilder xmlDocBuilder;
     //added by quxi 2009.09.01
     List<Baseline> baseLineList;
     //MapleConnection mapleConn;
@@ -89,14 +91,14 @@ public class Recognizer {
         baseLineList = new ArrayList();
         _symbolLib = theLibrary;
 
-        /**
+
         objDocumentBuilderFactory = DocumentBuilderFactory.newInstance();
-        mapleConn = new MapleConnection();
+        //mapleConn = new MapleConnection();
         try {
             xmlDocBuilder = objDocumentBuilderFactory.newDocumentBuilder();
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
-        }*/
+        }
         _structuralAnalyser = new StructuralAnalyser(baseLineList);
 
     }
@@ -147,7 +149,7 @@ public class Recognizer {
         //added by quxi 2009.09.08
         if (baseLineList == null) {
             baseLineList = new ArrayList();
-        //  this._structuralAnalyser.setBaseLine(baseLineList);
+          this._structuralAnalyser.setBaseLine(baseLineList);
         }
 
         /// Initialize recognized String list memory if not yet been done so
@@ -160,12 +162,12 @@ public class Recognizer {
         /// Initialize expression tree, if not yet been done so
         /// and create a Method wide local reference object.
 
-        /**
+
         if (_rawExpressionTree == null) {
             _rawExpressionTree = xmlDocBuilder.newDocument();
             _rawExpressionTree.appendChild(_rawExpressionTree.createElement("root"));
         }
-        */
+
 
         /// Initialize manual recognizer object, providing the loaded
         /// trained symbol library, if not yet been done so.
@@ -197,6 +199,7 @@ public class Recognizer {
         /// similarity distance.
         long startTime = System.currentTimeMillis();
 
+        //More than one symbol
         ArrayList recognitionList = doRecognition(recognizedStringList,
                 manualRecognizer, svmRecognizer);
 
@@ -214,10 +217,10 @@ public class Recognizer {
         //        }
         //    }
         //}
-        //String result = "";//MathML String
+        String result = "";//MathML String
 
-        //result = doAnalysis(recognizedStringList, true);
-        //Toast.makeText(MainActivity.getAppContext(), "Time after analyser is" + (System.currentTimeMillis() - startTime), Toast.LENGTH_SHORT).show();
+        result = doAnalysis(recognizedStringList, true);
+        Toast.makeText(MainActivity.getAppContext(), "Time after analyser is" + (System.currentTimeMillis() - startTime), Toast.LENGTH_SHORT).show();
 
         _recognitionList = recognitionList;
         _aryLMemoryRecognizedString = recognizedStringList;
@@ -226,7 +229,7 @@ public class Recognizer {
         _structuralAnalyser = structuralAnalyser;
 
 
-        String result = Character.toString(_recognitionList.get(0).getSymbolChar());
+        //String result = Character.toString(_recognitionList.get(0).getSymbolChar());
 
 
         return result;
@@ -252,7 +255,7 @@ public class Recognizer {
         int affectedSymbolCount = 0, count = 0;
         //added by quxi 2009.12.27
         baseLineList.removeAll(baseLineList);
-        //_structuralAnalyser.resetFlags();
+        _structuralAnalyser.resetFlags();
 
         while (count < symbolForReplacement.getNumberOfStrokes()) {
             RecognizedSymbol symbolToBeReplaced = (RecognizedSymbol) (_aryLMemoryRecognizedString.get(_aryLMemoryRecognizedString.size() - 1));
@@ -263,9 +266,9 @@ public class Recognizer {
         count = count - symbolForReplacement.getNumberOfStrokes();
         for (int i = 0; i < _aryLMemoryRecognizedString.size(); i++) {
             if (i == _aryLMemoryRecognizedString.size() - 1) {
-                //result = doAnalysis(_aryLMemoryRecognizedString.subList(0, i + 1), true);
+                result = doAnalysis(_aryLMemoryRecognizedString.subList(0, i + 1), true);
             } else {
-                //doAnalysis(_aryLMemoryRecognizedString.subList(0, i + 1), false);
+                doAnalysis(_aryLMemoryRecognizedString.subList(0, i + 1), false);
             }
         }
         while (count > 0) {
@@ -276,7 +279,7 @@ public class Recognizer {
                 st.add(tempStrokeList1.get(i));
             }
             doRecognition(st, _aryLMemoryRecognizedString, _manualRecognizer, _svmRecognizer);
-            //doAnalysis(_aryLMemoryRecognizedString, true);
+            doAnalysis(_aryLMemoryRecognizedString, true);
             count--;
         }
         _aryLMemoryRecognizedString.add(symbolForReplacement);
@@ -293,16 +296,15 @@ public class Recognizer {
      */
     public String UndoLastStroke() throws Exception {
         String result = " ";
-        //_rawExpressionTree = xmlDocBuilder.newDocument();
+        _rawExpressionTree = xmlDocBuilder.newDocument();
 
         RecognizedSymbol rc = (RecognizedSymbol) (_aryLMemoryRecognizedString.get(_aryLMemoryRecognizedString.size() - 1));
         _aryLMemoryRecognizedString.remove(_aryLMemoryRecognizedString.size() - 1);
 
         //added by quxi 2009.12.27
         baseLineList.removeAll(baseLineList);
-        //_structuralAnalyser.resetFlags();
+        _structuralAnalyser.resetFlags();
 
-        /**
         for (int i = 0; i < _aryLMemoryRecognizedString.size(); i++) {
             if (i == _aryLMemoryRecognizedString.size() - 1) {
                 result = doAnalysis(_aryLMemoryRecognizedString.subList(0, i + 1), true);
@@ -314,13 +316,13 @@ public class Recognizer {
         int pos = rc.getNumberOfStrokes();
         while (pos > 1) {
             _recognitionList = doRecognition(
-                    sepcialTypeCast(_strokeListMemory.subList(0, _strokeListMemory.size() - pos + 1)),
+                    specialTypeCast(_strokeListMemory.subList(0, _strokeListMemory.size() - pos + 1)),
                     _aryLMemoryRecognizedString, _manualRecognizer, _svmRecognizer);
             result = doAnalysis(_aryLMemoryRecognizedString, true);
             pos--;
         }
         _strokeListMemory.remove(_strokeListMemory.size() - 1);
-*/
+
         return result;
     }
 
@@ -336,10 +338,10 @@ public class Recognizer {
         //added by quxi 2009.09.08
         baseLineList = null;
         _aryLMemoryRecognizedString = null;
-        //_rawExpressionTree = null;
-        //_mathMLDocTree = null;
+        _rawExpressionTree = null;
+        _mathMLDocTree = null;
         _recognitionList = null;
-        //_structuralAnalyser = new StructuralAnalyser(baseLineList);
+        _structuralAnalyser = new StructuralAnalyser(baseLineList);
     }
 
     /**
@@ -347,12 +349,14 @@ public class Recognizer {
      * expression.
      * @return XML Document object.
      * @see Document
+     *
+     */
 
     public Document getMathMLDocTree() {
         return _mathMLDocTree;
     }
     // </editor-fold>
-    */
+
 
     // <editor-fold defaultstate="collapsed" desc="Private Methods">
     /**
@@ -363,7 +367,7 @@ public class Recognizer {
      * @see Stroke
      * @see StrokeList
      */
-    private StrokeList sepcialTypeCast(List<Stroke> target) {
+    private StrokeList specialTypeCast(List<Stroke> target) {
         StrokeList result = new StrokeList();
         for (int c = 0; c < target.size(); c++) {
             result.add(target.get(c));
@@ -386,7 +390,7 @@ public class Recognizer {
 
         ///this part is actually checking if the last character
         ///in the recognized list is minus sign (-)
-        ///If yes, modoify the XML of that recognized char.
+        ///If yes, modify the XML of that recognized char.
         ///And DO NOT add the new (recognized char) to list (just return false);
 
         //When the stroke count of last recognized is more than 1
@@ -416,6 +420,7 @@ public class Recognizer {
             Node node = lastRecSymbolInList.getNode();
             if (node.getParentNode() != null) {
                 node.getParentNode().removeChild(node);
+
             }
             //added by quxi 2009.09.01
             //update the baseLine symbols
@@ -441,7 +446,7 @@ public class Recognizer {
                 st.add(tempStrokeList1.get(i));
             }
             doRecognition(st, list, _manualRecognizer, _svmRecognizer);
-            //          doAnalysis(list, true);
+            doAnalysis(list, true);
             strokes++;
         }
 
@@ -508,10 +513,11 @@ public class Recognizer {
 
     /**
      * Internal method to perform symbol Recognition.
-     * @param recognizedStringList Previously recognized symbols.
+     * @param recognizedStringList Previously recognized symbols. alr exist
      * @param mRecognizer Symbol recognizer object.
      * @return List of newly recognized symbol.
      * @throws java.lang.Exception
+     *
      */
     private ArrayList doRecognition(
             List<RecognizedSymbol> recognizedStringList,
@@ -527,7 +533,7 @@ public class Recognizer {
         //using elastic match
         mResult = mRecognizer.recognizing(mResult);
         Toast.makeText(context, "Time after elastic is" + (System.currentTimeMillis() - elasticStartTime), Toast.LENGTH_SHORT).show();
-       // mResult = verifyContext(mResult); wasn't used
+        //mResult = verifyContext(mResult);
 
         /// Take the first (with closet similarity distance) character
         /// as recognized symbol.
@@ -593,26 +599,28 @@ public class Recognizer {
      *
      */
 
-    /**
+
 
     private String doAnalysis(List<RecognizedSymbol> recognizedStringList, boolean convertFlag) {
 
-        //_structuralAnalyser.analyse(recognizedStringList, _rawExpressionTree);
+        _structuralAnalyser.analyse(recognizedStringList, _rawExpressionTree);
 
         if (convertFlag) {
             try {
                 String asciimath = treeToascii(_rawExpressionTree.getFirstChild().cloneNode(true));
-                return asciiToMathMl(asciimath);
+                //return asciiToMathMl(asciimath);
+                Toast.makeText(context, asciimath, Toast.LENGTH_SHORT).show();
+                return asciimath;
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
         return null;
      }
-     */
 
 
-    /*private String asciiToMathMl(String formula) {
+
+    /**private String asciiToMathMl(String formula) {
         Process p = null;
         String ls_str = "";
         String result = "";
@@ -635,7 +643,7 @@ public class Recognizer {
             e.printStackTrace();
         }
         return result;
-    }
+    }*/
 
     private int getPosition(Node child, Node parent) {
         for (int i = 0; i < parent.getChildNodes().getLength(); i++) {
@@ -816,7 +824,7 @@ public class Recognizer {
                 node = node.getNextSibling();
             }
         }
-
+/**
         //added by quxi 2010.1.10 --computation engine
         if (asciiString.length() > 1 && asciiString.charAt(asciiString.length() - 1) == '=') {
             String mapleCmd = mapleConn.convertToMapleInstruction(asciiString.substring(0, asciiString.length() - 1));
@@ -832,16 +840,16 @@ public class Recognizer {
                 }
             }
         }
-        System.out.println(asciiString);
+        System.out.println(asciiString);*/
         return asciiString;
     }
 
-    *//**
+    /**
      * Utility method to dump a branch of XML tree,
      * starting from given node, to debugger console.
      * @param startNode The xml node to start exploration.
      * @param padding String padding to indent the children nodes.
-     *//*
+     */
     private void visualizeTree(Element startNode, String padding) {
         System.out.println(padding + startNode.getAttribute("id") + " " + startNode.getNodeName() + "( " + startNode.getAttribute("identity") + " )" + "[ " + startNode.getAttribute("type") + " ]");
 

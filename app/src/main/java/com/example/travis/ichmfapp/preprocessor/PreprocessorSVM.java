@@ -4,7 +4,7 @@ import com.example.travis.ichmfapp.symbollib.*;
 import com.example.travis.ichmfapp.symbollib.Stroke;
 
 
-import java.awt.*;
+
 
 /**
  * Created by Travis on 9/8/2018.
@@ -12,14 +12,19 @@ import java.awt.*;
 
 public class PreprocessorSVM {
 
+    // <editor-fold defaultstate="collapsed" desc="Private variables">
     private static int thresHold = 5;
     private static int desiredPointNum = 50;
     private static int closePoint = 20;
-//    private static Rectangle standardRec = new Rectangle(0, 0, -1, -1);
+    private static Box standardRec = new Box(0, 0, 100, 100);
+    // </editor-fold>
 
+    // <editor-fold defaultstate="collapsed" desc="Constructor">
     public PreprocessorSVM() {
     }
+    // </editor-fold>
 
+    // <editor-fold defaultstate="collapsed" desc="Public Methods">
     /**
      * The wrapper method to call the series of pre-processing steps.
      * @param _inputStrokeList StrokeList to be processed.
@@ -27,16 +32,8 @@ public class PreprocessorSVM {
      * @see StrokeList
      */
     public static StrokeList preProcessing(StrokeList _inputStrokeList) {
-        int pts =0 ;
-        for (int i = 0; i < _inputStrokeList.size(); i++) {
-            pts +=_inputStrokeList.get(i).getTotalStrokePoints();
-        }
-        if (pts<10){
-            return _inputStrokeList;
-        }
-
         return normallizePoint(reSampling(smoothing(normalizing(_inputStrokeList))));
-        }
+    }
 
     /**
      * Classify two StrokeList based on their closeness.
@@ -46,7 +43,7 @@ public class PreprocessorSVM {
      */
     public static boolean preClassify(StrokeList s1, StrokeList s2) {
         //If the two start points are close enough return true;
-        //If the two end points are close enough return true;
+        //If the trow end points are close enough return true;
         //else return False;
         if (distance(s1.get(0).getStrokePoint(0), s2.get(0).getStrokePoint(0)) <= closePoint) {
             return true;
@@ -62,14 +59,6 @@ public class PreprocessorSVM {
 
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="Private Methods">
-    /**
-     * To cut the first and last 5 points in the given stroke.
-     * @deprecated
-     */
-    @Deprecated
-    private void chopHeadTail() {
-    }
-
     /**
      * Resample each stroke in given list to have averagely same
      * distance between the stroke points.
@@ -138,7 +127,6 @@ public class PreprocessorSVM {
                 }
             }
         }
-
         int totalPoints = countTotalPoint(_inputStrokeList);
         int pointDifference = totalPoints - desiredPointNum;
         int i = _inputStrokeList.size() - 1;
@@ -194,7 +182,7 @@ public class PreprocessorSVM {
         return _inputStrokeList;
     }
 
-    public static int countTotalPoint(StrokeList _inputStrokeList) {
+    private static int countTotalPoint(StrokeList _inputStrokeList) {
         int totalPoint = 0;
         for (int k = 0; k < _inputStrokeList.size(); k++) {
             totalPoint += _inputStrokeList.get(k).getTotalStrokePoints();
@@ -231,7 +219,6 @@ public class PreprocessorSVM {
      */
     private static StrokeList normalizing(StrokeList _inputStrokeList) {
         double left = 10000, right = -10000, top = 10000, bottom = -10000;
-        //Rectangle standardRec = new Rectangle(0, 0, 100, 100);
         Stroke _strokeTemp;
 
         for (int i = 0; i < _inputStrokeList.size(); i++) {
@@ -255,8 +242,7 @@ public class PreprocessorSVM {
 
         double width = right - left + 1;
         double height = bottom - top + 1;
-        double scale = Math.max(width, height) / 100;
-                //standardRec.getWidth();
+        double scale = Math.max(width, height) / standardRec.getWidth();
 
         StrokeList result = new StrokeList();
         Stroke tempStroke;
@@ -284,6 +270,5 @@ public class PreprocessorSVM {
     private static double distance(StrokePoint p1, StrokePoint p2) {
         return Math.sqrt((p1.X - p2.X) * (p1.X - p2.X) + (p1.Y - p2.Y) * (p1.Y - p2.Y));
     }
-
+    // </editor-fold>
 }
-
