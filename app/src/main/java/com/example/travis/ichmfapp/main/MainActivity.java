@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     static Recognizer objreg;
-    private SymbolRecognizer _manualRecognizer;
     private SymbolRecognizer_SVM _svmRecognizer;
 
 
@@ -67,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         trainer = new Trainer();
+        final TextView txtcontent = (TextView)findViewById(R.id.tv1);
 
 
         try{
@@ -80,11 +80,10 @@ public class MainActivity extends AppCompatActivity {
 
 
          } catch (Exception e) {
-            //Toast.makeText(context, "New Default elastic file created", Toast.LENGTH_SHORT).show();
-
             trainer.generateDefaultSetElastic();
 
-            //TODO: if elastic file not found maybe use SVM only?
+
+            Toast.makeText(context, "Error! Elastic file not found!", Toast.LENGTH_SHORT).show();
          }
 
      writeView = (WriteView) findViewById(R.id.writeView);
@@ -99,7 +98,8 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         //objreg might not be initialise
                         recognizedSymbol = objreg.Recognize(currentstroke);
-                        Toast.makeText(MainActivity.this, recognizedSymbol, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(MainActivity.this, recognizedSymbol, Toast.LENGTH_SHORT).show();
+                        txtcontent.setText("Expression: " + recognizedSymbol);
                     } catch (Exception e) {
                         e.printStackTrace();
                         //maybe use SVM only
@@ -120,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         final Switch simpleswitch = (Switch) findViewById(R.id.simpleswitch);
+
 
 
         //train elastic symbol add strokes to the current list of symbol
@@ -159,21 +160,6 @@ public class MainActivity extends AppCompatActivity {
                 //Training for elastic matching
                 saved = Boolean.FALSE;
                 trainer.addElasticSymbol(toTrain, writeView.getStrokes());
-
-
-
-
-
-                /** for training for SVM
-                //send for processing, should account for symbol training only 4 strokes (not added yet)
-                StrokeList processedStrokes = getprocessed(writeView.getStrokes());
-                Toast.makeText(MainActivity.this, "Before: "+ PreprocessorSVM.countTotalPoint(writeView.getStrokes())
-                + ". After: " + PreprocessorSVM.countTotalPoint(processedStrokes), Toast.LENGTH_SHORT).show();
-
-                //send for feature extraction
-                String featureString = SymbolFeature.getFeature(0, processedStrokes);
-                Toast.makeText(context, featureString, Toast.LENGTH_SHORT).show();
-                 */
 
                 simpleswitch.setChecked(false);
                 training = false;
@@ -281,8 +267,7 @@ public class MainActivity extends AppCompatActivity {
                     removeButton.setVisibility(View.GONE);
 
                     //TODO: tidy up diff btw train and add symbol, remove symbol
-                    //TODO: also control input, currently only accept unicode
-                    //TODO: add all the symbols. yay!
+
 
                     alertDialog.show();
 
@@ -299,58 +284,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
-
-        TextView txtcontent = (TextView)findViewById(R.id.tv1);
-/**
-        try {
-            StrokeList preProcessedStrokeList = PreprocessorSVM.preProcessing(writeView.getStrokes());
-            Toast.makeText(context, "preprocessed", Toast.LENGTH_SHORT).show();
-            //compare storkelist with each symbol in symbol library
-            String featureString = SymbolFeature.getFeature(0, preProcessedStrokeList);
-            SVM_predict sp = new SVM_predict();
-            sp.run(featureString, 1);
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
-*/
-        /**
-            Recognizer objreg = new Recognizer(
-                    SymbolLib.Load(ConstantData.ElasticFileString,
-                            SymbolLib.LibraryTypes.Binary));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-         */
-
-
-        ////////////////////////
-        /**
-        try {
-            objreg = new Recognizer(
-                    SymbolLib.Load(ConstantData.ElasticFileString,
-                            SymbolLib.LibraryTypes.Binary));
-
-            String pointList = "";
-            Stroke receivedStroke = new Stroke();
-            int pointNum = Integer.parseInt(st.nextToken());
-
-            for (int i = 0; i < pointNum; i++) {
-                StrokePoint sp = new StrokePoint(Double.parseDouble(st2.nextToken()), Double.parseDouble(st2.nextToken()));
-                receivedStroke.addStrokePoint(sp);
-            }
-            objreg.Recognize(receivedStroke);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-
-        */
-        ///////////////////////
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -397,46 +330,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-
-    public StrokeList getprocessed (StrokeList rawStroke){
-        StrokeList processed = PreprocessorSVM.preProcessing(rawStroke);
-
-        return processed;
-    }
-
-    private String recognize (StrokeList memory){
-        SymbolRecognizer_SVM svmRecognizer = _svmRecognizer;
-        if (svmRecognizer == null) {
-            svmRecognizer = new SymbolRecognizer_SVM();
-        }
-        _svmRecognizer = svmRecognizer;
-        ArrayList mResult =null;
-        String result = "";
-
-        try{
-            mResult = svmRecognizer.recognizing(memory);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
-
-        for (int i =0; i < mResult.size(); i++){
-            result += mResult.get(i);
-        }
-
-        return result;
-    }
-
-    private String mrecognize (StrokeList memory){
-        SymbolRecognizer manualRecognizer = _manualRecognizer;
-        if (manualRecognizer == null) {
-            //manualRecognizer = new SymbolRecognizer(_symbolLib);
-        }
-        String s = " ";
-
-        return s;
     }
 
     private static String getOptionalResult() {
