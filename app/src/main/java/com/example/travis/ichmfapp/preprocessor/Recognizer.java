@@ -523,9 +523,10 @@ public class Recognizer {
             List<RecognizedSymbol> recognizedStringList,
             SymbolRecognizer mRecognizer, SymbolRecognizer_SVM svmRecognizer) throws Exception {
 
+        //TODO: cannot reg ":"
 
         long SVMStartTime = System.currentTimeMillis();
-        //using svm to recognise
+        //using svm to recognise, get and recognise all 4
         ArrayList mResult = svmRecognizer.recognizing(_strokeListMemory.GetLast4Strokes());
         long elasticStartTime = System.currentTimeMillis() - SVMStartTime;
         Toast.makeText(context, "Time after SVM recognition is : " + elasticStartTime , Toast.LENGTH_SHORT).show();
