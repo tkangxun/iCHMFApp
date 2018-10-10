@@ -222,7 +222,6 @@ public class SymbolLib implements Serializable {
                 41, //)
                 42, //* Asterisk
                 42,
-                42,
                 43, //+
                 43, //+
                 46, //.

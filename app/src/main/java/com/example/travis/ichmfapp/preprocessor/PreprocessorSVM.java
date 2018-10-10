@@ -32,6 +32,26 @@ public class PreprocessorSVM {
      * @see StrokeList
      */
     public static StrokeList preProcessing(StrokeList _inputStrokeList) {
+        int pts =0 ;
+        for (int i = 0; i < _inputStrokeList.size(); i++) {
+            pts +=_inputStrokeList.get(i).getTotalStrokePoints();
+        }
+        if (pts<10){
+            StrokeList dot = new StrokeList();
+            Stroke s = new Stroke();
+            StrokePoint pt = new StrokePoint(50,50);
+            s.addStrokePoint(pt);
+            dot.add(s);
+
+            if (_inputStrokeList.size()==2){
+                StrokePoint ptpt = new StrokePoint(50,70);
+                Stroke dotdot = new Stroke();
+                dotdot.addStrokePoint(ptpt);
+                dot.add(dotdot);
+            }
+            return dot;
+
+        }
         return normallizePoint(reSampling(smoothing(normalizing(_inputStrokeList))));
     }
 

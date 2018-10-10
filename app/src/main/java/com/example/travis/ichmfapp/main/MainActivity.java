@@ -95,14 +95,15 @@ public class MainActivity extends AppCompatActivity {
                 //Toast.makeText(MainActivity.this, "Getting strokes: " + writeView.getStrokes().size(), Toast.LENGTH_SHORT).show();
                 currentstroke = writeView.getLastStroke();
 
-
-                try{
-                    //objreg might not be initialise
-                    recognizedSymbol = objreg.Recognize(currentstroke);
-                    Toast.makeText(MainActivity.this, recognizedSymbol, Toast.LENGTH_SHORT).show();
-                }catch(Exception e){
-                    e.printStackTrace();
-                    //maybe use SVM only
+                if (training == false) {
+                    try {
+                        //objreg might not be initialise
+                        recognizedSymbol = objreg.Recognize(currentstroke);
+                        Toast.makeText(MainActivity.this, recognizedSymbol, Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        //maybe use SVM only
+                    }
                 }
 
             }
@@ -201,6 +202,14 @@ public class MainActivity extends AppCompatActivity {
                 trainer.saveSymbolLib();
                 saved = Boolean.TRUE;
                 saveButton.setVisibility(view.GONE);
+
+                try{
+                    objreg = new Recognizer(
+                            SymbolLib.Load(ConstantData.ElasticFileString,
+                                    SymbolLib.LibraryTypes.Binary));
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
 
             }
         });
