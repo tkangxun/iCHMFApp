@@ -16,9 +16,6 @@ import com.example.travis.ichmfapp.symbollib.StrokeList;
 import com.example.travis.ichmfapp.symbollib.StrokePoint;
 
 
-import java.util.ArrayList;
-
-import java.util.List;
 
 
 
@@ -148,10 +145,6 @@ public class WriteView extends View {
     }
 
 
-    //widgets
-
-
-    // can clear but doesn't reset the canvas. not shown visually
     public void clear() {
         mPath = new Path();
         mCanvas = new Canvas();
@@ -189,6 +182,29 @@ public class WriteView extends View {
 
 
         invalidate();
+    }
+
+    public void displaySymbol (StrokeList symbolStrokes){
+        this.clear();
+        mPaint.setColor(Color.RED);
+        mPaint.setStrokeWidth(20);
+
+        for (int i =0; i<symbolStrokes.size();i++){
+            for (int j=0; j<symbolStrokes.get(i).getTotalStrokePoints();j++){
+                if (j==0){
+                    touchStart((float)symbolStrokes.get(i).getStrokePoint(j).X +500,
+                            (float)symbolStrokes.get(i).getStrokePoint(j).Y+500);
+                    continue;
+                }
+                if (j== symbolStrokes.get(i).getTotalStrokePoints()-1){
+                    touchUp();
+                    continue;
+                }
+                touchMove((float)symbolStrokes.get(i).getStrokePoint(j).X+500,
+                        (float)symbolStrokes.get(i).getStrokePoint(j).Y+500);
+            }
+        }
+
     }
 
     public void addWriteViewListener(WriteViewListener eventListener){

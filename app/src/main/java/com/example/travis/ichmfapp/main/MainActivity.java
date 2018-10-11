@@ -68,9 +68,13 @@ public class MainActivity extends AppCompatActivity {
         trainer = new Trainer();
         final TextView txtcontent = (TextView)findViewById(R.id.tv1);
 
+        writeView = (WriteView) findViewById(R.id.writeView);
+
 
         try{
             trainer.openSymbolLib();
+            //char x = '4';
+            //writeView.displaySymbol(trainer.getTrainsymbol(x).getStrokes());
             objreg = new Recognizer(
                 SymbolLib.Load(ConstantData.ElasticFileString,
                 SymbolLib.LibraryTypes.Binary));
@@ -79,14 +83,16 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-         } catch (Exception e) {
+        } catch (Exception e) {
+            e.printStackTrace();
             trainer.generateDefaultSetElastic();
 
 
             Toast.makeText(context, "Error! Elastic file not found!", Toast.LENGTH_SHORT).show();
-         }
+        }
 
-     writeView = (WriteView) findViewById(R.id.writeView);
+
+
         writeView.addWriteViewListener(new WriteViewListener() {
             @Override
             public void StrokeEnd() {

@@ -47,6 +47,20 @@ public class Trainer{
         }
     }
 
+    public Symbol getTrainsymbol(char sym){
+        if (objSymbolLib == null) {
+            return null;
+        }
+
+        int unicode = ((int)sym);
+        List<Integer> indexes = objSymbolLib.findSymbol(unicode);
+        if (indexes.size() == 0){
+            Toast.makeText(context, "Symbol not found, try again", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+        return objSymbolLib.getSymbol(indexes.get(1));
+    }
+
 
     //SVM doesn't require saving button, save when write features
     public void trainSymbolSVM( int index) {
@@ -179,6 +193,8 @@ public class Trainer{
             }
         }
     }
+
+
 
     /**private void trainSymbolSVM() {
         if (jList1.getSelectedValue() == null) {
