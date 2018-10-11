@@ -191,6 +191,14 @@ public class WriteView extends View {
 
         for (int i =0; i<symbolStrokes.size();i++){
             for (int j=0; j<symbolStrokes.get(i).getTotalStrokePoints();j++){
+                if (symbolStrokes.get(i).getTotalStrokePoints()==1){
+                    touchStart((float)symbolStrokes.get(i).getStrokePoint(j).X +500,
+                            (float)symbolStrokes.get(i).getStrokePoint(j).Y+500);
+                    touchMove((float)symbolStrokes.get(i).getStrokePoint(j).X +500,
+                            (float)symbolStrokes.get(i).getStrokePoint(j).Y+500);
+                    touchUp();
+                    continue;
+                }
                 if (j==0){
                     touchStart((float)symbolStrokes.get(i).getStrokePoint(j).X +500,
                             (float)symbolStrokes.get(i).getStrokePoint(j).Y+500);

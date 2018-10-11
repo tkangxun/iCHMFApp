@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
         try{
             trainer.openSymbolLib();
-            //char x = '4';
+            //char x = ':';
             //writeView.displaySymbol(trainer.getTrainsymbol(x).getStrokes());
             objreg = new Recognizer(
                 SymbolLib.Load(ConstantData.ElasticFileString,
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                         txtcontent.setText("Expression: " + recognizedSymbol);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        //maybe use SVM only
+
                     }
                 }
 
@@ -304,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
 
                 /** place icon action here! */
                 writeView.clear();
-                //objreg.ClearRecognitionMemory();
+                objreg.ClearRecognitionMemory();
 
             }
         });

@@ -16,7 +16,7 @@ public class SymbolRecognizer_SVM {
         ArrayList result = new ArrayList();
         SVM_predict sp = new SVM_predict();
         char symbolChar;
-        long startTime = System.currentTimeMillis();
+        //long startTime = System.currentTimeMillis();
         boolean[] validStroke = oneSymbol(_strokeListMemory);
         //Toast.makeText(MainActivity.getAppContext(), "created SVM", Toast.LENGTH_SHORT).show();
 
@@ -31,7 +31,7 @@ public class SymbolRecognizer_SVM {
             }
 
             StrokeList preProcessedStrokeList = PreprocessorSVM.preProcessing(_strokeListLocal);
-            //compare storkelist with each symbol in symbol library _quxi
+            //compare storkelist with each symbol in symbol library
             String featureString = SymbolFeature.getFeature(0, preProcessedStrokeList);
             //Toast.makeText(MainActivity.getAppContext(), "processed and get featured", Toast.LENGTH_SHORT).show();
 

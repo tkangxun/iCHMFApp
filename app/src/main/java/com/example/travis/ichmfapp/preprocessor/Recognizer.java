@@ -525,16 +525,19 @@ public class Recognizer {
 
         //TODO: cannot reg ":"
 
-        long SVMStartTime = System.currentTimeMillis();
+        long symbolStartTime = System.currentTimeMillis();
         //using svm to recognise, get and recognise all 4
         ArrayList mResult = svmRecognizer.recognizing(_strokeListMemory.GetLast4Strokes());
-        long elasticStartTime = System.currentTimeMillis() - SVMStartTime;
-        Toast.makeText(context, "Time after SVM recognition is : " + elasticStartTime , Toast.LENGTH_SHORT).show();
+        long SVMtime = System.currentTimeMillis() - symbolStartTime;
+        Toast.makeText(context, "Time after SVM recognition is : " + SVMtime , Toast.LENGTH_SHORT).show();
         Toast.makeText(context, "Result from SVM: " + mResult, Toast.LENGTH_LONG).show();
         //using elastic match
         mResult = mRecognizer.recognizing(mResult);
-        Toast.makeText(context, "Time after elastic is" + (System.currentTimeMillis() - elasticStartTime), Toast.LENGTH_SHORT).show();
-        //mResult = verifyContext(mResult);
+        long elasticTime = System.currentTimeMillis() - symbolStartTime - SVMtime;
+        Toast.makeText(context, "Time after elastic is : " + elasticTime, Toast.LENGTH_SHORT).show();
+        /**if (!recognizedStringList.isEmpty()){
+            mResult = verifyContext(mResult.get(0), recognizedStringList.get(recognizedStringList.size()-1));
+        */
 
         /// Take the first (with closet similarity distance) character
         /// as recognized symbol.
@@ -544,7 +547,8 @@ public class Recognizer {
         while (i < mResult.size() && !addToList(recognizedChar, mResult, recognizedStringList)) {
             recognizedChar = (RecognizedSymbol) mResult.get(++i);
         }
-        System.out.println("Time after addToList is" + (System.currentTimeMillis() - elasticStartTime));
+        long listTime = System.currentTimeMillis()- symbolStartTime - elasticTime - SVMtime;
+        Toast.makeText(context, "Time after addToList time is : " + listTime, Toast.LENGTH_SHORT).show();
 
         return mResult;
     }

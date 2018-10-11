@@ -58,7 +58,7 @@ public class Trainer{
             Toast.makeText(context, "Symbol not found, try again", Toast.LENGTH_SHORT).show();
             return null;
         }
-        return objSymbolLib.getSymbol(indexes.get(1));
+        return objSymbolLib.getSymbol(indexes.get(0));
     }
 
 

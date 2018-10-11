@@ -36,18 +36,24 @@ public class PreprocessorSVM {
         for (int i = 0; i < _inputStrokeList.size(); i++) {
             pts +=_inputStrokeList.get(i).getTotalStrokePoints();
         }
-        if (pts<10){
+        if (pts<5){
+
             StrokeList dot = new StrokeList();
             Stroke s = new Stroke();
             StrokePoint pt = new StrokePoint(50,50);
             s.addStrokePoint(pt);
             dot.add(s);
 
+
+
             if (_inputStrokeList.size()==2){
-                StrokePoint ptpt = new StrokePoint(50,100);
-                Stroke dotdot = new Stroke();
-                dotdot.addStrokePoint(ptpt);
-                dot.add(dotdot);
+                if (Math.abs(_inputStrokeList.get(0).getStrokePoint(0).X -
+                        _inputStrokeList.get(1).getStrokePoint(0).X) <= 15) {
+                    StrokePoint ptpt = new StrokePoint(50, 150);
+                    Stroke dotdot = new Stroke();
+                    dotdot.addStrokePoint(ptpt);
+                    dot.add(dotdot);
+                }
             }
             return dot;
 
