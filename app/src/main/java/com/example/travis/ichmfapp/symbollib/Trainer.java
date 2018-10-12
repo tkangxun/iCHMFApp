@@ -62,7 +62,6 @@ public class Trainer{
     }
 
 
-    //SVM doesn't require saving button, save when write features
     public void trainSymbolSVM( int index) {
         if (jList1.get(index) == null) {
             return;

@@ -51,7 +51,7 @@ public class ConstantData {
     public static File ElasticFile = new File(mydir + ElasticFileString);
     public static File ElasticFileDefault = new File(mydir + ElasticFileDefaultString);
     //public static String exeDir = parentpath + "\\php\\mathml.exe ";
-    public static boolean doTest = true;
+    public static boolean doTest = false;
 
     public static String getAssest(String filename) {
 

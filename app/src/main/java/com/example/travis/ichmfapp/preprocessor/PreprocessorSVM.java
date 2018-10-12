@@ -44,11 +44,9 @@ public class PreprocessorSVM {
             s.addStrokePoint(pt);
             dot.add(s);
 
-
-
             if (_inputStrokeList.size()==2){
                 if (Math.abs(_inputStrokeList.get(0).getStrokePoint(0).X -
-                        _inputStrokeList.get(1).getStrokePoint(0).X) <= 15) {
+                        _inputStrokeList.get(1).getStrokePoint(0).X) <= 20) {
                     StrokePoint ptpt = new StrokePoint(50, 150);
                     Stroke dotdot = new Stroke();
                     dotdot.addStrokePoint(ptpt);

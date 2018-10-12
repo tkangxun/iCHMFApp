@@ -217,7 +217,6 @@ public class WriteView extends View {
 
     public void addWriteViewListener(WriteViewListener eventListener){
         this.wvlistener = eventListener;
-        //Toast.makeText(MainActivity.getAppContext(), "listener added", Toast.LENGTH_SHORT).show();
     }
 
 

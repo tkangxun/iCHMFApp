@@ -75,7 +75,7 @@ public class SVM_predict {
         }
 
         //sort result class by probability in descending order
-        //havent tested yet
+
         Collections.sort(result, new ByProbability());
         if (result.get(0).getIndex() != v) {
             result.get(0).setIndex((int) v);

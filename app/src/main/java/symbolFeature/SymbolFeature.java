@@ -75,8 +75,10 @@ public class SymbolFeature {
                 dotStrokeCount += 1;
             }
         }
-        angleWithHorizon = new double[symbolPointCount - strokeCount + unusedStroke - dotStrokeCount];
-        turningAngle = new double[angleWithHorizon.length - strokeCount + unusedStroke];
+        angleWithHorizon = new double[symbolPointCount - strokeCount
+        + unusedStroke - dotStrokeCount];
+        turningAngle = new double[angleWithHorizon.length - strokeCount
+                + unusedStroke];
 
         double vectorX, vectorY;
         int indexH = 0;

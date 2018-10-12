@@ -5,7 +5,6 @@ import android.widget.Toast;
 import com.example.travis.ichmfapp.main.MainActivity;
 import com.example.travis.ichmfapp.symbollib.*;
 import java.util.*;
-
 import symbolFeature.*;
 
 //* Created by Travis on 23/8/2018.
@@ -33,7 +32,7 @@ public class SymbolRecognizer_SVM {
             StrokeList preProcessedStrokeList = PreprocessorSVM.preProcessing(_strokeListLocal);
             //compare storkelist with each symbol in symbol library
             String featureString = SymbolFeature.getFeature(0, preProcessedStrokeList);
-            //Toast.makeText(MainActivity.getAppContext(), "processed and get featured", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.getAppContext(),featureString , Toast.LENGTH_SHORT).show();
 
             List<SVMResult> svmResult = sp.run(featureString, 1);
             //System.out.println("For round" + count + " Time after SVM is" + (System.currentTimeMillis() - startTime));
