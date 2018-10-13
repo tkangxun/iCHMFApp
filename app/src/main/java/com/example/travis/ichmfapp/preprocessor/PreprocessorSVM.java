@@ -38,7 +38,7 @@ public class PreprocessorSVM {
         }
         if (pts<5){
 
-            StrokeList dot = new StrokeList();
+            /**StrokeList dot = new StrokeList();
             Stroke s = new Stroke();
             StrokePoint pt = new StrokePoint(50,50);
             s.addStrokePoint(pt);
@@ -53,7 +53,8 @@ public class PreprocessorSVM {
                     dot.add(dotdot);
                 }
             }
-            return dot;
+            return dot;*/
+            return _inputStrokeList;
 
         }
         return normallizePoint(reSampling(smoothing(normalizing(_inputStrokeList))));

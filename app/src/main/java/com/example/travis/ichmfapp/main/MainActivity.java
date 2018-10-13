@@ -97,14 +97,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void StrokeEnd() {
 
-                //Toast.makeText(MainActivity.this, "Getting strokes: " + writeView.getStrokes().size(), Toast.LENGTH_SHORT).show();
+
                 currentstroke = writeView.getLastStroke();
 
                 if (training == false) {
                     try {
                         //objreg might not be initialise
                         recognizedSymbol = objreg.Recognize(currentstroke);
-                        //Toast.makeText(MainActivity.this, recognizedSymbol, Toast.LENGTH_SHORT).show();
                         txtcontent.setText("Expression: " + recognizedSymbol);
                     } catch (Exception e) {
                         e.printStackTrace();

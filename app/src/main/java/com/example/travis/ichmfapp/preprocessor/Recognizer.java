@@ -532,6 +532,28 @@ public class Recognizer {
         Toast.makeText(context, "Time after SVM recognition is : " + SVMtime , Toast.LENGTH_SHORT).show();
         Toast.makeText(context, "Result from SVM: " + mResult, Toast.LENGTH_LONG).show();
         //using elastic match
+/**
+        StrokeList dot = new StrokeList();
+        StrokePoint pt = new StrokePoint(50,50);
+        StrokePoint ptpt = new StrokePoint(50, 150);
+        Stroke dt = new Stroke();
+        Stroke dotdot = new Stroke();
+        dt.addStrokePoint(pt);
+        dotdot.addStrokePoint(ptpt);
+        dot.add(dt);
+        dot.add(dotdot);
+        double x = 0.0;
+        RecognizedSymbol colon = new RecognizedSymbol(':',dot,x);
+        for (int j = 0; recognizedStringList.size()<j; j++){
+            if (recognizedStringList.get(j).getSymbolChar() == '.'){
+                mResult.add(colon);
+                Toast.makeText(context, "added", Toast.LENGTH_SHORT).show();
+            }
+        }
+        mResult.add(colon);
+        Toast.makeText(context, "hello", Toast.LENGTH_SHORT).show();
+
+*/
         mResult = mRecognizer.recognizing(mResult);
         long elasticTime = System.currentTimeMillis() - symbolStartTime - SVMtime;
         Toast.makeText(context, "Time after elastic is : " + elasticTime, Toast.LENGTH_SHORT).show();
@@ -579,7 +601,7 @@ public class Recognizer {
         RecognizedSymbol recognizedChar = (RecognizedSymbol) mResult.get(0);
 
         int i = 0;
-        //do we have to do the add to list here?
+
         while (i < mResult.size() && !addToList(recognizedChar, mResult, recognizedStringList)) {
             recognizedChar = (RecognizedSymbol) mResult.get(++i);
         }

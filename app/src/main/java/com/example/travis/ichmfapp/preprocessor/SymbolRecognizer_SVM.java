@@ -17,12 +17,13 @@ public class SymbolRecognizer_SVM {
         char symbolChar;
         //long startTime = System.currentTimeMillis();
         boolean[] validStroke = oneSymbol(_strokeListMemory);
-        //Toast.makeText(MainActivity.getAppContext(), "created SVM", Toast.LENGTH_SHORT).show();
+
 
         for (int count = _strokeListMemory.size(); count > 0; count--) {
             if (validStroke[count - 1] == false) {
                 continue;
             }
+            //might to add back the stroke, test and check for j
             StrokeList _strokeListLocal = new StrokeList();
             for (int k = 0; k < count; k++) {
                 _strokeListLocal.add(_strokeListMemory.get(
