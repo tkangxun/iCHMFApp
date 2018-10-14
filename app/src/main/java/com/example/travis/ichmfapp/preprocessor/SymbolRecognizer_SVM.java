@@ -32,8 +32,9 @@ public class SymbolRecognizer_SVM {
 
             StrokeList preProcessedStrokeList = PreprocessorSVM.preProcessing(_strokeListLocal);
             //compare storkelist with each symbol in symbol library
+
             String featureString = SymbolFeature.getFeature(0, preProcessedStrokeList);
-            Toast.makeText(MainActivity.getAppContext(),featureString , Toast.LENGTH_SHORT).show();
+            //Toast.makeText(MainActivity.getAppContext(),featureString , Toast.LENGTH_SHORT).show();
 
             List<SVMResult> svmResult = sp.run(featureString, 1);
             //System.out.println("For round" + count + " Time after SVM is" + (System.currentTimeMillis() - startTime));
@@ -67,7 +68,14 @@ public class SymbolRecognizer_SVM {
             case 2:
                 if (!checkStrokeClose(copyArray(strokeNo, 0, 0), copyArray(strokeNo, 1, 1))) {
                     validStroke[0] = true;
-                } else {
+                    /**if (strokeNo[0].getTotalStrokePoints() <= 5 && checkcolon(strokeNo[0],strokeNo[1])){
+                        validStroke[1] = true;
+                    }
+                }else if (strokeNo[0].getTotalStrokePoints() <= 5 && checkcolon(strokeNo[0],strokeNo[1])){
+                    validStroke[0] = true;
+                    validStroke[1] = true;
+                     */
+                }else{
                     if (!intersect(strokeNo[0], strokeNo[1])) {
                         validStroke[0] = true;
                     }
@@ -134,6 +142,12 @@ public class SymbolRecognizer_SVM {
         }
         return newList;
     }
+
+    /**private boolean checkcolon(Stroke s1, Stroke s2){
+        if (Math.abs(s1.getCenter().X -s2.getCenter().X) <= 30){
+            return true;
+         }else return false;
+    }*/
 
     private boolean checkStrokeClose(Stroke[] slist1, Stroke[] slist2) {
         double start1 = 1000;
