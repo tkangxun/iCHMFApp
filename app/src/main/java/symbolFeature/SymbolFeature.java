@@ -1,9 +1,17 @@
 package symbolFeature;
 
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.support.v4.content.ContextCompat;
+import android.widget.Toast;
+
+import com.example.travis.ichmfapp.main.MainActivity;
 import com.example.travis.ichmfapp.symbollib.*;
 
 import java.io.*;
+
+import static com.example.travis.ichmfapp.symbollib.ConstantData.mydir;
 
 public class SymbolFeature {
 
@@ -198,15 +206,32 @@ public class SymbolFeature {
     }
 
     public static void writeFeatures(String featureString) {
+        if (ContextCompat.checkSelfPermission(MainActivity.getAppContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(MainActivity.getAppContext(), "permission denied, please enable it", Toast.LENGTH_SHORT).show();
+        } else{
+            //Toast.makeText(MainActivity.getAppContext(), "permission granted", Toast.LENGTH_SHORT).show();
+        }
+
+        if (!mydir.exists()) {
+            mydir.mkdirs();
+
+            if (!mydir.mkdirs()) {
+                Toast.makeText(MainActivity.getAppContext(), "dir not made", Toast.LENGTH_SHORT).show();
+            }
+        }
+
         try {
-            File file = new File(ConstantData.trainFile);
+            File file = new File(mydir,ConstantData.trainFile);
             FileWriter fstream = new FileWriter(file, file.exists());
             BufferedWriter out = new BufferedWriter(fstream);
             out.write(featureString);
             out.write("\n");
             out.close();
+            //Toast.makeText(MainActivity.getAppContext(), "wrote something", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {//Catch exception if any
-            System.err.println("Error: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

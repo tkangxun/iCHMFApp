@@ -47,7 +47,7 @@ public class SymbolRecognizer {
             //finalDistance2 = distance * Math.pow(10, 1 - recognizedList.get(i).getError());
 
             resultList.add(new RecognizedSymbol(symbolChar, sList, finalDistance));
-            if (ConstantData.doTest) {
+            if (true) {
                 Toast.makeText(MainActivity.getAppContext(), "The symbol " + symbolChar + ". With distance :" + distance + " and Stroke number: " + sList.size() +
                         " and possibility: " + recognizedList.get(i).getError() + " and finalDistance : " + finalDistance, Toast.LENGTH_SHORT).show();
             }

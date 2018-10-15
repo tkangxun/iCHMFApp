@@ -11,6 +11,8 @@
 
     <EditText
         android:id="@+id/editTextDialogUserInput"
+        android:digits="\0123456789UABCDEFuabcdef"
+        android:inputType="textNoSuggestions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 

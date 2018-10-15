@@ -10,29 +10,18 @@
 
     <com.example.travis.ichmfapp.main.WriteView
         android:id="@+id/writeView"
-        app:layout_constraintTop_toBottomOf="@id/button4"
+        app:layout_constraintTop_toBottomOf="@id/svm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        app:layout_constraintBottom_toBottomOf="@id/button4"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="parent"/>
-
-    <TextView
-        android:id="@+id/tv1"
+        android:id="@+id/result"
         android:textSize="30sp"
         android:textColor="#000"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/simpleswitch"/>
 
     <Switch
         android:id="@+id/simpleswitch"
@@ -45,7 +34,7 @@
         android:thumbTint="@color/colorPrimary" />
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/train"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -54,7 +43,7 @@
         android:textStyle="bold"
         android:thumbTint="@color/colorPrimary" />
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -62,23 +51,33 @@
         android:textSize="15sp"
         android:textStyle="bold"
         android:thumbTint="@color/colorPrimary" />
-
+<!--
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintLeft_toRightOf="@id/button1"
+        app:layout_constraintLeft_toRightOf="@id/train"
         android:text="Add Symbol"
         android:textSize="15sp"
         android:textStyle="bold"
         android:thumbTint="@color/colorPrimary" />
-
+-->
     <Button
-        android:id="@+id/button4"
+        android:id="@+id/remove"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintLeft_toRightOf="@id/button2"
+        app:layout_constraintLeft_toRightOf="@id/train"
         android:text="Remove sbl"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:thumbTint="@color/colorPrimary" />
+    <Button
+        android:id="@+id/svm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/train"
+        android:text="SVM"
         android:textSize="15sp"
         android:textStyle="bold"
         android:thumbTint="@color/colorPrimary" />

@@ -91,9 +91,8 @@ public class SVM_predict {
         int predict_probability = probability;
         List<SVMResult> result = new ArrayList();
         try {
-            //BufferedReader input = new BufferedReader(new FileReader(argv[i]));
-            //DataOutputStream output = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(argv[i+2])));
             svm_model model = svm.svm_load_model(model_file_name);
+
             if (predict_probability == 1) {
                 if (svm.svm_check_probability_model(model) == 0) {
                     System.err.print("Model does not support probabiliy estimates\n");

@@ -75,7 +75,7 @@ public class StructuralAnalyser {
         _tempExpressionTree = rawExpressionTree;
 
         /**
-         * For each item (RecognizedSymbol) in givne list,
+         * For each item (RecognizedSymbol) in given list,
          * tag them with their specific index.
          * The sequence of th index is the writing sequence of
          * symbols (i.e the recognized sequence of symbols).
@@ -171,8 +171,8 @@ public class StructuralAnalyser {
      */
     private Element createSymbolNode(RecognizedSymbol recSymbol, Document xmlDoc) {
         Element node = xmlDoc.createElement("symbolnode");
-        node.setAttribute("identity", recSymbol.getSymbolCharString());
-        node.setAttribute("id", String.valueOf(recSymbol.getId()));
+        node.setAttribute("identity", recSymbol.getSymbolCharString()); //set symbol char
+        node.setAttribute("id", String.valueOf(recSymbol.getId()));   //set id
 
         String[] positions = {"presuperscript",
                 "above", "superscript", "row", "subscript", "below",
@@ -1054,13 +1054,13 @@ public class StructuralAnalyser {
         Box rec = recgSymbol.getBox();
 
         /**
-         * [1] For chracter b,d,h,k,l and 0-9 and capital letters
+         * [1] For character b,d,h,k,l and 0-9 and capital letters
          * take x=0.5 and y=0.65 location. A little lower for Y.
          * [2] For character f,g,j,p,d,q,y take x=0.5 and y=0.35,
          * litter higher for Y.
-         * [3] For character i and t, take x = 0.5, y = 0.575, Y amost to 0.6.
-         * [4] For rest of the chracters, take the most centers relative to
-         * widht and height.
+         * [3] For character i and t, take x = 0.5, y = 0.575, Y almost to 0.6.
+         * [4] For rest of the characters, take the most centers relative to
+         * width and height.
          */
         if (SymbolClassifier.inArray(recgSymbol.getSymbolCharString(), array1) || Character.isDigit(recgSymbol.getSymbolCharString().charAt(0)) || Character.isUpperCase(recgSymbol.getSymbolChar())) {
             center = new StrokePoint((int) (rec.getX() + 0.5 * rec.getWidth()),

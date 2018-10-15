@@ -9,6 +9,8 @@ import com.example.travis.ichmfapp.preprocessor.PreprocessorSVM;
 import com.example.travis.ichmfapp.preprocessor.SymbolRecognizer_SVM;
 
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import symbolFeature.*;
@@ -61,22 +63,6 @@ public class Trainer{
         return objSymbolLib.getSymbol(indexes.get(0));
     }
 
-
-    public void trainSymbolSVM( int index) {
-        if (jList1.get(index) == null) {
-            return;
-        }
-        Symbol sbl = (Symbol) jList1.get(index);
-        if (SymbolRecognizer_SVM.checkStrokeNO(sbl.getSymbolCharDecimal(), sbl.getStrokes().size())) {
-
-            SymbolFeature.writeFeatures(SymbolFeature.getFeature(sbl.getSymbolCharDecimal(), sbl.getStrokes()));
-
-            Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(context, "Invalid Stroke Number", Toast.LENGTH_SHORT).show();
-        }
-    }
-
     public void generateDefaultSetElastic() {
 
         fileSymbolLib = ConstantData.ElasticFileDefaultString;
@@ -91,7 +77,11 @@ public class Trainer{
         } catch (Exception ex) {
             ex.printStackTrace();
             }
+
         }
+
+
+
 
 
     public  void openSymbolLib() throws Exception{
@@ -132,23 +122,17 @@ public class Trainer{
             return;
         }
 
-        int unicode = ((int)sym);
+        int unicode = ((int) sym);
         List<Integer> indexes = objSymbolLib.findSymbol(unicode);
-        if (indexes.size() == 0){
+        if (indexes.size() == 0) {
             Toast.makeText(context, "Symbol not found, try again", Toast.LENGTH_SHORT).show();
             return;
         }
         StrokeList empty = new StrokeList();
-        for (int i = 0; i< indexes.size(); i++){
+        for (int i = 0; i < indexes.size(); i++) {
             objSymbolLib.getSymbol(indexes.get(i)).setStrokes(empty);
         }
         Toast.makeText(context, "symbol strokes have been removed from : " + indexes, Toast.LENGTH_SHORT).show();
-
-
-
-
-
-
     }
 
     public void addElasticSymbol(char sym, StrokeList strokes){
@@ -175,11 +159,14 @@ public class Trainer{
 
     // adds a brand new symbol apart from the default list
     public void addSymbol(char sym) {
-        if (objSymbolLib == null) {
+
+        int unicode = ((int)sym);
+        List<Integer> indexes = objSymbolLib.findSymbol(unicode);
+        if (indexes.size() == 0){
+            Toast.makeText(context, "Symbol not found, try again", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        int unicode = ((int)sym);
         if (sym != 0) {
             try {
                 Symbol sbl = new Symbol(SymbolLib.getHexToChar(unicode));
@@ -195,18 +182,36 @@ public class Trainer{
 
 
 
-    /**private void trainSymbolSVM() {
-        if (jList1.getSelectedValue() == null) {
+    public void trainSymbolSVM(char sym, StrokeList strokes) {
+
+        SymbolLib elastic = this.objSymbolLib;
+        generateDefaultSetSVM();
+
+        int unicode = ((int)sym);
+
+        List<Integer> indexes = objSymbolLib.findSymbol(unicode);
+        if (indexes.size() == 0){
+            Toast.makeText(context, "Symbol not found, try again", Toast.LENGTH_SHORT).show();
+            this.objSymbolLib = elastic;
             return;
         }
-        Symbol sbl = (Symbol) jList1.getSelectedValue();
+        Symbol sbl = new Symbol(sym);
+        sbl.setStrokes(strokes);
+
         if (SymbolRecognizer_SVM.checkStrokeNO(sbl.getSymbolCharDecimal(), sbl.getStrokes().size())) {
             SymbolFeature.writeFeatures(SymbolFeature.getFeature(sbl.getSymbolCharDecimal(), sbl.getStrokes()));
-            this.jLabel4.setText("Success");
+            Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
         } else {
-            jLabel4.setText("Invalid Stroke Number");
+            Toast.makeText(context, "invalid number of strokes", Toast.LENGTH_SHORT).show();
         }
-    }*/
+
+        //set back symbol library
+        this.objSymbolLib =elastic;
+
+        //create new svm file base on new symbol input
+        SVM_train svm = new SVM_train();
+        svm.run();
+    }
 
 
 

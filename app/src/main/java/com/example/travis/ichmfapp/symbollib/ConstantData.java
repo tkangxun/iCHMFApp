@@ -31,26 +31,22 @@ public class ConstantData {
     public ConstantData() {
 
     }
-
-
-    //To save files in external storage
+    //To save files in internal storage
     static String root = Environment.getExternalStorageDirectory().toString();
-    static File mydir = new File (root + "/iCHMF/");
-
-
+    public static File mydir = new File (root + "/iCHMF/");
 
     //These strings are use to read files from the assets folder
     public static String trainFile = "sample.dat";
     public static String modelFile = "model.dat";
 
-
+    //created files are read from internal storage
     public static String ElasticFileString = "/elastic.dat";
     public static String ElasticFileDefaultString = "/elasticDefault.dat";
 
 
     public static File ElasticFile = new File(mydir + ElasticFileString);
     public static File ElasticFileDefault = new File(mydir + ElasticFileDefaultString);
-    //public static String exeDir = parentpath + "\\php\\mathml.exe ";
+
     public static boolean doTest = false;
 
     public static String getAssest(String filename) {

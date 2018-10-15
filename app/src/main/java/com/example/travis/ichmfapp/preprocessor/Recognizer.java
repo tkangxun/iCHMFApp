@@ -527,15 +527,14 @@ public class Recognizer {
 
         long symbolStartTime = System.currentTimeMillis();
         //using svm to recognise, get and recognise all 4
-        ArrayList mResult = svmRecognizer.recognizing(_strokeListMemory.GetLast4Strokes());
+        ArrayList svmResult = svmRecognizer.recognizing(_strokeListMemory.GetLast4Strokes());
         long SVMtime = System.currentTimeMillis() - symbolStartTime;
-        Toast.makeText(context, "Time after SVM recognition is : " + SVMtime , Toast.LENGTH_SHORT).show();
-        Toast.makeText(context, "Result from SVM: " + mResult, Toast.LENGTH_LONG).show();
+
         //using elastic match
 
-        mResult = mRecognizer.recognizing(mResult);
+        ArrayList mResult = mRecognizer.recognizing(svmResult);
         long elasticTime = System.currentTimeMillis() - symbolStartTime - SVMtime;
-        Toast.makeText(context, "Time after elastic is : " + elasticTime, Toast.LENGTH_SHORT).show();
+
         /**if (!recognizedStringList.isEmpty()){
             mResult = verifyContext(mResult.get(0), recognizedStringList.get(recognizedStringList.size()-1));
         */
@@ -549,7 +548,15 @@ public class Recognizer {
             recognizedChar = (RecognizedSymbol) mResult.get(++i);
         }
         long listTime = System.currentTimeMillis()- symbolStartTime - elasticTime - SVMtime;
-        Toast.makeText(context, "Time after addToList time is : " + listTime, Toast.LENGTH_SHORT).show();
+
+        Toast.makeText(context,
+                "Time after SVM recognition is : " + SVMtime + "\n"
+                        + "Result from SVM: " + svmResult + "\n"
+                        + "----------------------------------\n"
+                        + "Time after elastic is : " + elasticTime + "\n"
+                        + "Result from elastic: " + mResult + "\n"
+                        + "----------------------------------\n"
+                        + "Time after addToList time is : " + listTime,Toast.LENGTH_LONG).show();
 
         return mResult;
     }
