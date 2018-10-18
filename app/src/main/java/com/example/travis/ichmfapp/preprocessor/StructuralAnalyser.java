@@ -27,7 +27,6 @@ public class StructuralAnalyser {
     public static final byte ABOVE = 1;
     public static final byte SUPER_SCRIPT = 2;
     public static final byte ROW = 3;
-    //added by quxi 2009.09.01
     public static final byte ROW_BEFORE = -3;
     public static final byte SUB_SCRIPT = 4;
     public static final byte BELOW = 5;
@@ -35,33 +34,29 @@ public class StructuralAnalyser {
     public static final byte ROW2 = 7;
     public static final byte INSIDE = 8;
     private Document _tempExpressionTree;
-    //added by quxi 2009.08.27
+
     List<Baseline> baseLine;
-    //added by quxi 2009.09.07
+
     boolean fracHandling;
     int sqrtHandling;
     static boolean matrixHandling;
-    //added by quxi2009.09.20
+
     //tell if the formula is a matrix or an normal equation
     boolean matrixFound;
     static double elementDistance = 0;
-    // </editor-fold>
 
-    // <editor-fold defaultstate="collapsed" desc="Constructors">
     /**
      * Default constructor for Structural Analyzer.
      */
     public StructuralAnalyser(List<Baseline> baseLine) {
-        //added by quxi 2009.08.27
+
         this.baseLine = baseLine;
         fracHandling = false;
         sqrtHandling = -1;
         matrixFound = false;
         matrixHandling = false;
     }
-    // </editor-fold>
 
-    // <editor-fold defaultstate="collapsed" desc="Public Methods">
     /**
      * The main method to perform the structural analysis.
      * @param recognizedSymbolList The list of recognized symbols.
@@ -82,8 +77,6 @@ public class StructuralAnalyser {
          */
         for (int i = 0; i < recognizedSymbolList.size(); i++) {
             ((RecognizedSymbol) recognizedSymbolList.get(i)).setId(i);
-            // get recognized symbol info -- quxi
-            //int x =recognizedSymbolList.get(i).getBox().x;
         }
 
         RecognizedSymbol lastRecSymbol = (RecognizedSymbol) recognizedSymbolList.get(recognizedSymbolList.size() - 1);
@@ -94,8 +87,8 @@ public class StructuralAnalyser {
         // under Root node.
         // [2] Remove any existing nodes in given tree, to rebuild new one.
         // [3] Add newly created Root to the tree.
-        // In case RecognizedSymbol list contains more than ONE item
-        // get
+        // In case RecognizedSymbol list contains more than ONE item dobaseline
+
         if (recognizedSymbolList.size() == 1) {
 
 
@@ -125,7 +118,6 @@ public class StructuralAnalyser {
         } else {
             RecognizedSymbol secondLastRecSymbol = (RecognizedSymbol) recognizedSymbolList.get(recognizedSymbolList.size() - 2);
 
-            //uncommented by quxi
             if (ConstantData.doTest) {
                 System.out.println("        -BEFORE TREE");
                 visualizeTree((Element) rawExpressionTree.getFirstChild(), "");
@@ -137,14 +129,14 @@ public class StructuralAnalyser {
             doBaseLine(recognizedSymbolList, lastRecSymbol, rawExpressionTree);
             //success = doAnalyse(secondLastRecSymbol, lastRecSymbol, recognizedSymbolList, rawExpressionTree);
 
-            //uncommented by quxi
+
             if (ConstantData.doTest) {
                 System.out.println("        -AFTER TREE");
                 visualizeTree((Element) rawExpressionTree.getFirstChild(), "");
                 System.out.println("        -AFTER TREE");
             }
 
-             if (!success) {// Do correctionF
+             if (!success) {// Do correction
                 int pos = boundingBoxDetermination(secondLastRecSymbol, lastRecSymbol);
                 int newPos = doCorrection(secondLastRecSymbol, pos);
                 if (newPos == 3) {
@@ -161,8 +153,6 @@ public class StructuralAnalyser {
         }
     }
 
-    // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="Private Methods">
     private void visualizeTree(Element startNode, String padding) {
         System.out.println(padding + startNode.getAttribute("id") + " " + startNode.getNodeName() + "( " + startNode.getAttribute("identity") + " )" + "[ " + startNode.getAttribute("type") + " ]");
 
@@ -201,12 +191,11 @@ public class StructuralAnalyser {
         return node;
     }
 
-    //added by quxi 2009.09.08
+
     //set baseLine after clear
     public void setBaseLine(List<Baseline> baseLineList) {
         this.baseLine = baseLineList;
     }
-    //added by quxi 2009.08.27
     //detect baseline for recognized sybmbols
 
     public void resetFlags() {
@@ -229,7 +218,7 @@ public class StructuralAnalyser {
                 if (checkSameLine(recognizedSymbolList, lastRecSymbol, closestSymbol)) {
                     Node symbolParentNode = baseLine.get(i).getSymbol().getNode().getParentNode(); //equation node
                     if (symbolParentNode.getNodeName().equals("matrixOB")) {
-                        //need to write a method to solve this quxi 2009.09.15
+                        //need to write a method to solve this
                         symbolParentNode = symbolParentNode.getParentNode().getParentNode();
                     }
 
@@ -271,7 +260,6 @@ public class StructuralAnalyser {
                     testRow = true;
                     baseLine.get(i).addSymbol(lastRecSymbol);
 
-                    //added by quxi 2009.09.08
                     //handle matrix element added in existing row
                     if (matrixHandling == true && (closestSymbol.getNode().getParentNode().getParentNode().getNodeName().equals("matrixrow") || closestSymbol.getNode().getParentNode().getNodeName().equals("matrixOB"))) {
                         if (SymbolClassifier.oneExpression(pos, closestSymbol, lastRecSymbol)) { //existing element entry
@@ -284,7 +272,7 @@ public class StructuralAnalyser {
                             Node newCloseBraceNode = rawExpressionTree.createElement("matrixCB");
                             refMatrixRoot.appendChild(newCloseBraceNode);
                             newCloseBraceNode.appendChild(newLastRecSymbolNode);
-                            //added by quxi
+
                             //if the equation is not a matrix
                             if (!matrixFound) {
                                 Node parentNodeOfMatrix = newCloseBraceNode.getParentNode().getParentNode();
@@ -357,11 +345,11 @@ public class StructuralAnalyser {
             int pos = boundingBoxDetermination(relatedSymbol, lastRecSymbol);
             //if (SymbolClassifier.oneExpression(pos, relatedSymbol, lastRecSymbol) || matrixHandling) {
             //if (rightPos(relatedSymbol, lastRecSymbol, recognizedSymbolList)) {
-            //added by quxi 2009.09.07
+
             //handle fraction
             if ((pos == 5) && lastRecSymbol.getSymbolChar() == '\u2212') {
                 fracHandling = true;
-                //added by quxi 2009.09.12
+
                 //handle complex numerator, e.g. a2
                 Node parentOfRelatedSymbol = relatedSymbol.getNode().getParentNode();
                 while (!parentOfRelatedSymbol.getNodeName().equals("rootequation")) {
@@ -424,7 +412,7 @@ public class StructuralAnalyser {
 
                 //append to expression tree
                 eqNodeOf2ndLastSymbol.appendChild(matrixRoot);
-            } //added by quxi 2009.09.09
+            }
             //handle new matrix row
             else if ((pos == BELOW || pos == PRE_SUB_SCRIPT) && matrixHandling && !SymbolClassifier.oneExpression(pos, relatedSymbol, lastRecSymbol)) {
                 Node refMatrixRoot = relatedSymbol.getNode().getParentNode().getParentNode().getParentNode();
@@ -440,9 +428,8 @@ public class StructuralAnalyser {
                 refMatrixRoot.appendChild(newMatrixRow);
             } //normal case
             else {
+                //remove "?"
                 Node equation = relatedSymbol.getNode().getChildNodes().item(pos);
-                //added by quxi 2009.09.08
-                //still have bugs, remove the ? symbol
                 if (equation.hasChildNodes() && ((Element) (equation.getFirstChild())).getAttribute("attribute").equals("")) {
                     equation.removeChild(equation.getFirstChild());
                 }
@@ -456,7 +443,7 @@ public class StructuralAnalyser {
     }
     // ArrayList ancestorList = getAncestor(secondLastRecSymbol.getNode());
 
-    //added by quxi 2009.09.11
+
     //return relatedSymbol of lastRecSymbol
     private RecognizedSymbol findRelatedSymbol(List<RecognizedSymbol> recognizedSymbolList, RecognizedSymbol lastRecSymbol) {
         RecognizedSymbol closestSymbol = (RecognizedSymbol) (findClosest(recognizedSymbolList, lastRecSymbol));
@@ -540,7 +527,7 @@ public class StructuralAnalyser {
         }
         return mstSymbols.get(0);
     }
-    //added by quxi 2009.09.15
+
     //get set the distance between 2 matrix element
 
     protected static double getMatrixElementDistance() {
@@ -555,7 +542,7 @@ public class StructuralAnalyser {
         return matrixHandling;
     }
 
-    //added by quxi 2009.09.15
+
     //return 1st matrix element of the row
     private RecognizedSymbol get1stElement(List<RecognizedSymbol> list, RecognizedSymbol symbol) {
         Node parentNode = symbol.getNode().getParentNode().getParentNode();
@@ -576,7 +563,7 @@ public class StructuralAnalyser {
         return null;
     }
 
-    //added by quxi 2009.09.15
+
     //return parent symbol node
     private Node findParentNode(RecognizedSymbol symbol) {
         Node temp = symbol.getNode().getParentNode();
@@ -589,7 +576,7 @@ public class StructuralAnalyser {
         return null;
     }
 
-    //added by quxi 2009.09.01
+
     //verify if the 2 symbols that in row relations are in the same baseLine
     private boolean checkSameLine(List<RecognizedSymbol> symbolList, RecognizedSymbol lastRecSymbol, RecognizedSymbol baseLineSymbol) {
         Node tempNode = baseLineSymbol.getNode();
@@ -636,7 +623,7 @@ public class StructuralAnalyser {
             return false;
         }
     }
-    //added by quxi 2009.09.16
+
     //check if the last symbol and closest symbol intersect with other symbols
 
     private boolean checkIntersect(List<RecognizedSymbol> symbolList, RecognizedSymbol lastRecSymbol, RecognizedSymbol baseLineSymbol) {
@@ -654,7 +641,7 @@ public class StructuralAnalyser {
         return false;
     }
 
-    //added by quxi 2009.09.01
+
     //find the next node that in the same baseLine
     private Node findRightNode(List<RecognizedSymbol> symbolList, RecognizedSymbol closeSymbol, RecognizedSymbol last) {
         int count = 0;
@@ -671,7 +658,7 @@ public class StructuralAnalyser {
         }
     }
 
-    //added by quxi 2009.08.27
+
     //find the closest symbol of the last recognized symbol
     private RecognizedSymbol findClosest(List<RecognizedSymbol> symbolList, RecognizedSymbol Last) {
         RecognizedSymbol closestSymbol = symbolList.get(0);
@@ -689,7 +676,7 @@ public class StructuralAnalyser {
         return closestSymbol;
     }
 
-    //added by quxi 2009.09.11
+
 //return the distance between 2 symbols based on symbol border
     private double getDistance(RecognizedSymbol symbolA, RecognizedSymbol lastSymbol) {
         Box aR = symbolA.getBox();
@@ -758,7 +745,7 @@ public class StructuralAnalyser {
         }
     }
 
-    //added by quxi 2009.08.28
+
     private int boundingBoxDeterminationForShortSymbol(RecognizedSymbol secondLastRecSymbol, RecognizedSymbol lastRecSymbol) {
         Box lastBBox = lastRecSymbol.getBox();
         StrokePoint lastCenter = center(lastRecSymbol);
@@ -905,8 +892,8 @@ public class StructuralAnalyser {
 
     }
 
-    //added by quxi 2009.08.28
-//get all the recognizedSymbols on the same baseLine
+
+    //get all the recognizedSymbols on the same baseLine
     private List<RecognizedSymbol> findBaseLineSymbols(Node nodeL) {
         for (int i = 0; i < baseLine.size(); i++) {
             List<RecognizedSymbol> symbolList = baseLine.get(i).getSymbolList();
@@ -919,17 +906,17 @@ public class StructuralAnalyser {
         return null;
     }
 
-    //added by quxi 2009.08.28
-//get RecognizedSymbol based on the node
+
+    //get RecognizedSymbol based on the node
     private RecognizedSymbol getSymbolFromNode(List<RecognizedSymbol> symbolList, Node node) {
         String id = ((Element) (node)).getAttribute("id");
         return (RecognizedSymbol) symbolList.get(Integer.parseInt(id));
     }
 
-    //added by quxi 2009.08.31
-//find out the MST for the recognizedSymbol
-//1. Directed connected symbols.
-//2. Symbols that next to connected Symbols and angle between them and lastSymbol is less than 90
+
+    //find out the MST for the recognizedSymbol
+    //1. Directed connected symbols.
+    //2. Symbols that next to connected Symbols and angle between them and lastSymbol is less than 90
     public List<RecognizedSymbol> findMSTSymbols(List<RecognizedSymbol> symbolList, RecognizedSymbol last) {
         int symbolNO = symbolList.size();
         double d;
@@ -1024,8 +1011,8 @@ public class StructuralAnalyser {
         return connectedSymbols;
     }
 
-    //added by quxi 2009.08.30
-//find out the RecognizedSymbol based on its center
+
+    //find out the RecognizedSymbol based on its center
     private boolean calcDegree(RecognizedSymbol temp, RecognizedSymbol center, RecognizedSymbol last) {
         StrokePoint tempP = center(temp);
         StrokePoint centerP = center(center);
@@ -1043,7 +1030,7 @@ public class StructuralAnalyser {
         }
     }
 
-    //added by quxi 2009.08.30
+
     //find out the RecognizedSymbol based on its center
     private RecognizedSymbol getSymbolsFromCenter(List<RecognizedSymbol> symbolList, StrokePoint sp) {
         int i = 0;
@@ -1095,53 +1082,6 @@ public class StructuralAnalyser {
         }
         return false;
     }
-    /**
-     * To decide the center point of recognized symbol based on
-     * it's bounding box. But determiniation depends on the specific
-     * chracacter of the recogznized symbol.
-     * @param recgSymbol The recognized symbol to find center point
-     * @return StrokePoint representng center of recognized symbol.
-     * @see RecognizedSymbol
-     * @see StrokePoint
-
-    private StrokePoint center(RecognizedSymbol recgSymbol) {
-        String[] array1 = {"b", "d", "h", "k", "l"};
-        String[] array2 = {"f", "g", "j", "p", "q", "y", String.valueOf('\u03B3')};
-        String[] array3 = {"i", "t"};
-
-        StrokePoint center;
-
-        Box rec = recgSymbol.getBox();
-
-        /**
-         * [1] For character b,d,h,k,l and 0-9 and capital letters
-         * take x=0.5 and y=0.65 location. A little lower for Y.
-         * [2] For character f,g,j,p,d,q,y take x=0.5 and y=0.35,
-         * litter higher for Y.
-         * [3] For character i and t, take x = 0.5, y = 0.575, Y almost to 0.6.
-         * [4] For rest of the characters, take the most centers relative to
-         * width and height.
-
-        if (SymbolClassifier.inArray(recgSymbol.getSymbolCharString(), array1) || Character.isDigit(recgSymbol.getSymbolCharString().charAt(0)) || Character.isUpperCase(recgSymbol.getSymbolChar())) {
-            center = new StrokePoint((int) (rec.getX() + 0.5 * rec.getWidth()),
-                    (int) (rec.getY() + 0.65 * rec.getHeight()));
-        } else if (SymbolClassifier.inArray(recgSymbol.getSymbolCharString(), array2)) {
-            center = new StrokePoint((int) (rec.getX() + 0.5 * rec.getWidth()),
-                    (int) (rec.getY() + 0.35 * rec.getHeight()));
-        } else if (SymbolClassifier.inArray(recgSymbol.getSymbolCharString(), array3)) {
-            center = new StrokePoint((int) (rec.getX() + 0.5 * rec.getWidth()),
-                    (int) (rec.getY() + 0.575 * rec.getHeight()));
-        } //added by quxi 2009.09.09
-        //center of sqrt should be at the left side hook part
-        else if (((String) (recgSymbol.getSymbolCharString())).equals(String.valueOf('\u221A'))) {
-            center = new StrokePoint((int) (rec.getX() + 0.1 * rec.getWidth()),
-                    (int) (rec.getY() + 0.5 * rec.getHeight()));
-        } else {
-            center = new StrokePoint((int) (rec.getX() + 0.5 * rec.getWidth()),
-                    (int) (rec.getY() + 0.5 * rec.getHeight()));
-        }
-        return center;
-    }*/
 
     private StrokePoint center(RecognizedSymbol recgSymbol) {
         String[] array1 = {"t","f", "b", "d", "h", "k", "l"};
@@ -1241,7 +1181,7 @@ public class StructuralAnalyser {
         }
     }
 
-    //added by quxi 2009.09.04
+
     //overload the rightPos function, a modified version
     private Boolean rightPos(RecognizedSymbol c, RecognizedSymbol last, int p) {
         if (p == 3) {
@@ -1251,7 +1191,7 @@ public class StructuralAnalyser {
                 return true;
             } else if (SymbolClassifier.checkPosClass(last.getSymbolCharString(), p)) {
                 return true;
-            } //added by quxi 2009.09.09 -- to handle matrix
+            } //-- to handle matrix
             else if (matrixHandling && p == 5) {
                 return true;
             } else {

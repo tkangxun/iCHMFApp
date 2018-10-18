@@ -12,19 +12,14 @@ import com.example.travis.ichmfapp.symbollib.Stroke;
 
 public class PreprocessorSVM {
 
-    // <editor-fold defaultstate="collapsed" desc="Private variables">
+
     private static int thresHold = 5;
     private static int desiredPointNum = 50;
     private static int closePoint = 20;
     private static Box standardRec = new Box(0, 0, 100, 100);
-    // </editor-fold>
 
-    // <editor-fold defaultstate="collapsed" desc="Constructor">
-    public PreprocessorSVM() {
-    }
-    // </editor-fold>
 
-    // <editor-fold defaultstate="collapsed" desc="Public Methods">
+    public PreprocessorSVM() {}
     /**
      * The wrapper method to call the series of pre-processing steps.
      * @param _inputStrokeList StrokeList to be processed.
@@ -36,6 +31,7 @@ public class PreprocessorSVM {
         for (int i = 0; i < _inputStrokeList.size(); i++) {
             pts +=_inputStrokeList.get(i).getTotalStrokePoints();
         }
+
         if (pts<5){
 
             StrokeList dot = new StrokeList();
@@ -82,8 +78,6 @@ public class PreprocessorSVM {
         }
     }
 
-    // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="Private Methods">
     /**
      * Resample each stroke in given list to have averagely same
      * distance between the stroke points.
@@ -295,5 +289,5 @@ public class PreprocessorSVM {
     private static double distance(StrokePoint p1, StrokePoint p2) {
         return Math.sqrt((p1.X - p2.X) * (p1.X - p2.X) + (p1.Y - p2.Y) * (p1.Y - p2.Y));
     }
-    // </editor-fold>
+
 }

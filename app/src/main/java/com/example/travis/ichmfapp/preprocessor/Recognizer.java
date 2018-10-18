@@ -50,7 +50,7 @@ public class Recognizer {
      * (NOT MATH EXPRESSION) based on the trained symbol library.
      */
     SymbolRecognizer _manualRecognizer;
-    //added by quxi 2009.12.22
+
     SymbolRecognizer_SVM _svmRecognizer;
     /**
      * The object which is responbislbe for analyzing the symbol relations
@@ -78,7 +78,7 @@ public class Recognizer {
      * Document builder object to create XML document.
      */
     DocumentBuilder xmlDocBuilder;
-    //added by quxi 2009.09.01
+
     List<Baseline> baseLineList;
     //MapleConnection mapleConn;
     // </editor-fold>
@@ -87,11 +87,8 @@ public class Recognizer {
      * @param theLibrary SymbolLib object with loaded symbol library.
      */
     public Recognizer(SymbolLib theLibrary) {
-        //added by quxi 2009.09.01
         baseLineList = new ArrayList();
         _symbolLib = theLibrary;
-
-
         objDocumentBuilderFactory = DocumentBuilderFactory.newInstance();
         //mapleConn = new MapleConnection();
         try {
@@ -103,7 +100,6 @@ public class Recognizer {
 
     }
 
-    // <editor-fold defaultstate="collapsed" desc="Public Methods">
     /**
      * Retrieve the candidate list of symbols arrange
      * in ascending order of recognition error rate.
@@ -118,7 +114,6 @@ public class Recognizer {
      * in ascending order of recognition error rate.
      * @return List of RecognizedSymbol objects.
      */
-
     public List<RecognizedSymbol> getRecognizedSymboList() {
         return _aryLMemoryRecognizedString;
     }
@@ -161,8 +156,6 @@ public class Recognizer {
 
         /// Initialize expression tree, if not yet been done so
         /// and create a Method wide local reference object.
-
-
         if (_rawExpressionTree == null) {
             _rawExpressionTree = xmlDocBuilder.newDocument();
             _rawExpressionTree.appendChild(_rawExpressionTree.createElement("root"));
@@ -261,7 +254,6 @@ public class Recognizer {
         }
 
         int affectedSymbolCount = 0, count = 0;
-        //added by quxi 2009.12.27
         baseLineList.removeAll(baseLineList);
         _structuralAnalyser.resetFlags();
 
@@ -309,7 +301,6 @@ public class Recognizer {
         RecognizedSymbol rc = (RecognizedSymbol) (_aryLMemoryRecognizedString.get(_aryLMemoryRecognizedString.size() - 1));
         _aryLMemoryRecognizedString.remove(_aryLMemoryRecognizedString.size() - 1);
 
-        //added by quxi 2009.12.27
         baseLineList.removeAll(baseLineList);
         _structuralAnalyser.resetFlags();
 
@@ -429,7 +420,6 @@ public class Recognizer {
                 node.getParentNode().removeChild(node);
 
             }
-            //added by quxi 2009.09.01
             //update the baseLine symbols
             for (int i = 0; i < baseLineList.size(); i++) {
                 List<RecognizedSymbol> symbolList = baseLineList.get(i).getSymbolList();
@@ -444,7 +434,7 @@ public class Recognizer {
                 }
             }
         }
-        //added by quxi 2009.12.29
+
         while (strokes < 1) {
             List<Stroke> tempStrokeList1 = _strokeListMemory.subList(0,
                     _strokeListMemory.size() - recognizedChar.getNumberOfStrokes() + strokes);
@@ -457,7 +447,6 @@ public class Recognizer {
             strokes++;
         }
 
-        //modified by quxi 2009.12.29
 
         if (list.size() == 0 || verifyContext(recognizedChar, (RecognizedSymbol) list.get(list.size() - 1))) {
             RecognizedSymbol pre = new RecognizedSymbol('0');
@@ -476,8 +465,6 @@ public class Recognizer {
 
     }
 
-
-    //added by quxi 2010.1.15
     //check if the symbol is similar symbol and choose the correct one
     private RecognizedSymbol checkSimilarSymbols(RecognizedSymbol recognizedChar, RecognizedSymbol previous, List<RecognizedSymbol> candidate) {
         char lastChar = recognizedChar.getSymbolChar();
@@ -530,7 +517,6 @@ public class Recognizer {
             List<RecognizedSymbol> recognizedStringList,
             SymbolRecognizer mRecognizer, SymbolRecognizer_SVM svmRecognizer) throws Exception {
 
-        //TODO: cannot reg ":", remove colon
 
         long symbolStartTime = System.currentTimeMillis();
         //using svm to recognise, get and recognise all 4
@@ -601,8 +587,6 @@ public class Recognizer {
         return mResult;
     }
 
-
-    //added by quxi 2009.12.29
     private boolean verifyContext(RecognizedSymbol result, RecognizedSymbol last) {
         int pos = _structuralAnalyser.boundingBoxDetermination(last, result);
         return SymbolClassifier.checkContext(pos, last, result);
@@ -637,8 +621,6 @@ public class Recognizer {
         }
         return null;
      }
-
-
 
     /**private String asciiToMathMl(String formula) {
         Process p = null;
@@ -680,7 +662,6 @@ public class Recognizer {
         }
         return -1;
     }
-    //added by quxi 2010.
 
     private String treeToascii(Node rootEquationNode) {
         String asciiString = "";
@@ -844,23 +825,6 @@ public class Recognizer {
                 node = node.getNextSibling();
             }
         }
-/**
-        //added by quxi 2010.1.10 --computation engine
-        if (asciiString.length() > 1 && asciiString.charAt(asciiString.length() - 1) == '=') {
-            String mapleCmd = mapleConn.convertToMapleInstruction(asciiString.substring(0, asciiString.length() - 1));
-            String result = mapleConn.compute(mapleCmd, mapleConn.getEngine());
-            if (result != null) {
-                try {
-                    double resu = Double.parseDouble(result);
-                    DecimalFormat formatter = new DecimalFormat("0.00");
-                    asciiString = asciiString.concat(formatter.format(resu));
-                } catch (NumberFormatException e) {
-                    System.err.println("Could not parse maple result");
-                    asciiString = asciiString.concat(result);
-                }
-            }
-        }
-        System.out.println(asciiString);*/
         return asciiString;
     }
 

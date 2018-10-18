@@ -44,11 +44,19 @@ public class MainActivity extends AppCompatActivity {
     private Button removeButton;
     private Button svmButton;
 
-    private String recognizedSymbol;
+    private String result;
     private Stroke currentstroke;
 
     static Recognizer objreg;
     private Trainer trainer;
+
+    //TODO: undo button vs clear all strokes and expressions
+    //TODO: correction button
+    //TODO: erase current expression, with time control
+    //TODO: store expression string
+    //TODO: brackets and expression, syntax check
+    //TODO: correction panel?
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,8 +90,8 @@ public class MainActivity extends AppCompatActivity {
                 if (training == false) {
                     try {
                         //objreg might not be initialise
-                        recognizedSymbol = objreg.Recognize(currentstroke);
-                        expression.setText("Expression: " + recognizedSymbol);
+                        result = objreg.Recognize(currentstroke);
+                        expression.setText("Expression: " + result);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

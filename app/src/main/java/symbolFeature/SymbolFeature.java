@@ -72,7 +72,7 @@ public class SymbolFeature {
         int dotStrokeCount = 0; //count the number of stroke that has only 1 point
         int unusedStroke = 0;
 
-        //added by quxi 2009.12.26
+
         //ignore the strokes with stroke points less than 2
         for (int i = 0; i < strokelist.size(); i++) {
             if (strokelist.get(i).getTotalStrokePoints() == 2) {
@@ -229,7 +229,6 @@ public class SymbolFeature {
             out.write(featureString);
             out.write("\n");
             out.close();
-            //Toast.makeText(MainActivity.getAppContext(), "wrote something", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {//Catch exception if any
             e.printStackTrace();
         }
