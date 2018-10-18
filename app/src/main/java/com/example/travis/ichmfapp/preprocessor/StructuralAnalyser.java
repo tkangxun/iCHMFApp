@@ -55,7 +55,7 @@ public class StructuralAnalyser {
         //added by quxi 2009.08.27
         this.baseLine = baseLine;
         fracHandling = false;
-        sqrtHandling = 0;
+        sqrtHandling = -1;
         matrixFound = false;
         matrixHandling = false;
     }
@@ -80,8 +80,8 @@ public class StructuralAnalyser {
          * The sequence of th index is the writing sequence of
          * symbols (i.e the recognized sequence of symbols).
          */
-        for (int i = 1; i < recognizedSymbolList.size()+1; i++) {
-            ((RecognizedSymbol) recognizedSymbolList.get(i-1)).setId(i);
+        for (int i = 0; i < recognizedSymbolList.size(); i++) {
+            ((RecognizedSymbol) recognizedSymbolList.get(i)).setId(i);
             // get recognized symbol info -- quxi
             //int x =recognizedSymbolList.get(i).getBox().x;
         }
@@ -104,7 +104,7 @@ public class StructuralAnalyser {
             Element root = rawExpressionTree.createElement("rootequation");
 
             if (lastRecSymbol.getSymbolChar() =='\u221a' ) {
-                sqrtHandling = 1;
+                sqrtHandling = 0;
                 Element node = createSymbolNode((RecognizedSymbol) recognizedSymbolList.get(0), rawExpressionTree);
                 root.appendChild(node);
                 if (node.getChildNodes().item(INSIDE).getChildNodes().getLength() == 0) {
@@ -211,7 +211,7 @@ public class StructuralAnalyser {
 
     public void resetFlags() {
         fracHandling = false;
-        sqrtHandling = 0;
+        sqrtHandling = -1;
         matrixFound = false;
         matrixHandling = false;
     }
@@ -249,7 +249,7 @@ public class StructuralAnalyser {
                      * if true, off sqrt handing and continue
                      * if new symbol still inside, add inside the sqrt
                      */
-                    if (sqrtHandling != 0) {
+                    if (sqrtHandling != -1) {
                         Box sqrtBox = getBoxByID(recognizedSymbolList, sqrtHandling);
                         if (!checkOutside(sqrtBox, lastRecSymbol)){
                             baseLine.get(i).addSymbol(lastRecSymbol);
@@ -263,13 +263,9 @@ public class StructuralAnalyser {
 
                             return;
                         }else{
-                            sqrtHandling = 0;
+                            sqrtHandling = -1;
                         }
-
                     }
-
-
-
 
                     symbolHandled = true;
                     testRow = true;
@@ -406,7 +402,9 @@ public class StructuralAnalyser {
                     }
                 }
                 equationNodeOf2ndLastSymbol.appendChild(frac);
-            } //handle matrix found 2009.09.08
+            }
+
+            //handle matrix found 2009.09.08
             else if (openFences.indexOf(relatedSymbol.getSymbolCharString()) > -1 && pos == SUPER_SCRIPT) {
                 matrixHandling = true;
                 Node matrixRoot = rawExpressionTree.createElement("matrix");

@@ -10,7 +10,7 @@
 
     <com.example.travis.ichmfapp.main.WriteView
         android:id="@+id/writeView"
-        app:layout_constraintTop_toBottomOf="@id/svm"
+        app:layout_constraintTop_toBottomOf="@id/result"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
