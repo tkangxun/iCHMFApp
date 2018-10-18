@@ -118,7 +118,7 @@ public class Recognizer {
      * in ascending order of recognition error rate.
      * @return List of RecognizedSymbol objects.
      */
-    //added by quxi 2009.08.27
+
     public List<RecognizedSymbol> getRecognizedSymboList() {
         return _aryLMemoryRecognizedString;
     }
@@ -146,7 +146,7 @@ public class Recognizer {
         if (_strokeListMemory == null) {
             _strokeListMemory = new StrokeList();
         }
-        //added by quxi 2009.09.08
+
         if (baseLineList == null) {
             baseLineList = new ArrayList();
           this._structuralAnalyser.setBaseLine(baseLineList);
@@ -176,7 +176,7 @@ public class Recognizer {
             manualRecognizer = new SymbolRecognizer(_symbolLib);
         }
 
-        //added by quxi 2009.12.22
+
         SymbolRecognizer_SVM svmRecognizer = _svmRecognizer;
         if (svmRecognizer == null) {
             svmRecognizer = new SymbolRecognizer_SVM();
@@ -203,8 +203,8 @@ public class Recognizer {
         ArrayList recognitionList = doRecognition(recognizedStringList,
                 manualRecognizer, svmRecognizer);
 
-        //System.out.println("Time after recognition is" + (System.currentTimeMillis() - startTime));
-        Toast.makeText(MainActivity.getAppContext(), "Time after Symbol recognition is" + (System.currentTimeMillis() - startTime), Toast.LENGTH_SHORT).show();
+
+        long symbolRecognition = System.currentTimeMillis() - startTime;
         //FOR TESTING
         //for (int c = 0; c < recognizedStringList.size(); c++)
         //{
@@ -220,7 +220,7 @@ public class Recognizer {
         String result = "";//MathML String
 
         result = doAnalysis(recognizedStringList, true);
-        Toast.makeText(MainActivity.getAppContext(), "Time after analyser is" + (System.currentTimeMillis() - startTime), Toast.LENGTH_SHORT).show();
+        long structureAnalyse = System.currentTimeMillis() - symbolRecognition;
 
         _recognitionList = recognitionList;
         _aryLMemoryRecognizedString = recognizedStringList;
@@ -230,6 +230,14 @@ public class Recognizer {
 
 
         //String result = Character.toString(_recognitionList.get(0).getSymbolChar());
+        long totalTime = symbolRecognition+structureAnalyse;
+
+        Toast.makeText(context,
+                "Time for symbol recognition : " + symbolRecognition+ "\n" +
+                "symbol recognised: " + recognitionList + "\n" +
+                        "----------------------------------" +"\n" +
+                        "Time for structural analyse: " + structureAnalyse + "\n" +
+                        "Total time: "+ totalTime, Toast.LENGTH_LONG).show();
 
 
         return result;
@@ -335,7 +343,6 @@ public class Recognizer {
      */
     public void ClearRecognitionMemory() {
         _strokeListMemory = null;
-        //added by quxi 2009.09.08
         baseLineList = null;
         _aryLMemoryRecognizedString = null;
         _rawExpressionTree = null;
@@ -688,7 +695,7 @@ public class Recognizer {
             String symbol = ((Element) (node)).getAttribute("identity");
             if (nodeType.equals("symbolnode")) {
                 if (symbol.equals(String.valueOf('\u221a'))) { //root
-                    asciiString += "root()";
+                    asciiString += "root";
                     lastOperator = "root";
                 } else if (symbol.equals(String.valueOf('\u2212'))) {
                     if (node.getChildNodes().item(5).hasChildNodes() || node.getChildNodes().item(1).hasChildNodes()) {

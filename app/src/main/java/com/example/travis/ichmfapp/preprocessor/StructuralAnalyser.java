@@ -39,7 +39,7 @@ public class StructuralAnalyser {
     List<Baseline> baseLine;
     //added by quxi 2009.09.07
     boolean fracHandling;
-    boolean sqrtHandling;
+    int sqrtHandling;
     static boolean matrixHandling;
     //added by quxi2009.09.20
     //tell if the formula is a matrix or an normal equation
@@ -55,7 +55,7 @@ public class StructuralAnalyser {
         //added by quxi 2009.08.27
         this.baseLine = baseLine;
         fracHandling = false;
-        sqrtHandling = false;
+        sqrtHandling = 0;
         matrixFound = false;
         matrixHandling = false;
     }
@@ -80,7 +80,7 @@ public class StructuralAnalyser {
          * The sequence of th index is the writing sequence of
          * symbols (i.e the recognized sequence of symbols).
          */
-        for (int i = 0; i < recognizedSymbolList.size(); i++) {
+        for (int i = 1; i < recognizedSymbolList.size()+1; i++) {
             ((RecognizedSymbol) recognizedSymbolList.get(i)).setId(i);
             // get recognized symbol info -- quxi
             //int x =recognizedSymbolList.get(i).getBox().x;
@@ -97,12 +97,27 @@ public class StructuralAnalyser {
         // In case RecognizedSymbol list contains more than ONE item
         // get
         if (recognizedSymbolList.size() == 1) {
-            //test code quxi 2009.08.30
+
+
             baseLine.add(new Baseline(recognizedSymbolList.get(0), center(recognizedSymbolList.get(0))));
             //--------------------
             Element root = rawExpressionTree.createElement("rootequation");
-            Element node = createSymbolNode((RecognizedSymbol) recognizedSymbolList.get(0), rawExpressionTree);
-            root.appendChild(node);
+
+            if (lastRecSymbol.getSymbolChar() =='\u221a' ) {
+                sqrtHandling = 1;
+                Element node = createSymbolNode((RecognizedSymbol) recognizedSymbolList.get(0), rawExpressionTree);
+                root.appendChild(node);
+                if (node.getChildNodes().item(INSIDE).getChildNodes().getLength() == 0) {
+                    Element denominator = createSymbolNode(new RecognizedSymbol('?'), rawExpressionTree);
+                    node.getChildNodes().item(INSIDE).appendChild(denominator);
+                }
+            }else   {
+                Element node = createSymbolNode((RecognizedSymbol) recognizedSymbolList.get(0), rawExpressionTree);
+                root.appendChild(node);
+            }
+
+
+
             while (rawExpressionTree.getChildNodes().getLength() != 0) {
                 rawExpressionTree.removeChild(rawExpressionTree.getLastChild());
             }
@@ -196,7 +211,7 @@ public class StructuralAnalyser {
 
     public void resetFlags() {
         fracHandling = false;
-        sqrtHandling = false;
+        sqrtHandling = 0;
         matrixFound = false;
         matrixHandling = false;
     }
@@ -217,8 +232,27 @@ public class StructuralAnalyser {
                         //need to write a method to solve this quxi 2009.09.15
                         symbolParentNode = symbolParentNode.getParentNode().getParentNode();
                     }
-                    //added by quxi 2009.09.04
-                    //currently used to handle the sqrt
+
+                    //handle sqrt and add ? in the braces
+                    if (lastRecSymbol.getSymbolChar() =='\u221a' ) {
+                            sqrtHandling = lastRecSymbol.getId();
+                            baseLine.add(new Baseline(lastRecSymbol, center(lastRecSymbol)));
+                            Element sqrt = newLastRecSymbolNode;
+                            if (sqrt.getChildNodes().item(INSIDE).getChildNodes().getLength() == 0) {
+                                Element sqr = createSymbolNode(new RecognizedSymbol('?'), rawExpressionTree);
+                                sqrt.getChildNodes().item(INSIDE).appendChild(sqr);
+                            }
+
+                    }
+                    //determine if lastSymbol is outside of Squareroot
+                    /**if (sqrtHandling != 0) {
+                        Box sqrtBox = getBoxByID(recognizedSymbolList, sqrtHandling);
+
+                        }*/
+
+
+
+
                     symbolHandled = true;
                     testRow = true;
                     baseLine.get(i).addSymbol(lastRecSymbol);
@@ -279,7 +313,7 @@ public class StructuralAnalyser {
                             symbolParentNode.appendChild(newLastRecSymbolNode);
                         }
                     }
-                    //added by quxi 2009.09.08
+
                     //handle fraction case e.g. 2^3 and lastRecSymbol is -
                     if (lastRecSymbol.getSymbolChar() == '\u2212' && closestSymbol.getNode().getChildNodes().item(SUPER_SCRIPT).hasChildNodes()) {
                         Node equationNodeOf2ndLastSymbol = closestSymbol.getNode().getChildNodes().item(SUPER_SCRIPT);
@@ -741,9 +775,19 @@ public class StructuralAnalyser {
         StrokePoint lastCenter = center(lastRecSymbol);
         //Find angle degree between two Center points.
         double angle = getAngle(secondLastCenter, lastCenter);
+        /**
         if ((lastBBox.getX() >= secondLastBBox.getX() && lastBBox.getX() + 0.8 * lastBBox.getWidth() <= secondLastBBox.getX() + secondLastBBox.getWidth()) && (lastBBox.getY() >= secondLastBBox.getY() && lastBBox.getY() + 0.8 * lastBBox.getHeight() <= secondLastBBox.getY() + secondLastBBox.getHeight())) {
             return INSIDE;
-        }	//	inside
+        }	//	inside*/
+
+        //assuming second last symbol is sqrt, the center of sqrt should be larger than the start of the symbol inside
+        // and the width of the symbol doesn't exceed the sqrt
+        //and the height doesn't exceed more than 1.1 times of the sqrt
+        if (secondLastBBox.getCenterX() >= lastBBox.getX() &&
+                secondLastBBox.getX()+secondLastBBox.getWidth() >= lastBBox.getX() + lastBBox.getWidth() &&
+                secondLastBBox.getY()+ 1.1 * secondLastBBox.getHeight() >= lastBBox.getY() + lastBBox.getHeight()){
+            return INSIDE;
+        }
 
         if (angle >= -Math.PI / 8 && angle <= Math.PI / 8) { //22.5
             //When absolute distance between tow centers is lesser than
@@ -1043,7 +1087,7 @@ public class StructuralAnalyser {
      * @return StrokePoint representng center of recognized symbol.
      * @see RecognizedSymbol
      * @see StrokePoint
-     */
+
     private StrokePoint center(RecognizedSymbol recgSymbol) {
         String[] array1 = {"b", "d", "h", "k", "l"};
         String[] array2 = {"f", "g", "j", "p", "q", "y", String.valueOf('\u03B3')};
@@ -1061,7 +1105,7 @@ public class StructuralAnalyser {
          * [3] For character i and t, take x = 0.5, y = 0.575, Y almost to 0.6.
          * [4] For rest of the characters, take the most centers relative to
          * width and height.
-         */
+
         if (SymbolClassifier.inArray(recgSymbol.getSymbolCharString(), array1) || Character.isDigit(recgSymbol.getSymbolCharString().charAt(0)) || Character.isUpperCase(recgSymbol.getSymbolChar())) {
             center = new StrokePoint((int) (rec.getX() + 0.5 * rec.getWidth()),
                     (int) (rec.getY() + 0.65 * rec.getHeight()));
@@ -1074,6 +1118,43 @@ public class StructuralAnalyser {
         } //added by quxi 2009.09.09
         //center of sqrt should be at the left side hook part
         else if (((String) (recgSymbol.getSymbolCharString())).equals(String.valueOf('\u221A'))) {
+            center = new StrokePoint((int) (rec.getX() + 0.1 * rec.getWidth()),
+                    (int) (rec.getY() + 0.5 * rec.getHeight()));
+        } else {
+            center = new StrokePoint((int) (rec.getX() + 0.5 * rec.getWidth()),
+                    (int) (rec.getY() + 0.5 * rec.getHeight()));
+        }
+        return center;
+    }*/
+
+    private StrokePoint center(RecognizedSymbol recgSymbol) {
+        String[] array1 = {"t","f", "b", "d", "h", "k", "l"};
+        String[] array2 = { "g", "j", "p", "q", "y"};
+        String[] array3 = {"a","c","e","e","m","n","o","r","s","u","v","w","x","z"};
+
+        StrokePoint center;
+
+        Box rec = recgSymbol.getBox();
+
+        /**
+         * [1] For character t,f,b,d,h,k,l and 0-9 and capital letters
+         * take x=0.5 and y=1- 0.55 location. Almost to the center
+         * [2] For character g,j,p,q and y take center to be = 1- 0.65
+         * [3] the rest of the small letters, take center to be = 1- 0.75
+         * [4] For rest of the characters, take take x=0.5 and y=1- 0.5,
+         */
+        if (SymbolClassifier.inArray(recgSymbol.getSymbolCharString(), array1) || Character.isDigit(recgSymbol.getSymbolCharString().charAt(0)) || Character.isUpperCase(recgSymbol.getSymbolChar())) {
+            center = new StrokePoint((int) (rec.getX() + 0.5 * rec.getWidth()),
+                    (int) (rec.getY() + 0.45 * rec.getHeight()));
+        } else if (SymbolClassifier.inArray(recgSymbol.getSymbolCharString(), array2)) {
+            center = new StrokePoint((int) (rec.getX() + 0.5 * rec.getWidth()),
+                    (int) (rec.getY() + 0.35 * rec.getHeight()));
+        } else if (SymbolClassifier.inArray(recgSymbol.getSymbolCharString(), array3)) {
+            center = new StrokePoint((int) (rec.getX() + 0.5 * rec.getWidth()),
+                    (int) (rec.getY() + 0.25 * rec.getHeight()));
+        }
+        //center of sqrt should be at the left side hook part
+        else if ( recgSymbol.getSymbolCharString().equals(String.valueOf('\u221A'))) {
             center = new StrokePoint((int) (rec.getX() + 0.1 * rec.getWidth()),
                     (int) (rec.getY() + 0.5 * rec.getHeight()));
         } else {
@@ -1379,6 +1460,17 @@ public class StructuralAnalyser {
             return "[";
         }
         return "";
+    }
+
+    public Box getBoxByID (List<RecognizedSymbol> list ,int index){
+        Box box =new Box(0,0,0,0);
+        for (int i =0; i < list.size();i++){
+            if (list.get(i).getId() == index){
+                box = list.get(i).getBox();
+            }
+        }
+        return box;
+
     }
 
 }

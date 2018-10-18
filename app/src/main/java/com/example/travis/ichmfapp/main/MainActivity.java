@@ -62,8 +62,11 @@ public class MainActivity extends AppCompatActivity {
 
         try{
             trainer.openSymbolLib();
-            //char x = ':';
-            //writeView.displaySymbol(trainer.getTrainsymbol(x).getStrokes());
+            /**
+             //To check the stroke stored in library
+            char x = SymbolLib.unicodeToChar("221a");
+            writeView.displaySymbol(trainer.getTrainsymbol(x).getStrokes());
+             */
             objreg = new Recognizer(
                 SymbolLib.Load(ConstantData.ElasticFileString,
                 SymbolLib.LibraryTypes.Binary));
@@ -83,14 +86,11 @@ public class MainActivity extends AppCompatActivity {
                         expression.setText("Expression: " + recognizedSymbol);
                     } catch (Exception e) {
                         e.printStackTrace();
-
                     }
                 }
-
             }
         });
         final Switch simpleswitch = (Switch) findViewById(R.id.simpleswitch);
-
 
         //train elastic symbol add strokes to the current list of symbol
         trainButton = (Button) findViewById(R.id.train);
@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                                     Toast.makeText(MainActivity.this, "Symbol: " + toTrain, Toast.LENGTH_SHORT).show();
                                 }catch (Exception e){
                                     Toast.makeText(MainActivity.this, "Please enter only unicode!", Toast.LENGTH_SHORT).show();
-                                    //alertdialog.show();  symbol cant be resolved
+                                    simpleswitch.setChecked(false);
 
                                 }
                                 Toast.makeText(MainActivity.this, "Symbol: " + toTrain, Toast.LENGTH_SHORT).show();
@@ -139,9 +139,6 @@ public class MainActivity extends AppCompatActivity {
         // create alert dialog
         final AlertDialog alertDialog = builder.create();
 
-
-
-
         trainButton.setVisibility(View.GONE);
         //addSymbolButton.setVisibility(View.GONE);
         removeButton.setVisibility(View.GONE);
@@ -153,12 +150,9 @@ public class MainActivity extends AppCompatActivity {
         trainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
-                //for SVM, Sampling is collected, preprocessed , feature extraction, then train and model created
-                //input symbol only feature extraction then SVM classification
-
-                training = true;
+                // for SVM, Sampling is collected, preprocessed , feature extraction,
+                // then train and model created
+                // input symbol only feature extraction then SVM classification
                 Toast.makeText(MainActivity.getAppContext(), "Training symbol: " + toTrain+ ", strokes: " + writeView.getStrokes().size(), Toast.LENGTH_SHORT).show();
 
                 //Training for elastic matching
