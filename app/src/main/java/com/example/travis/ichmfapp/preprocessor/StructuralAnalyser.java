@@ -81,7 +81,7 @@ public class StructuralAnalyser {
          * symbols (i.e the recognized sequence of symbols).
          */
         for (int i = 1; i < recognizedSymbolList.size()+1; i++) {
-            ((RecognizedSymbol) recognizedSymbolList.get(i)).setId(i);
+            ((RecognizedSymbol) recognizedSymbolList.get(i-1)).setId(i);
             // get recognized symbol info -- quxi
             //int x =recognizedSymbolList.get(i).getBox().x;
         }
@@ -144,7 +144,7 @@ public class StructuralAnalyser {
                 System.out.println("        -AFTER TREE");
             }
 
-            if (!success) {// Do correctionF
+             if (!success) {// Do correctionF
                 int pos = boundingBoxDetermination(secondLastRecSymbol, lastRecSymbol);
                 int newPos = doCorrection(secondLastRecSymbol, pos);
                 if (newPos == 3) {
@@ -244,11 +244,29 @@ public class StructuralAnalyser {
                             }
 
                     }
-                    //determine if lastSymbol is outside of Squareroot
-                    /**if (sqrtHandling != 0) {
+                    /**
+                     * check if the new symbol is out side of sqrt box.
+                     * if true, off sqrt handing and continue
+                     * if new symbol still inside, add inside the sqrt
+                     */
+                    if (sqrtHandling != 0) {
                         Box sqrtBox = getBoxByID(recognizedSymbolList, sqrtHandling);
+                        if (!checkOutside(sqrtBox, lastRecSymbol)){
+                            baseLine.get(i).addSymbol(lastRecSymbol);
+                            RecognizedSymbol sqrt = findRelatedSymbol(recognizedSymbolList, lastRecSymbol);
+                            Node sqrtChild = sqrt.getNode().getChildNodes().item(INSIDE);
+                            if (sqrtChild != null) {
+                                sqrt.getNode().insertBefore(newLastRecSymbolNode, sqrtChild);
+                            } else {
+                                sqrt.getNode().appendChild(newLastRecSymbolNode);
+                            }
 
-                        }*/
+                            return;
+                        }else{
+                            sqrtHandling = 0;
+                        }
+
+                    }
 
 
 
@@ -1471,6 +1489,14 @@ public class StructuralAnalyser {
         }
         return box;
 
+    }
+
+    public Boolean checkOutside(Box sqrt, RecognizedSymbol lastSymbol){
+        double line =  sqrt.getX() + sqrt.getWidth();
+        if (line < lastSymbol.getBox().getX()){
+            return true;
+        }
+        return false;
     }
 
 }
