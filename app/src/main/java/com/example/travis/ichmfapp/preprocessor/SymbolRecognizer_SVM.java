@@ -17,6 +17,7 @@ public class SymbolRecognizer_SVM {
         char symbolChar;
         //long startTime = System.currentTimeMillis();
         boolean[] validStroke = oneSymbol(_strokeListMemory);
+        validStroke = checkColon(validStroke, _strokeListMemory);
 
 
         for (int count = _strokeListMemory.size(); count > 0; count--) {
@@ -46,14 +47,24 @@ public class SymbolRecognizer_SVM {
                     result.add(tempResult);
                 }
             }
-            for (int i = 0; i< preProcessedStrokeList.size();i++){
-                if (preProcessedStrokeList.get(i).getTotalStrokePoints() <5){
-                    result.add(new RecognizedSymbol('.',preProcessedStrokeList,0.1));
+        }
+        for (int i = 0; i< _strokeListMemory.size();i++){
+            if (_strokeListMemory.get(i).getTotalStrokePoints() <5){
+                StrokeList dot = new StrokeList();
+                dot.add(_strokeListMemory.get(i));
+                result.add(new RecognizedSymbol('.',dot,0.1));
 
+                if (i+1< _strokeListMemory.size() && _strokeListMemory.get(i+1).getTotalStrokePoints() <5){
+                    dot.add(_strokeListMemory.get(i+1));
+                    //result.remove(result.size()-1);
+                    result.remove(result.size()-1);
+                    result.add(new RecognizedSymbol(':',dot,0.1));
+                    i++;
                 }
 
             }
         }
+
         return result;
     }
 
@@ -150,12 +161,6 @@ public class SymbolRecognizer_SVM {
         }
         return newList;
     }
-
-    /**private boolean checkColon(Stroke s1, Stroke s2){
-        if (Math.abs(s1.getCenter().X -s2.getCenter().X) <= 30){
-            return true;
-         }else return false;
-    }*/
 
     private boolean checkStrokeClose(Stroke[] slist1, Stroke[] slist2) {
         double start1 = 1000;
@@ -301,5 +306,17 @@ public class SymbolRecognizer_SVM {
             }
         }
         return false;
+    }
+
+    private boolean[] checkColon(boolean[] valid, StrokeList mem){
+        for(int i = 0; i <mem.size(); i++)
+            if (mem.get(i).getTotalStrokePoints() < 5 ){
+                if (i+1 <mem.size() && mem.get(i+1).getTotalStrokePoints()<5){
+                    valid[i] = true;
+                    valid[1+i] =true;
+                }
+
+            }
+        return valid;
     }
 }
