@@ -27,6 +27,7 @@ import com.example.travis.ichmfapp.preprocessor.*;
 import com.example.travis.ichmfapp.symbollib.*;
 import java.util.ArrayList;
 
+import symbolFeature.SymbolFeature;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private Button addSymbolButton;
     private Button removeButton;
     private Button svmButton;
+    private Button checker;
 
     private String result;
     private Stroke currentstroke;
@@ -70,11 +72,6 @@ public class MainActivity extends AppCompatActivity {
 
         try{
             trainer.openSymbolLib();
-            /**
-             //To check the stroke stored in library
-            char x = SymbolLib.unicodeToChar("221a");
-            writeView.displaySymbol(trainer.getTrainsymbol(x).getStrokes());
-             */
             objreg = new Recognizer(
                 SymbolLib.Load(ConstantData.ElasticFileString,
                 SymbolLib.LibraryTypes.Binary));
@@ -109,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
         //remove strokes existing symbol in library
         removeButton = (Button) findViewById(R.id.remove);
         svmButton = (Button) findViewById(R.id.svm);
+        checker = (Button) findViewById(R.id.check);
         AlertDialog.Builder builder = new AlertDialog.Builder(
                 this);
         //alert dialog
@@ -151,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
         //addSymbolButton.setVisibility(View.GONE);
         removeButton.setVisibility(View.GONE);
         svmButton.setVisibility(View.GONE);
+        checker.setVisibility(View.GONE);
         if (saved) {
             saveButton.setVisibility(View.GONE);
         }else{saveButton.setVisibility(View.VISIBLE);}
@@ -220,6 +219,16 @@ public class MainActivity extends AppCompatActivity {
                 simpleswitch.setChecked(false);
             }
         });
+        checker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                StrokeList displayStrokes = trainer.getTrainsymbol(toTrain).getStrokes();
+                writeView.displaySymbol(displayStrokes);
+                String feature = SymbolFeature.getFeature(0, displayStrokes);
+                Toast.makeText(MainActivity.this,feature + "\n" + displayStrokes.get(0).getStrokePoint(0).ToString() , Toast.LENGTH_SHORT).show();
+
+            }
+        });
 
 
 
@@ -238,12 +247,14 @@ public class MainActivity extends AppCompatActivity {
                     saveButton.setVisibility(View.GONE);
                     removeButton.setVisibility(View.VISIBLE);
                     svmButton.setVisibility(View.VISIBLE);
+                    checker.setVisibility(View.VISIBLE);
                 }else {
                     training = false;
                     trainButton.setVisibility(View.GONE);
                     //addSymbolButton.setVisibility(View.GONE);
                     removeButton.setVisibility(View.GONE);
                     svmButton.setVisibility(View.GONE);
+                    checker.setVisibility(View.GONE);
                     if (saved) {
                         saveButton.setVisibility(View.GONE);
                     }else{saveButton.setVisibility(View.VISIBLE);}

@@ -450,14 +450,14 @@ public class Recognizer {
 
         if (list.size() == 0 || verifyContext(recognizedChar, (RecognizedSymbol) list.get(list.size() - 1))) {
             RecognizedSymbol pre = new RecognizedSymbol('0');
-            if (list.size() != 0) {
+            if (list.size() != 0 ) {
                 pre = (RecognizedSymbol) list.get(list.size() - 1);
             }
             recognizedChar = checkSimilarSymbols(recognizedChar, pre, candidate);
             list.add(recognizedChar);
             return true;
         } else {
-            if (list.size() != 0 && ConstantData.doTest) {
+            if (list.size() != 0){
                 Toast.makeText(context, "Blocked by checkContext!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", Toast.LENGTH_SHORT).show();
             }
             return false;
@@ -588,6 +588,9 @@ public class Recognizer {
     }
 
     private boolean verifyContext(RecognizedSymbol result, RecognizedSymbol last) {
+        if (result.getSymbolChar() == '.' || result.getSymbolChar() == '\u221a'){
+            return true;
+        }
         int pos = _structuralAnalyser.boundingBoxDetermination(last, result);
         return SymbolClassifier.checkContext(pos, last, result);
 
@@ -759,6 +762,7 @@ public class Recognizer {
                         case StructuralAnalyser.ROW:
                             break;
                         case StructuralAnalyser.SUB_SCRIPT:
+                            //this is causing the "." to be subscript
                             asciiString += "_(";
                             stack.push(node);
                             break;

@@ -1,5 +1,7 @@
 package com.example.travis.ichmfapp.preprocessor;
 
+import android.inputmethodservice.Keyboard;
+
 import com.example.travis.ichmfapp.symbollib.*;
 
 import java.util.*;
@@ -214,7 +216,29 @@ public class StructuralAnalyser {
             List<RecognizedSymbol> baseLineNodeList = baseLine.get(i).getSymbolList();
             RecognizedSymbol closestSymbol = (RecognizedSymbol) (this.findClosest(baseLineNodeList, lastRecSymbol));
             int pos = boundingBoxDetermination(closestSymbol, lastRecSymbol);
-            if (Math.abs(pos) == ROW && !symbolHandled) {
+            RecognizedSymbol relatedSymbol = findRelatedSymbol(recognizedSymbolList, lastRecSymbol);
+            Node equation = relatedSymbol.getNode().getChildNodes().item(pos);
+
+            //remove ?
+            if (equation.hasChildNodes() && ((Element) (equation.getFirstChild())).getAttribute("attribute").equals("")) {
+                if ( sqrtHandling == -1) {
+                    equation.removeChild(equation.getFirstChild());
+
+                    equation.appendChild(newLastRecSymbolNode);
+                    if (lastRecSymbol.getSymbolChar() =='\u221a' ) {
+                        sqrtHandling = lastRecSymbol.getId();
+                        Element sqrt = newLastRecSymbolNode;
+                        if (sqrt.getChildNodes().item(INSIDE).getChildNodes().getLength() == 0) {
+                            Element sqr = createSymbolNode(new RecognizedSymbol('?'), rawExpressionTree);
+                            sqrt.getChildNodes().item(INSIDE).appendChild(sqr);
+                        }
+                    }
+                    baseLine.add(new Baseline(lastRecSymbol, center(lastRecSymbol)));
+                    return;
+                }
+
+
+            }else if (Math.abs(pos) == ROW && !symbolHandled) {
                 if (checkSameLine(recognizedSymbolList, lastRecSymbol, closestSymbol)) {
                     Node symbolParentNode = baseLine.get(i).getSymbol().getNode().getParentNode(); //equation node
                     if (symbolParentNode.getNodeName().equals("matrixOB")) {
@@ -399,7 +423,7 @@ public class StructuralAnalyser {
                 Node openBraceRootNode = rawExpressionTree.createElement("matrixOB");
                 Node matrixRow = rawExpressionTree.createElement("matrixrow");
 
-                //remove [ from existing ree
+                //remove [ from existing tree
                 Node eqNodeOf2ndLastSymbol = relatedSymbol.getNode().getParentNode();
                 eqNodeOf2ndLastSymbol.removeChild(relatedSymbol.getNode());
                 //add Openbrace in Matrix tree
@@ -752,6 +776,9 @@ public class StructuralAnalyser {
         Box secondLastBBox = secondLastRecSymbol.getBox();
         StrokePoint secondLastCenter = center(secondLastRecSymbol);
         //Find angle degree between two Center points.
+        if (secondLastRecSymbol.getSymbolChar() == '.'){
+            return ROW;
+        }
 
         if (secondLastBBox.x <= lastBBox.x + 0.4 * lastBBox.width && secondLastBBox.x + secondLastBBox.width >= lastBBox.x + lastBBox.width * 0.6) {
             if (lastCenter.Y >= secondLastCenter.Y) {
@@ -760,6 +787,9 @@ public class StructuralAnalyser {
                 return ABOVE;//1
             }	//below
         } else if (lastBBox.y - 0.2 * lastBBox.height >= secondLastBBox.y + secondLastBBox.height) {
+            if (lastRecSymbol.getSymbolChar() == '.'){
+                return ROW;
+            }
             return SUB_SCRIPT; // above 5
         } else if (lastBBox.y + 0.8 * lastBBox.height <= secondLastBBox.y) {
             return SUPER_SCRIPT;//1
@@ -771,7 +801,7 @@ public class StructuralAnalyser {
         }
     }
 
-    private int boundingBoxDetermination(Box secondLastBBox, StrokePoint secondLastCenter,
+    private int boundingBoxDeterminations(Box secondLastBBox, StrokePoint secondLastCenter,
                                          RecognizedSymbol lastRecSymbol) {
 
         Box lastBBox = lastRecSymbol.getBox();
@@ -836,6 +866,9 @@ public class StructuralAnalyser {
                     //last symbol height/width. It is determined as SAME ROW.
                     if (lastCenter.Y > secondLastCenter.Y) {
                         System.out.println("bb:5");
+                        if (lastRecSymbol.getSymbolChar() == '.'){
+                            return ROW;
+                        }
                         return SUB_SCRIPT;//sub script 4
                     } else {
                         System.out.println("bb:6");
@@ -843,6 +876,9 @@ public class StructuralAnalyser {
                     }
                 } else if (angle > Math.PI / 8 && angle < 3 * Math.PI / 8) {
                     System.out.println("bb:7");
+                    if (lastRecSymbol.getSymbolChar() == '.'){
+                        return ROW;
+                    }
                     return SUB_SCRIPT;//4
                 } //subscript
                 else if (angle < -Math.PI / 8 && angle > -3 * Math.PI / 8) {
@@ -1069,11 +1105,14 @@ public class StructuralAnalyser {
         StrokePoint secondLastCenter = center(secondLastRecSymbol);
         String secondChar = secondLastRecSymbol.getSymbolCharString();
         String lastChar = lastRecSymbol.getSymbolCharString();
+        if (secondLastRecSymbol.getSymbolChar() == '.'){
+            return ROW;
+        }
         //- ,= , nearly equal
 //        if ((isShortSymbol(secondChar)||isShortSymbol(lastChar))&&!(isShortSymbol(secondChar)&&isShortSymbol(lastChar))) {
 //            return boundingBoxDeterminationForShortSymbol(secondLastRecSymbol, lastRecSymbol);
 //        }
-        return boundingBoxDetermination(secondLastBBox, secondLastCenter, lastRecSymbol);
+        return boundingBoxDeterminations(secondLastBBox, secondLastCenter, lastRecSymbol);
     }
 
     private boolean isShortSymbol(String c){

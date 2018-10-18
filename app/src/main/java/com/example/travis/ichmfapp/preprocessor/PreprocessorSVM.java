@@ -49,8 +49,8 @@ public class PreprocessorSVM {
                     dot.add(dotdot);
                 }
             }
-            return dot;
-            //return _inputStrokeList;
+            //return dot;
+            return _inputStrokeList;
 
         }
         return normallizePoint(reSampling(smoothing(normalizing(_inputStrokeList))));

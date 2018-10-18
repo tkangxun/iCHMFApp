@@ -33,6 +33,7 @@ public class SymbolRecognizer_SVM {
             StrokeList preProcessedStrokeList = PreprocessorSVM.preProcessing(_strokeListLocal);
             //compare storkelist with each symbol in symbol library
 
+
             String featureString = SymbolFeature.getFeature(0, preProcessedStrokeList);
             //Toast.makeText(MainActivity.getAppContext(),featureString , Toast.LENGTH_SHORT).show();
 
@@ -44,6 +45,13 @@ public class SymbolRecognizer_SVM {
                     RecognizedSymbol tempResult = new RecognizedSymbol(symbolChar, _strokeListLocal, svmResult.get(j).getProb());
                     result.add(tempResult);
                 }
+            }
+            for (int i = 0; i< preProcessedStrokeList.size();i++){
+                if (preProcessedStrokeList.get(i).getTotalStrokePoints() <5){
+                    result.add(new RecognizedSymbol('.',preProcessedStrokeList,0.1));
+
+                }
+
             }
         }
         return result;
@@ -68,10 +76,10 @@ public class SymbolRecognizer_SVM {
             case 2:
                 if (!checkStrokeClose(copyArray(strokeNo, 0, 0), copyArray(strokeNo, 1, 1))) {
                     validStroke[0] = true;
-                    /**if (strokeNo[0].getTotalStrokePoints() <= 5 && checkcolon(strokeNo[0],strokeNo[1])){
+                    /**if (strokeNo[0].getTotalStrokePoints() <= 5 && checkColon(strokeNo[0],strokeNo[1])){
                         validStroke[1] = true;
                     }
-                }else if (strokeNo[0].getTotalStrokePoints() <= 5 && checkcolon(strokeNo[0],strokeNo[1])){
+                }else if (strokeNo[0].getTotalStrokePoints() <= 5 && checkColon(strokeNo[0],strokeNo[1])){
                     validStroke[0] = true;
                     validStroke[1] = true;
                      */
@@ -143,7 +151,7 @@ public class SymbolRecognizer_SVM {
         return newList;
     }
 
-    /**private boolean checkcolon(Stroke s1, Stroke s2){
+    /**private boolean checkColon(Stroke s1, Stroke s2){
         if (Math.abs(s1.getCenter().X -s2.getCenter().X) <= 30){
             return true;
          }else return false;

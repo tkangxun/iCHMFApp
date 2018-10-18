@@ -82,6 +82,18 @@
         android:textStyle="bold"
         android:thumbTint="@color/colorPrimary" />
 
+    <Button
+        android:id="@+id/check"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/svm"
+        app:layout_constraintTop_toBottomOf="@id/remove"
+
+        android:text="Check"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:thumbTint="@color/colorPrimary" />
+
 
 
 </android.support.constraint.ConstraintLayout>
