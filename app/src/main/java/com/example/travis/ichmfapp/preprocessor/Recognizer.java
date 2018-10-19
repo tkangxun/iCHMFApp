@@ -544,6 +544,8 @@ public class Recognizer {
         }
         long listTime = System.currentTimeMillis()- symbolStartTime - elasticTime - SVMtime;
 
+        mResult= removeDuplicates(mResult);
+
         Toast.makeText(context,
                 "Time after SVM recognition is : " + SVMtime + "\n"
                         + "Result from SVM: " + svmResult + "\n"
@@ -852,5 +854,17 @@ public class Recognizer {
         }
         return;
     }
-    // </editor-fold>*/
+
+    public ArrayList removeDuplicates(ArrayList<RecognizedSymbol> result){
+        ArrayList<RecognizedSymbol> temp = new ArrayList<RecognizedSymbol>();
+        ArrayList<RecognizedSymbol> clone = result;
+        for (int i = 0; i< result.size();){
+            for(int j = 0; j< result.size();){
+                if (i!=j && result.get(i).getSymbolChar() == result.get(j).getSymbolChar()){
+
+                }
+            }
+        }
+    }
+
 }

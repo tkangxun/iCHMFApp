@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
                         //objreg might not be initialise
                         result = objreg.Recognize(currentstroke);
                         correct.setVisibility(View.VISIBLE);
-                        correctionpanal(true);
+                        correctionpanal(false);
                         expression.setText("Expression: " + result);
                     } catch (Exception e) {
                         e.printStackTrace();

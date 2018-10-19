@@ -97,18 +97,15 @@ public class StructuralAnalyser {
             baseLine.add(new Baseline(recognizedSymbolList.get(0), center(recognizedSymbolList.get(0))));
             //--------------------
             Element root = rawExpressionTree.createElement("rootequation");
+            Element node = createSymbolNode((RecognizedSymbol) recognizedSymbolList.get(0), rawExpressionTree);
+            root.appendChild(node);
 
             if (lastRecSymbol.getSymbolChar() =='\u221a' ) {
                 sqrtHandling = 0;
-                Element node = createSymbolNode((RecognizedSymbol) recognizedSymbolList.get(0), rawExpressionTree);
-                root.appendChild(node);
                 if (node.getChildNodes().item(INSIDE).getChildNodes().getLength() == 0) {
-                    Element denominator = createSymbolNode(new RecognizedSymbol('?'), rawExpressionTree);
-                    node.getChildNodes().item(INSIDE).appendChild(denominator);
+                    Element child = createSymbolNode(new RecognizedSymbol('?'), rawExpressionTree);
+                    node.getChildNodes().item(INSIDE).appendChild(child);
                 }
-            }else   {
-                Element node = createSymbolNode((RecognizedSymbol) recognizedSymbolList.get(0), rawExpressionTree);
-                root.appendChild(node);
             }
 
 
@@ -221,21 +218,31 @@ public class StructuralAnalyser {
 
             //remove ?
             if (equation.hasChildNodes() && ((Element) (equation.getFirstChild())).getAttribute("attribute").equals("")) {
-                if ( sqrtHandling == -1) {
-                    equation.removeChild(equation.getFirstChild());
-
-                    equation.appendChild(newLastRecSymbolNode);
-                    if (lastRecSymbol.getSymbolChar() =='\u221a' ) {
-                        sqrtHandling = lastRecSymbol.getId();
-                        Element sqrt = newLastRecSymbolNode;
-                        if (sqrt.getChildNodes().item(INSIDE).getChildNodes().getLength() == 0) {
-                            Element sqr = createSymbolNode(new RecognizedSymbol('?'), rawExpressionTree);
-                            sqrt.getChildNodes().item(INSIDE).appendChild(sqr);
-                        }
+                if ( sqrtHandling != -1) {
+                    Box sqrtBox = getBoxByID(recognizedSymbolList, sqrtHandling);
+                    if (!checkOutside(sqrtBox, lastRecSymbol)){
+                        equation.removeChild(equation.getFirstChild());
+                        equation.appendChild(newLastRecSymbolNode);
+                        //new baseline
+                        baseLine.add(new Baseline(lastRecSymbol, center(lastRecSymbol)));
+                        return;
                     }
-                    baseLine.add(new Baseline(lastRecSymbol, center(lastRecSymbol)));
-                    return;
                 }
+                equation.removeChild(equation.getFirstChild());
+                equation.appendChild(newLastRecSymbolNode);
+                if (lastRecSymbol.getSymbolChar() =='\u221a' ) {
+                    sqrtHandling = lastRecSymbol.getId();
+                    Element sqrt = newLastRecSymbolNode;
+                    if (sqrt.getChildNodes().item(INSIDE).getChildNodes().getLength() == 0) {
+                        Element sqr = createSymbolNode(new RecognizedSymbol('?'), rawExpressionTree);
+                        sqrt.getChildNodes().item(INSIDE).appendChild(sqr);
+                    }
+
+                }
+                //add new baseline
+                baseLine.add(new Baseline(lastRecSymbol, center(lastRecSymbol)));
+                return;
+
 
 
             }else if (Math.abs(pos) == ROW && !symbolHandled) {
@@ -255,31 +262,13 @@ public class StructuralAnalyser {
                                 Element sqr = createSymbolNode(new RecognizedSymbol('?'), rawExpressionTree);
                                 sqrt.getChildNodes().item(INSIDE).appendChild(sqr);
                             }
-
+                            return;
                     }
                     /**
                      * check if the new symbol is out side of sqrt box.
                      * if true, off sqrt handing and continue
                      * if new symbol still inside, add inside the sqrt
                      */
-                    if (sqrtHandling != -1) {
-                        Box sqrtBox = getBoxByID(recognizedSymbolList, sqrtHandling);
-                        if (!checkOutside(sqrtBox, lastRecSymbol)){
-                            baseLine.get(i).addSymbol(lastRecSymbol);
-                            RecognizedSymbol sqrt = findRelatedSymbol(recognizedSymbolList, lastRecSymbol);
-                            Node sqrtChild = sqrt.getNode().getChildNodes().item(INSIDE);
-                            if (sqrtChild != null) {
-                                sqrt.getNode().insertBefore(newLastRecSymbolNode, sqrtChild);
-                            } else {
-                                sqrt.getNode().appendChild(newLastRecSymbolNode);
-                            }
-
-                            return;
-                        }else{
-                            sqrtHandling = -1;
-                        }
-                    }
-
                     symbolHandled = true;
                     testRow = true;
                     baseLine.get(i).addSymbol(lastRecSymbol);
@@ -808,16 +797,11 @@ public class StructuralAnalyser {
         StrokePoint lastCenter = center(lastRecSymbol);
         //Find angle degree between two Center points.
         double angle = getAngle(secondLastCenter, lastCenter);
-        /**
-        if ((lastBBox.getX() >= secondLastBBox.getX() && lastBBox.getX() + 0.8 * lastBBox.getWidth() <= secondLastBBox.getX() + secondLastBBox.getWidth()) && (lastBBox.getY() >= secondLastBBox.getY() && lastBBox.getY() + 0.8 * lastBBox.getHeight() <= secondLastBBox.getY() + secondLastBBox.getHeight())) {
-            return INSIDE;
-        }	//	inside*/
 
-        //assuming second last symbol is sqrt, the center of sqrt should be larger than the start of the symbol inside
-        // and the width of the symbol doesn't exceed the sqrt
+        //assuming second last symbol is sqrt
+        //the 1.1 width of the symbol doesn't exceed the sqrt width
         //and the height doesn't exceed more than 1.1 times of the sqrt
-        if (secondLastBBox.getCenterX() >= lastBBox.getX() &&
-                secondLastBBox.getX()+secondLastBBox.getWidth() >= lastBBox.getX() + lastBBox.getWidth() &&
+        if (secondLastBBox.getX()+secondLastBBox.getWidth() >= lastBBox.getX() + lastBBox.getWidth()*1.1 &&
                 secondLastBBox.getY()+ 1.1 * secondLastBBox.getHeight() >= lastBBox.getY() + lastBBox.getHeight()){
             return INSIDE;
         }
