@@ -105,7 +105,7 @@ public class Recognizer {
      * in ascending order of recognition error rate.
      * @return List of RecognizedSymbol objects.
      */
-    public ArrayList getOptionalRecognitionList() {
+    public ArrayList<RecognizedSymbol> getOptionalRecognitionList() {
         return _recognitionList;
     }
 
@@ -223,14 +223,15 @@ public class Recognizer {
 
 
         //String result = Character.toString(_recognitionList.get(0).getSymbolChar());
-        long totalTime = symbolRecognition+structureAnalyse;
+        long totalTime = System.currentTimeMillis() - startTime;
+
 
         Toast.makeText(context,
                 "Time for symbol recognition : " + symbolRecognition+ "\n" +
                 "symbol recognised: " + recognitionList + "\n" +
                         "----------------------------------" +"\n" +
                         "Time for structural analyse: " + structureAnalyse + "\n" +
-                        "Total time: "+ totalTime, Toast.LENGTH_LONG).show();
+                        "Total time: "+ totalTime, Toast.LENGTH_SHORT).show();
 
 
         return result;
@@ -248,10 +249,11 @@ public class Recognizer {
         String result = "";
         RecognizedSymbol symbolForReplacement = (RecognizedSymbol) _recognitionList.get(position);
 
+        /**
         //add to sample file
         if (SymbolRecognizer_SVM.checkStrokeNO(symbolForReplacement.getSymbolCharDecimal(), symbolForReplacement.getStrokes().size())) {
             symbolFeature.SymbolFeature.writeFeatures(symbolFeature.SymbolFeature.getFeature(symbolForReplacement.getSymbolCharDecimal(), PreprocessorSVM.preProcessing(symbolForReplacement.getStrokes())));
-        }
+        }*/
 
         int affectedSymbolCount = 0, count = 0;
         baseLineList.removeAll(baseLineList);
@@ -283,7 +285,7 @@ public class Recognizer {
             count--;
         }
         _aryLMemoryRecognizedString.add(symbolForReplacement);
-        //result = doAnalysis(_aryLMemoryRecognizedString, true);
+        result = doAnalysis(_aryLMemoryRecognizedString, true);
         return result;
     }
 
@@ -549,7 +551,7 @@ public class Recognizer {
                         + "Time after elastic is : " + elasticTime + "\n"
                         + "Result from elastic: " + mResult + "\n"
                         + "----------------------------------\n"
-                        + "Time after addToList time is : " + listTime,Toast.LENGTH_LONG).show();
+                        + "Time after addToList time is : " + listTime,Toast.LENGTH_SHORT).show();
 
         return mResult;
     }
@@ -616,7 +618,9 @@ public class Recognizer {
             try {
                 String asciimath = treeToascii(_rawExpressionTree.getFirstChild().cloneNode(true));
                 //return asciiToMathMl(asciimath);
-                Toast.makeText(context, asciimath, Toast.LENGTH_SHORT).show();
+
+                //prints the expression
+                //Toast.makeText(context, asciimath, Toast.LENGTH_SHORT).show();
                 return asciimath;
             } catch (Exception ex) {
                 ex.printStackTrace();

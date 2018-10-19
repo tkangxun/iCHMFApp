@@ -45,6 +45,11 @@ public class MainActivity extends AppCompatActivity {
     private Button removeButton;
     private Button svmButton;
     private Button checker;
+    private Button correct;
+    private Button correction[] = new Button[5];
+
+
+
 
     private String result;
     private Stroke currentstroke;
@@ -88,6 +93,8 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         //objreg might not be initialise
                         result = objreg.Recognize(currentstroke);
+                        correct.setVisibility(View.VISIBLE);
+                        correctionpanal(true);
                         expression.setText("Expression: " + result);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -95,6 +102,92 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        //Correction panel
+
+        correction[0] = (Button) findViewById(R.id.correct0);
+        correction[1] = (Button) findViewById(R.id.correct1);
+        correction[2] = (Button) findViewById(R.id.correct2);
+        correction[3] = (Button) findViewById(R.id.correct3);
+        correction[4] = (Button) findViewById(R.id.correct4);
+
+
+        //Correction button onclick initialisation, index 0 is skipped since it is the current exp shown
+        // <editor-fold defaultstate="collapsed">
+        correction[0].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try{
+                    result = objreg.MakeCorrection(1);
+                    correctionpanal(false);
+                    expression.setText("Expression: " + result);
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
+        correction[1].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try{
+                    result = objreg.MakeCorrection(2);
+                    correctionpanal(false);
+                    expression.setText("Expression: " + result);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
+        correction[2].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try{
+                    result = objreg.MakeCorrection(3);
+                    correctionpanal(false);
+                    expression.setText("Expression: " + result);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
+        correction[3].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try{
+                    result = objreg.MakeCorrection(4);
+                    correctionpanal(false);
+                    expression.setText("Expression: " + result);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
+        correction[4].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try{
+                    result = objreg.MakeCorrection(5);
+                    correctionpanal(false);
+                    expression.setText("Expression: " + result);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+        });
+// </editor-fold>
+
+        correctionpanal(false);
+
         final Switch simpleswitch = (Switch) findViewById(R.id.simpleswitch);
 
         //train elastic symbol add strokes to the current list of symbol
@@ -107,6 +200,7 @@ public class MainActivity extends AppCompatActivity {
         removeButton = (Button) findViewById(R.id.remove);
         svmButton = (Button) findViewById(R.id.svm);
         checker = (Button) findViewById(R.id.check);
+        correct = (Button) findViewById(R.id.correct);
         AlertDialog.Builder builder = new AlertDialog.Builder(
                 this);
         //alert dialog
@@ -150,6 +244,7 @@ public class MainActivity extends AppCompatActivity {
         removeButton.setVisibility(View.GONE);
         svmButton.setVisibility(View.GONE);
         checker.setVisibility(View.GONE);
+        correct.setVisibility(View.GONE);
         if (saved) {
             saveButton.setVisibility(View.GONE);
         }else{saveButton.setVisibility(View.VISIBLE);}
@@ -229,6 +324,17 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        correct.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //show buttons
+                correct.setVisibility(view.GONE);
+                correctionpanal(true);
+
+
+            }
+        });
 
 
 
@@ -248,6 +354,9 @@ public class MainActivity extends AppCompatActivity {
                     removeButton.setVisibility(View.VISIBLE);
                     svmButton.setVisibility(View.VISIBLE);
                     checker.setVisibility(View.VISIBLE);
+                    correct.setVisibility(View.GONE);
+                    correctionpanal(false);
+
                 }else {
                     training = false;
                     trainButton.setVisibility(View.GONE);
@@ -276,6 +385,8 @@ public class MainActivity extends AppCompatActivity {
                 /** place icon action here! */
                 writeView.clear();
                 objreg.ClearRecognitionMemory();
+                correctionpanal(false);
+                correct.setVisibility(View.GONE);
                 expression.setText("");
 
 
@@ -320,6 +431,22 @@ public class MainActivity extends AppCompatActivity {
         }
         return result;
     }
+    private void correctionpanal(Boolean show){
+
+        for (int i =0;i< correction.length; i++){
+            if (show){
+                char symbol =objreg.getOptionalRecognitionList().get(i+1    ).getSymbolChar();
+                if (symbol != ' ') {
+                    correction[i].setText(Character.toString(symbol));
+                    correction[i].setVisibility(View.VISIBLE);
+                }
+            }else  {
+                correction[i].setVisibility(View.GONE);
+            }
+        }
+
+    }
+
 
 
 }

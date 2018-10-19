@@ -21,7 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/simpleswitch"/>
+        app:layout_constraintTop_toBottomOf="@id/correct"/>
 
     <Switch
         android:id="@+id/simpleswitch"
@@ -88,11 +88,65 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@id/svm"
         app:layout_constraintTop_toBottomOf="@id/remove"
-
         android:text="Check"
         android:textSize="15sp"
         android:textStyle="bold"
         android:thumbTint="@color/colorPrimary" />
+    <Button
+        android:id="@+id/correct"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/save"
+        android:text="Correction"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:thumbTint="@color/colorPrimary" />
+    <Button
+        android:id="@+id/correct0"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="a"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:thumbTint="@color/colorPrimary" />
+    <Button
+        android:id="@+id/correct1"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/correct0"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:thumbTint="@color/colorPrimary" />
+    <Button
+        android:id="@+id/correct2"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/correct1"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:thumbTint="@color/colorPrimary" />
+    <Button
+        android:id="@+id/correct3"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/correct2"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:thumbTint="@color/colorPrimary" />
+    <Button
+        android:id="@+id/correct4"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/correct3"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:thumbTint="@color/colorPrimary" />
+
 
 
 
