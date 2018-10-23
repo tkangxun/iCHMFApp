@@ -58,11 +58,11 @@ public class MainActivity extends AppCompatActivity {
     private Trainer trainer;
 
     //TODO: undo button vs clear all strokes and expressions
-    //TODO: correction button
-    //TODO: erase current expression, with time control
+    //TODO: erase current expression, with time control overlay input method
     //TODO: store expression string
     //TODO: brackets and expression, syntax check
-    //TODO: correction panel?
+    //TODO: train svm option to save both elastic lib
+    //TODO: in square root need to put back fraction
 
 
     @Override
@@ -354,7 +354,9 @@ public class MainActivity extends AppCompatActivity {
                     removeButton.setVisibility(View.VISIBLE);
                     svmButton.setVisibility(View.VISIBLE);
                     checker.setVisibility(View.VISIBLE);
+                    expression.setText("");
                     correct.setVisibility(View.GONE);
+
                     correctionpanal(false);
 
                 }else {

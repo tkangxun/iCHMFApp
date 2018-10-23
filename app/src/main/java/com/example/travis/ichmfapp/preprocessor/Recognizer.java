@@ -215,6 +215,7 @@ public class Recognizer {
         result = doAnalysis(recognizedStringList, true);
         long structureAnalyse = System.currentTimeMillis() - symbolRecognition;
 
+        recognitionList= removeDuplicates(recognitionList);
         _recognitionList = recognitionList;
         _aryLMemoryRecognizedString = recognizedStringList;
         _manualRecognizer = manualRecognizer;
@@ -457,11 +458,13 @@ public class Recognizer {
             }
             recognizedChar = checkSimilarSymbols(recognizedChar, pre, candidate);
             list.add(recognizedChar);
+            removeDuplicates(list);
             return true;
-        } else {
+        } else { //TODO: add sqrt and - to context checking
             if (list.size() != 0){
                 Toast.makeText(context, "Blocked by checkContext!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", Toast.LENGTH_SHORT).show();
             }
+            Toast.makeText(context, "false", Toast.LENGTH_SHORT).show();
             return false;
         }
 
@@ -546,14 +549,16 @@ public class Recognizer {
 
         mResult= removeDuplicates(mResult);
 
-        Toast.makeText(context,
-                "Time after SVM recognition is : " + SVMtime + "\n"
-                        + "Result from SVM: " + svmResult + "\n"
-                        + "----------------------------------\n"
-                        + "Time after elastic is : " + elasticTime + "\n"
-                        + "Result from elastic: " + mResult + "\n"
-                        + "----------------------------------\n"
-                        + "Time after addToList time is : " + listTime,Toast.LENGTH_SHORT).show();
+        if (ConstantData.doTest) {
+            Toast.makeText(context,
+                    "Time after SVM recognition is : " + SVMtime + "\n"
+                            + "Result from SVM: " + svmResult + "\n"
+                            + "----------------------------------\n"
+                            + "Time after elastic is : " + elasticTime + "\n"
+                            + "Result from elastic: " + mResult + "\n"
+                            + "----------------------------------\n"
+                            + "Time after addToList time is : " + listTime, Toast.LENGTH_SHORT).show();
+        }
 
         return mResult;
     }
@@ -855,16 +860,30 @@ public class Recognizer {
         return;
     }
 
-    public ArrayList removeDuplicates(ArrayList<RecognizedSymbol> result){
-        ArrayList<RecognizedSymbol> temp = new ArrayList<RecognizedSymbol>();
-        ArrayList<RecognizedSymbol> clone = result;
-        for (int i = 0; i< result.size();){
-            for(int j = 0; j< result.size();){
-                if (i!=j && result.get(i).getSymbolChar() == result.get(j).getSymbolChar()){
+    public static ArrayList removeDuplicates(ArrayList<RecognizedSymbol> result){
 
+        for (int i = 0; i< result.size();i++){
+            for(int j = 0; j< result.size();j++){
+                if (i!=j && result.get(i).getSymbolChar() == result.get(j).getSymbolChar()){
+                    result.remove(j);
+                    removeDuplicates(result);
                 }
             }
         }
+        return result;
+    }
+
+    public static List<RecognizedSymbol> removeDuplicates(List<RecognizedSymbol> result){
+
+        for (int i = 0; i< result.size();i++){
+            for(int j = 0; j< result.size();j++){
+                if (i!=j && result.get(i).getSymbolChar() == result.get(j).getSymbolChar()){
+                    result.remove(j);
+                    removeDuplicates(result);
+                }
+            }
+        }
+        return result;
     }
 
 }

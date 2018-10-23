@@ -87,13 +87,6 @@ public class SymbolRecognizer_SVM {
             case 2:
                 if (!checkStrokeClose(copyArray(strokeNo, 0, 0), copyArray(strokeNo, 1, 1))) {
                     validStroke[0] = true;
-                    /**if (strokeNo[0].getTotalStrokePoints() <= 5 && checkColon(strokeNo[0],strokeNo[1])){
-                        validStroke[1] = true;
-                    }
-                }else if (strokeNo[0].getTotalStrokePoints() <= 5 && checkColon(strokeNo[0],strokeNo[1])){
-                    validStroke[0] = true;
-                    validStroke[1] = true;
-                     */
                 }else{
                     if (!intersect(strokeNo[0], strokeNo[1])) {
                         validStroke[0] = true;
@@ -307,13 +300,14 @@ public class SymbolRecognizer_SVM {
         }
         return false;
     }
-
+//TODO: change to vertical axis
     private boolean[] checkColon(boolean[] valid, StrokeList mem){
         for(int i = 0; i <mem.size(); i++)
             if (mem.get(i).getTotalStrokePoints() < 5 ){
                 if (i+1 <mem.size() && mem.get(i+1).getTotalStrokePoints()<5){
                     valid[i] = true;
                     valid[1+i] =true;
+
                 }
 
             }

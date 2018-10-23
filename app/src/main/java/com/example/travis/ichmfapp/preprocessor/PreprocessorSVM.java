@@ -64,7 +64,7 @@ public class PreprocessorSVM {
      */
     public static boolean preClassify(StrokeList s1, StrokeList s2) {
         //If the two start points are close enough return true;
-        //If the trow end points are close enough return true;
+        //If the throw end points are close enough return true;
         //else return False;
         if (distance(s1.get(0).getStrokePoint(0), s2.get(0).getStrokePoint(0)) <= closePoint) {
             return true;

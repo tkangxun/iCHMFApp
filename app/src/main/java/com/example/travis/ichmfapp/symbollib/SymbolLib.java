@@ -158,6 +158,7 @@ public class SymbolLib implements Serializable {
      * @throws java.lang.Exception
      */
     //added by quxi 2009.10.21 :for the symbol trainer
+    //TODO: update stroke number classification
     public static boolean GenerateDefaultSetElastic(String filePathLibrary, LibraryTypes type) throws Exception {
         SymbolLib basic = new SymbolLib("Basic Symbol Library for Elastic matching");
         basic.setFilename(filePathLibrary);
