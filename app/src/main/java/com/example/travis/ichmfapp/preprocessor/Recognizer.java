@@ -215,7 +215,7 @@ public class Recognizer {
         result = doAnalysis(recognizedStringList, true);
         long structureAnalyse = System.currentTimeMillis() - symbolRecognition;
 
-        recognitionList= removeDuplicates(recognitionList);
+
         _recognitionList = recognitionList;
         _aryLMemoryRecognizedString = recognizedStringList;
         _manualRecognizer = manualRecognizer;
@@ -226,13 +226,14 @@ public class Recognizer {
         //String result = Character.toString(_recognitionList.get(0).getSymbolChar());
         long totalTime = System.currentTimeMillis() - startTime;
 
-
-        Toast.makeText(context,
-                "Time for symbol recognition : " + symbolRecognition+ "\n" +
-                "symbol recognised: " + recognitionList + "\n" +
-                        "----------------------------------" +"\n" +
-                        "Time for structural analyse: " + structureAnalyse + "\n" +
-                        "Total time: "+ totalTime, Toast.LENGTH_SHORT).show();
+        if(ConstantData.doTest) {
+            Toast.makeText(context,
+                    "Time for symbol recognition : " + symbolRecognition + "\n" +
+                            "symbol recognised: " + recognitionList + "\n" +
+                            "----------------------------------" + "\n" +
+                            "Time for structural analyse: " + structureAnalyse + "\n" +
+                            "Total time: " + totalTime, Toast.LENGTH_SHORT).show();
+        }
 
 
         return result;
@@ -458,7 +459,7 @@ public class Recognizer {
             }
             recognizedChar = checkSimilarSymbols(recognizedChar, pre, candidate);
             list.add(recognizedChar);
-            removeDuplicates(list);
+
             return true;
         } else { //TODO: add sqrt and - to context checking
             if (list.size() != 0){
@@ -860,7 +861,7 @@ public class Recognizer {
         return;
     }
 
-    public static ArrayList removeDuplicates(ArrayList<RecognizedSymbol> result){
+    private static ArrayList removeDuplicates(ArrayList<RecognizedSymbol> result){
 
         for (int i = 0; i< result.size();i++){
             for(int j = 0; j< result.size();j++){
@@ -873,7 +874,7 @@ public class Recognizer {
         return result;
     }
 
-    public static List<RecognizedSymbol> removeDuplicates(List<RecognizedSymbol> result){
+    private static List<RecognizedSymbol> removeDuplicates(List<RecognizedSymbol> result){
 
         for (int i = 0; i< result.size();i++){
             for(int j = 0; j< result.size();j++){
