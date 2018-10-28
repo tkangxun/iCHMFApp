@@ -25,7 +25,11 @@ import android.widget.Toast;
 import com.example.travis.ichmfapp.R;
 import com.example.travis.ichmfapp.preprocessor.*;
 import com.example.travis.ichmfapp.symbollib.*;
-import java.util.ArrayList;
+
+import com.rapidapi.rapidconnect.*;
+
+
+import java.util.*;
 
 import symbolFeature.SymbolFeature;
 
@@ -53,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String result;
     private Stroke currentstroke;
+    private NewtonAPI api;
 
     static Recognizer objreg;
     private Trainer trainer;
@@ -62,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     //TODO: store expression string
     //TODO: brackets and expression, syntax check
     //TODO: train svm option to save both elastic lib
-    //TODO: in square root need to put back fraction
+
 
 
     @Override
@@ -71,7 +76,8 @@ public class MainActivity extends AppCompatActivity {
         MainActivity.context = getApplicationContext();
         setContentView(R.layout.activity_main);
 
-        trainer = new Trainer();
+                trainer = new Trainer();
+        api = new NewtonAPI();
         final TextView expression = (TextView)findViewById(R.id.result);
         writeView = (WriteView) findViewById(R.id.writeView);
 
@@ -96,6 +102,8 @@ public class MainActivity extends AppCompatActivity {
                         correct.setVisibility(View.VISIBLE);
                         correctionpanal(false);
                         expression.setText("Expression: " + result);
+                        //api.getAnswer();
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -319,8 +327,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 StrokeList displayStrokes = trainer.getTrainsymbol(toTrain).getStrokes();
                 writeView.displaySymbol(displayStrokes);
-                String feature = SymbolFeature.getFeature(0, displayStrokes);
-                Toast.makeText(MainActivity.this,feature + "\n" + displayStrokes.get(0).getStrokePoint(0).ToString() , Toast.LENGTH_SHORT).show();
+                ;
+                Toast.makeText(MainActivity.this,"Number of Strokes: " + displayStrokes.size() , Toast.LENGTH_SHORT).show();
 
             }
         });

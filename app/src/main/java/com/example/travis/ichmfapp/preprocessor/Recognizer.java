@@ -534,9 +534,6 @@ public class Recognizer {
         ArrayList mResult = mRecognizer.recognizing(svmResult);
         long elasticTime = System.currentTimeMillis() - symbolStartTime - SVMtime;
 
-        /**if (!recognizedStringList.isEmpty()){
-            mResult = verifyContext(mResult.get(0), recognizedStringList.get(recognizedStringList.size()-1));
-        */
 
         /// Take the first (with closet similarity distance) character
         /// as recognized symbol.

@@ -219,6 +219,17 @@ public class StructuralAnalyser {
             //Node equation = relatedSymbol.getNode().getChildNodes().item(pos);
 
             //remove ?
+            //TODO:fraction have abit of problem the minus sign and fraction
+            if (fracHandling){
+                Node equation = closestSymbol.getNode().getChildNodes().item(BELOW);
+                if (equation.hasChildNodes() && ((Element) (equation.getFirstChild())).getAttribute("identity").equals("?")){
+                    equation.removeChild(equation.getFirstChild());
+                    equation.appendChild(newLastRecSymbolNode);
+                    baseLine.get(i).addSymbol(lastRecSymbol);
+                    baseLine.add(new Baseline(lastRecSymbol, center(lastRecSymbol)));
+                    return;
+                }
+            }
             if (!sqrtHandling.isEmpty()) {
                 /**
                  * check if the new symbol is out side of sqrt box.
@@ -353,6 +364,7 @@ public class StructuralAnalyser {
             //if (rightPos(relatedSymbol, lastRecSymbol, recognizedSymbolList)) {
 
             //handle fraction
+            //fraction to handle inside
             if ((pos == 5) && lastRecSymbol.getSymbolChar() == '\u2212') {
                 fracHandling = true;
 
