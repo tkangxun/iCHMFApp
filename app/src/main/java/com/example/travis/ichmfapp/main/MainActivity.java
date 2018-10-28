@@ -52,9 +52,6 @@ public class MainActivity extends AppCompatActivity {
     private Button correct;
     private Button correction[] = new Button[5];
 
-
-
-
     private String result;
     private Stroke currentstroke;
     private NewtonAPI api;
@@ -76,8 +73,8 @@ public class MainActivity extends AppCompatActivity {
         MainActivity.context = getApplicationContext();
         setContentView(R.layout.activity_main);
 
-                trainer = new Trainer();
-        api = new NewtonAPI();
+        trainer = new Trainer();
+        //api = new NewtonAPI();
         final TextView expression = (TextView)findViewById(R.id.result);
         writeView = (WriteView) findViewById(R.id.writeView);
 

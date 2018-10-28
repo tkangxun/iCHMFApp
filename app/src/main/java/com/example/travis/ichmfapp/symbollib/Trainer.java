@@ -1,7 +1,10 @@
 package com.example.travis.ichmfapp.symbollib;
 
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
 import com.example.travis.ichmfapp.main.MainActivity;
@@ -9,11 +12,15 @@ import com.example.travis.ichmfapp.preprocessor.PreprocessorSVM;
 import com.example.travis.ichmfapp.preprocessor.SymbolRecognizer_SVM;
 
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 import symbolFeature.*;
+
+import static com.example.travis.ichmfapp.symbollib.ConstantData.mydir;
 
 
 /**
@@ -23,12 +30,36 @@ import symbolFeature.*;
 public class Trainer{
 
     private SymbolLib objSymbolLib;
+    private SymbolLib svmlib;
     private String fileSymbolLib = null;
     private SymbolList jList1 = null;
     private Context context = MainActivity.getAppContext();
 
     public Trainer (){
-        this.generateDefaultSetSVM();
+
+        /**
+        if (ContextCompat.checkSelfPermission(MainActivity.getAppContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(MainActivity.getAppContext(), "permission denied, please enable it", Toast.LENGTH_SHORT).show();
+        } else{
+            //Toast.makeText(MainActivity.getAppContext(), "permission granted", Toast.LENGTH_SHORT).show();
+        }
+
+        if (!mydir.exists()) {
+            mydir.mkdirs();
+
+            if (!mydir.mkdirs()) {
+                Toast.makeText(MainActivity.getAppContext(), "dir not made", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        File file = new File(mydir, ConstantData.trainFile);
+        //String s = file.getPath().toString();
+        if (!file.exists()){
+            this.generateDefaultSetSVM();}*/
+
+
     }
 
 
@@ -36,13 +67,27 @@ public class Trainer{
 
     private void generateDefaultSetSVM() {
 
+        if (objSymbolLib == null) {
+            return;
+        }
 
         try {
-            this.objSymbolLib = SymbolLib.GenerateDefaultSetSVM(SymbolLib.LibraryTypes.Binary);
-            //An array of all the basic symbols
-            jList1 = objSymbolLib.getSymbols();
+            this.svmlib = SymbolLib.GenerateDefaultSetSVM(SymbolLib.LibraryTypes.Binary);
+            //An array of all the basic symbols and create file
+            jList1 = svmlib.getSymbols();
+            List<Integer> indexes;
+            for (int i = 0; i< jList1.size();i++){
 
-            //Toast.makeText(context, "trainer size: " + jList1.size(), Toast.LENGTH_SHORT).show();
+                indexes = objSymbolLib.findSymbol(jList1.get(i).getSymbolCharDecimal());
+                for (int j =0; j< indexes.size();j++){
+                    symbolFeature.SymbolFeature.writeFeatures(
+                            symbolFeature.SymbolFeature.getFeature(jList1.get(i).getSymbolCharDecimal(),
+                            objSymbolLib.getSymbol(indexes.get(j)).getStrokes()));
+                }
+            }
+
+
+
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -118,6 +163,9 @@ public class Trainer{
     }
 
     public void removeSymbol(char sym) {
+        try{openSymbolLib();}
+        catch (Exception e){e.printStackTrace();}
+        fileSymbolLib = ConstantData.ElasticFileString;
         if (objSymbolLib == null) {
             return;
         }
@@ -136,6 +184,8 @@ public class Trainer{
     }
 
     public void addElasticSymbol(char sym, StrokeList strokes){
+        try{openSymbolLib();}
+        catch (Exception e){e.printStackTrace();}
         if (objSymbolLib == null) {
             return;
         }
@@ -184,33 +234,36 @@ public class Trainer{
 
     public void trainSymbolSVM(char sym, StrokeList strokes) {
 
-        SymbolLib elastic = this.objSymbolLib;
-        generateDefaultSetSVM();
+
+        File file = new File(mydir, ConstantData.trainFile);
+        //String s = file.getPath().toString();
+        if (!file.exists()){
+            this.generateDefaultSetSVM();}
+
 
         int unicode = ((int)sym);
 
         List<Integer> indexes = objSymbolLib.findSymbol(unicode);
         if (indexes.size() == 0){
             Toast.makeText(context, "Symbol not found, try again", Toast.LENGTH_SHORT).show();
-            this.objSymbolLib = elastic;
             return;
         }
         Symbol sbl = new Symbol(sym);
         sbl.setStrokes(strokes);
 
         if (SymbolRecognizer_SVM.checkStrokeNO(sbl.getSymbolCharDecimal(), sbl.getStrokes().size())) {
-            SymbolFeature.writeFeatures(SymbolFeature.getFeature(sbl.getSymbolCharDecimal(), sbl.getStrokes()));
+            SymbolFeature.writeFeatures(SymbolFeature.getFeature(sbl.getSymbolCharDecimal(), PreprocessorSVM.preProcessing(sbl.getStrokes())));
             Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(context, "invalid number of strokes", Toast.LENGTH_SHORT).show();
         }
 
-        //set back symbol library
-        this.objSymbolLib =elastic;
 
+        /**
         //create new svm file base on new symbol input
         SVM_train svm = new SVM_train();
         svm.run();
+         */
     }
 
 

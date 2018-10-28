@@ -461,7 +461,7 @@ public class Recognizer {
             list.add(recognizedChar);
 
             return true;
-        } else { //TODO: add sqrt and - to context checking
+        } else {
             if (list.size() != 0){
                 Toast.makeText(context, "Blocked by checkContext!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", Toast.LENGTH_SHORT).show();
             }
