@@ -2532,7 +2532,7 @@ public class svm {
     public static svm_model svm_load_model(String model_file_name) throws IOException
     {
         BufferedReader fp;
-        /**
+
         File file = new File(ConstantData.mydir,ConstantData.modelFile);
         if (file.exists()){
             fp = new BufferedReader(new FileReader (file));
@@ -2541,9 +2541,9 @@ public class svm {
         }else{
             fp = new BufferedReader(new FileReader (ConstantData.getAssest(model_file_name)));
             //Toast.makeText(MainActivity.getAppContext(), "svm file from asset", Toast.LENGTH_SHORT).show();
-        }*/
+        }
 
-        fp = new BufferedReader(new FileReader (ConstantData.getAssest(model_file_name)));
+        //fp = new BufferedReader(new FileReader (ConstantData.getAssest(model_file_name)));
 
         // read parameters
 

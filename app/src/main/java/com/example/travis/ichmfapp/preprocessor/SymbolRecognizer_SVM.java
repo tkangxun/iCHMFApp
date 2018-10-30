@@ -300,7 +300,7 @@ public class SymbolRecognizer_SVM {
         }
         return false;
     }
-//TODO: change to vertical axis
+
     private boolean[] checkColon(boolean[] valid, StrokeList mem){
         for(int i = 0; i <mem.size(); i++)
             if (mem.get(i).getTotalStrokePoints() < 5 ){

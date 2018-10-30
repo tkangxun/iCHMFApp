@@ -227,6 +227,11 @@ public class StructuralAnalyser {
                     equation.appendChild(newLastRecSymbolNode);
                     baseLine.get(i).addSymbol(lastRecSymbol);
                     baseLine.add(new Baseline(lastRecSymbol, center(lastRecSymbol)));
+                    if (lastRecSymbol.getSymbolChar() =='\u221a' ) {
+                        sqrtHandling.add(lastRecSymbol.getId());
+                        Element sqr = createSymbolNode(new RecognizedSymbol('?'), rawExpressionTree);
+                        newLastRecSymbolNode.getChildNodes().item(INSIDE).appendChild(sqr);
+                    }
                     return;
                 }
             }
@@ -445,8 +450,6 @@ public class StructuralAnalyser {
                 newMatrixRow.appendChild(newEqRow);
                 refMatrixRoot.appendChild(newMatrixRow);
             } //normal case
-
-            //TODO: add vector case above and under
             else {
                 //remove "?"
 
@@ -455,14 +458,15 @@ public class StructuralAnalyser {
                     equation.removeChild(equation.getFirstChild());
                 }
                 equation.appendChild(newLastRecSymbolNode);
+                if (lastRecSymbol.getSymbolChar() =='\u221a' ) {
+                    sqrtHandling.add(lastRecSymbol.getId());
+                    Element sqr = createSymbolNode(new RecognizedSymbol('?'), rawExpressionTree);
+                    newLastRecSymbolNode.getChildNodes().item(INSIDE).appendChild(sqr);
+                }
             }
             //add a new baseLine
             baseLine.add(new Baseline(lastRecSymbol, center(lastRecSymbol)));
-            if (lastRecSymbol.getSymbolChar() =='\u221a' ) {
-                sqrtHandling.add(lastRecSymbol.getId());
-                Element sqr = createSymbolNode(new RecognizedSymbol('?'), rawExpressionTree);
-                newLastRecSymbolNode.getChildNodes().item(INSIDE).appendChild(sqr);
-            }
+
             //matrixDetectStep(lastRecSymbol, mdt, rawExpressionTree, recognizedSymbolList);
         }
 

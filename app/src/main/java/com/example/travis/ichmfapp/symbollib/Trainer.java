@@ -235,6 +235,14 @@ public class Trainer{
     public void trainSymbolSVM(char sym, StrokeList strokes) {
 
 
+        if( sym == '?'){
+            //create new svm file base on new symbol input
+            SVM_train svm = new SVM_train();
+            svm.run();
+            Toast.makeText(context, "new SVM model created", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         File file = new File(mydir, ConstantData.trainFile);
         //String s = file.getPath().toString();
         if (!file.exists()){
@@ -259,11 +267,9 @@ public class Trainer{
         }
 
 
-        /**
-        //create new svm file base on new symbol input
-        SVM_train svm = new SVM_train();
-        svm.run();
-         */
+
+
+
     }
 
 

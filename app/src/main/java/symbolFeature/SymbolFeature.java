@@ -40,7 +40,6 @@ public class SymbolFeature {
     to the y axis direction (sine ?(x)), (e) curvature
     according to x axis, (f) curvature according to y axis
     and (g) the position of stylus (up or down).*/
-//TODO: edit here
     /*coordinates
     of the resampled points, sines and cosines of the
     angle made by the line segments joining the points in the

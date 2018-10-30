@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
     //TODO: erase current expression, with time control overlay input method
     //TODO: store expression string
     //TODO: brackets and expression, syntax check
-    //TODO: train svm option to save both elastic lib
+
 
 
 

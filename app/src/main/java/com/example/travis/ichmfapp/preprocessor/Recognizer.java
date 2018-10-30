@@ -251,11 +251,11 @@ public class Recognizer {
         String result = "";
         RecognizedSymbol symbolForReplacement = (RecognizedSymbol) _recognitionList.get(position);
 
-        /**
+
         //add to sample file
         if (SymbolRecognizer_SVM.checkStrokeNO(symbolForReplacement.getSymbolCharDecimal(), symbolForReplacement.getStrokes().size())) {
             symbolFeature.SymbolFeature.writeFeatures(symbolFeature.SymbolFeature.getFeature(symbolForReplacement.getSymbolCharDecimal(), PreprocessorSVM.preProcessing(symbolForReplacement.getStrokes())));
-        }*/
+        }
 
         int affectedSymbolCount = 0, count = 0;
         baseLineList.removeAll(baseLineList);
