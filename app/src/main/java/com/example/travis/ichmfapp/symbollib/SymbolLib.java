@@ -396,7 +396,8 @@ public class SymbolLib implements Serializable {
 
             java.io.FileInputStream fis =
                     new java.io.FileInputStream(
-                            new File(ConstantData.mydir.toString()+filePathLibrary));
+                            new File(ConstantData.getAssest(ConstantData.ElasticFileString)));
+            //                new File(ConstantData.mydir.toString()+filePathLibrary));
 
             ObjectInputStream ois = new ObjectInputStream(fis);
 

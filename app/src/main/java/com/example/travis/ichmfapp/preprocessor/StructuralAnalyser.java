@@ -245,6 +245,7 @@ public class StructuralAnalyser {
                 if (!checkOutside(sqrtBox, lastRecSymbol)) {
                     RecognizedSymbol relatedSymbol = getSymbolByID(recognizedSymbolList, sqrtHandling.get(sqrtHandling.size() - 1));
                     Node equation = relatedSymbol.getNode().getChildNodes().item(INSIDE);
+                    //TODO: error when square  root is not the first in nested`also in nested
                     if (equation.hasChildNodes() && ((Element) (equation.getFirstChild())).getAttribute("identity").equals("?")) {
                         equation.removeChild(equation.getFirstChild());
                         equation.appendChild(newLastRecSymbolNode);

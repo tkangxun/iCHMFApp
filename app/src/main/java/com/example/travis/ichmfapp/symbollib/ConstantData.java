@@ -5,10 +5,14 @@ package com.example.travis.ichmfapp.symbollib;
  */
 
 
+import android.Manifest;
 import android.content.Context;
 
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.os.Environment;
+import android.support.v4.content.ContextCompat;
+import android.widget.Toast;
 
 
 import com.example.travis.ichmfapp.main.MainActivity;
@@ -40,8 +44,8 @@ public class ConstantData {
     public static String modelFile = "model.dat";
 
     //created files are read from internal storage
-    public static String ElasticFileString = "/elastic.dat";
-    public static String ElasticFileDefaultString = "/elasticDefault.dat";
+    public static String ElasticFileString = "elastic.dat";
+    public static String ElasticFileDefaultString = "elasticDefault.dat";
 
 
     public static File ElasticFile = new File(mydir + ElasticFileString);
@@ -71,6 +75,39 @@ public class ConstantData {
             throw new RuntimeException(e);
         }
         return f.getPath();
+    }
+
+
+    public void savetophone(String fname) throws Exception{
+        if (ContextCompat.checkSelfPermission(MainActivity.getAppContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(MainActivity.getAppContext(), "permission denied, please enable it", Toast.LENGTH_SHORT).show();
+        } else{
+            //Toast.makeText(MainActivity.getAppContext(), "permission granted", Toast.LENGTH_SHORT).show();
+        }
+
+
+        if (!mydir.exists()) {
+            mydir.mkdirs();
+
+            if (!mydir.mkdirs()) {
+                Toast.makeText(MainActivity.getAppContext(), "dir not made", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        File file = new File(mydir, fname);
+        String s = file.getPath().toString();
+        if (file.exists()){
+            file.delete();
+            Toast.makeText(MainActivity.getAppContext(), s + " is overwritten", Toast.LENGTH_SHORT).show();
+        }
+        FileOutputStream fos = new FileOutputStream(file);
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(this);
+        oos.close();
+        fos.close();
+        return;
     }
 
 }
