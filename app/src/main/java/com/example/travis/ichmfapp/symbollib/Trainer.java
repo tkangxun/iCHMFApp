@@ -37,27 +37,7 @@ public class Trainer{
 
     public Trainer (){
 
-        /**
-        if (ContextCompat.checkSelfPermission(MainActivity.getAppContext(),
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(MainActivity.getAppContext(), "permission denied, please enable it", Toast.LENGTH_SHORT).show();
-        } else{
-            //Toast.makeText(MainActivity.getAppContext(), "permission granted", Toast.LENGTH_SHORT).show();
-        }
-
-        if (!mydir.exists()) {
-            mydir.mkdirs();
-
-            if (!mydir.mkdirs()) {
-                Toast.makeText(MainActivity.getAppContext(), "dir not made", Toast.LENGTH_SHORT).show();
-            }
-        }
-
-        File file = new File(mydir, ConstantData.trainFile);
-        //String s = file.getPath().toString();
-        if (!file.exists()){
-            this.generateDefaultSetSVM();}*/
+        ConstantData.savetophone();
 
 
     }

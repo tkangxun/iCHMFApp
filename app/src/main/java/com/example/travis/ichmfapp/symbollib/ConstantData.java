@@ -78,7 +78,15 @@ public class ConstantData {
     }
 
 
-    public void savetophone(String fname) throws Exception{
+    public static void savetophone(){
+        am = MainActivity.getAppContext().getAssets();
+        String[] files = null;
+        try {
+            files = am.list("file");
+        } catch (IOException e) {
+            Toast.makeText(context, "fail to retrieve file string", Toast.LENGTH_SHORT).show();
+        }
+
         if (ContextCompat.checkSelfPermission(MainActivity.getAppContext(),
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -96,18 +104,41 @@ public class ConstantData {
             }
         }
 
-        File file = new File(mydir, fname);
-        String s = file.getPath().toString();
-        if (file.exists()){
-            file.delete();
-            Toast.makeText(MainActivity.getAppContext(), s + " is overwritten", Toast.LENGTH_SHORT).show();
+        if (files != null) for (String filename : files) {
+            InputStream in = null;
+            OutputStream out = null;
+            try {
+                in = am.open("file/"+ filename);
+                File outFile = new File(mydir, filename);
+                out = new FileOutputStream(outFile);
+                copyFile(in, out);
+            } catch(IOException e) {
+                Toast.makeText(context, "fail to copy file", Toast.LENGTH_SHORT).show();
+            }
+            finally {
+                if (in != null) {
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        // NOOP
+                    }
+                }
+                if (out != null) {
+                    try {
+                        out.close();
+                    } catch (IOException e) {
+                        // NOOP
+                    }
+                }
+            }
         }
-        FileOutputStream fos = new FileOutputStream(file);
-        ObjectOutputStream oos = new ObjectOutputStream(fos);
-        oos.writeObject(this);
-        oos.close();
-        fos.close();
-        return;
+    }
+    private static void copyFile(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[1024];
+        int read;
+        while((read = in.read(buffer)) != -1){
+            out.write(buffer, 0, read);
+        }
     }
 
 }

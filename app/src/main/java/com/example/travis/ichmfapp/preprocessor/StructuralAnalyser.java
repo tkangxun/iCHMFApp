@@ -257,11 +257,20 @@ public class StructuralAnalyser {
                             newLastRecSymbolNode.getChildNodes().item(INSIDE).appendChild(sqr);
                         }
                         return;
+                    } else {
+                        closestSymbol = getSymbolByID(recognizedSymbolList, sqrtHandling.get(sqrtHandling.size() - 1));
+                        pos = boundingBoxDetermination(closestSymbol, lastRecSymbol);
                     }
                 } else{  // add as row
                     closestSymbol = getSymbolByID(recognizedSymbolList, sqrtHandling.get(sqrtHandling.size() - 1));
                     pos = boundingBoxDetermination(closestSymbol, lastRecSymbol);
-                    sqrtHandling.remove(sqrtHandling.size()-1);} //end of squareroot relation
+                    sqrtHandling.remove(sqrtHandling.size()-1);
+                    if (!sqrtHandling.isEmpty()){
+                        doBaseLine(recognizedSymbolList, lastRecSymbol, rawExpressionTree);
+                        return;
+                    }
+
+                } //end of squareroot relation
             }//fall thru as symbol not added
 
 

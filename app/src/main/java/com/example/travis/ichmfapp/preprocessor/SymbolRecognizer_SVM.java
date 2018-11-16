@@ -310,6 +310,12 @@ public class SymbolRecognizer_SVM {
                         valid[1 + i] = true;
                     }
 
+                }else if (i+2 <mem.size() && mem.get(i+2).getTotalStrokePoints()<5) {
+                    if (Math.abs(mem.get(i).getStrokePoint(0).X - mem.get(i + 1).getStrokePoint(0).X) < 30) {
+                        valid[i] = true;
+                        valid[1 + i] = true;
+                        valid[2 + i] = true;
+                    }
                 }
 
             }
