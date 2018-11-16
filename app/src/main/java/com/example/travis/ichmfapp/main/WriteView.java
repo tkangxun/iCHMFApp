@@ -173,15 +173,42 @@ public class WriteView extends View {
     }
 
     public void undoLastStroke() {
-        if (this.getStrokeSize()<2){
+        if (_strokes.size()<2){
             mPath.reset();
             this.clear();
+            return;
         }
-        this._strokes.remove(_strokes.size() - 1);
-        mPath.setLastPoint(mX,mY);
 
-
+        _strokes.remove(_strokes.size()-1);
+        mPath = new Path();
         invalidate();
+
+        for (int i =0; i<_strokes.size();i++){
+            for (int j=0; j<_strokes.get(i).getTotalStrokePoints();j++){
+                if (_strokes.get(i).getTotalStrokePoints()==1){
+                    touchStart((float)_strokes.get(i).getStrokePoint(j).X,
+                            (float)_strokes.get(i).getStrokePoint(j).Y);
+                    touchMove((float)_strokes.get(i).getStrokePoint(j).X,
+                            (float)_strokes.get(i).getStrokePoint(j).Y);
+                    touchUp();
+                    continue;
+                }
+                if (j==0){
+                    touchStart((float)_strokes.get(i).getStrokePoint(j).X,
+                            (float)_strokes.get(i).getStrokePoint(j).Y);
+                    continue;
+                }
+                if (j== _strokes.get(i).getTotalStrokePoints()-1){
+                    touchUp();
+                    continue;
+                }
+                touchMove((float)_strokes.get(i).getStrokePoint(j).X,
+                        (float)_strokes.get(i).getStrokePoint(j).Y);
+            }
+        }
+
+
+
     }
 
     public void displaySymbol (StrokeList symbolStrokes){

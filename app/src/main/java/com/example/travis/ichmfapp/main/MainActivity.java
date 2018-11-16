@@ -26,13 +26,9 @@ import com.example.travis.ichmfapp.R;
 import com.example.travis.ichmfapp.preprocessor.*;
 import com.example.travis.ichmfapp.symbollib.*;
 
-import com.rapidapi.rapidconnect.*;
-
-
 import java.util.*;
 
 import symbolFeature.SymbolFeature;
-
 
 public class MainActivity extends AppCompatActivity {
 
@@ -51,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private Button checker;
     private Button correct;
     private Button correction[] = new Button[5];
+    private Button undo;
 
     private String result;
     private Stroke currentstroke;
@@ -97,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
                         //objreg might not be initialise
                         result = objreg.Recognize(currentstroke);
                         correct.setVisibility(View.VISIBLE);
+                        undo.setVisibility(View.VISIBLE);
                         correctionpanal(false);
                         expression.setText("Expression: " + result);
                         //api.getAnswer();
@@ -206,6 +204,7 @@ public class MainActivity extends AppCompatActivity {
         svmButton = (Button) findViewById(R.id.svm);
         checker = (Button) findViewById(R.id.check);
         correct = (Button) findViewById(R.id.correct);
+        undo = (Button) findViewById(R.id.undo);
         AlertDialog.Builder builder = new AlertDialog.Builder(
                 this);
         //alert dialog
@@ -250,6 +249,7 @@ public class MainActivity extends AppCompatActivity {
         svmButton.setVisibility(View.GONE);
         checker.setVisibility(View.GONE);
         correct.setVisibility(View.GONE);
+        undo.setVisibility(View.GONE);
         if (saved) {
             saveButton.setVisibility(View.GONE);
         }else{saveButton.setVisibility(View.VISIBLE);}
@@ -324,7 +324,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 StrokeList displayStrokes = trainer.getTrainsymbol(toTrain).getStrokes();
                 writeView.displaySymbol(displayStrokes);
-                ;
+
                 Toast.makeText(MainActivity.this,"Number of Strokes: " + displayStrokes.size() , Toast.LENGTH_SHORT).show();
 
             }
@@ -336,6 +336,34 @@ public class MainActivity extends AppCompatActivity {
                 //show buttons
                 correct.setVisibility(view.GONE);
                 correctionpanal(true);
+
+
+            }
+        });
+
+        undo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (writeView.getStrokeSize()==1){
+                    writeView.clear();
+                    objreg.ClearRecognitionMemory();
+                    correctionpanal(false);
+                    correct.setVisibility(View.GONE);
+                    undo.setVisibility(View.GONE);
+                    expression.setText("");
+                }
+
+                try{
+                    //undo stroke for recogniser
+                    //objreg.UndoLastStroke();
+                    writeView.undoLastStroke();
+
+                    //TODO: need to undo stroke in write view also
+                }catch (Exception e){
+                    Toast.makeText(MainActivity.this, "Can't undo!", Toast.LENGTH_SHORT).show();
+                }
+
 
 
             }
@@ -361,6 +389,9 @@ public class MainActivity extends AppCompatActivity {
                     checker.setVisibility(View.VISIBLE);
                     expression.setText("");
                     correct.setVisibility(View.GONE);
+
+                    //TODO: might wanna add back for trainging undo
+                    undo.setVisibility(View.GONE);
 
                     correctionpanal(false);
 
@@ -394,6 +425,7 @@ public class MainActivity extends AppCompatActivity {
                 objreg.ClearRecognitionMemory();
                 correctionpanal(false);
                 correct.setVisibility(View.GONE);
+                undo.setVisibility(View.GONE);
                 expression.setText("");
 
 
