@@ -352,14 +352,15 @@ public class MainActivity extends AppCompatActivity {
                     correct.setVisibility(View.GONE);
                     undo.setVisibility(View.GONE);
                     expression.setText("");
+                    return;
                 }
 
                 try{
                     //undo stroke for recogniser
-                    //objreg.UndoLastStroke();
+                    result = objreg.UndoLastStroke();
                     writeView.undoLastStroke();
+                    expression.setText("Expression: " + result);
 
-                    //TODO: need to undo stroke in write view also
                 }catch (Exception e){
                     Toast.makeText(MainActivity.this, "Can't undo!", Toast.LENGTH_SHORT).show();
                 }
@@ -390,7 +391,7 @@ public class MainActivity extends AppCompatActivity {
                     expression.setText("");
                     correct.setVisibility(View.GONE);
 
-                    //TODO: might wanna add back for trainging undo
+                    //TODO: might wanna add back for training undo
                     undo.setVisibility(View.GONE);
 
                     correctionpanal(false);
