@@ -79,6 +79,9 @@ public class Recognizer {
      */
     DocumentBuilder xmlDocBuilder;
 
+    //To keep track of brackets
+    List<Character> brackets = new ArrayList<Character>();
+
     List<Baseline> baseLineList;
     //MapleConnection mapleConn;
     // </editor-fold>
@@ -250,6 +253,7 @@ public class Recognizer {
     public String MakeCorrection(int position) throws Exception {
         String result = "";
         RecognizedSymbol symbolForReplacement = (RecognizedSymbol) _recognitionList.get(position);
+        brackets.clear();
 
 
         //add to sample file
@@ -301,6 +305,7 @@ public class Recognizer {
     public String UndoLastStroke() throws Exception {
         String result = " ";
         _rawExpressionTree = xmlDocBuilder.newDocument();
+        brackets.clear();
 
         RecognizedSymbol rc = (RecognizedSymbol) (_aryLMemoryRecognizedString.get(_aryLMemoryRecognizedString.size() - 1));
         _aryLMemoryRecognizedString.remove(_aryLMemoryRecognizedString.size() - 1);
@@ -344,6 +349,7 @@ public class Recognizer {
         _mathMLDocTree = null;
         _recognitionList = null;
         _structuralAnalyser = new StructuralAnalyser(baseLineList);
+        brackets.clear();
     }
 
     /**
@@ -451,6 +457,16 @@ public class Recognizer {
             strokes++;
         }
 
+        if (list.size()>0  &&recognizedChar.getSymbolChar() == '\u2212' && list.get(list.size() - 1).getSymbolChar() == '+'
+                && _structuralAnalyser.boundingBoxDetermination(list.get(list.size() - 1), recognizedChar) == 5){
+            recognizedChar.setStrokes(list.get(list.size() - 1).getStrokes());
+            list.remove(list.size()-1);
+            Stroke temp = recognizedChar.getStroke(0);
+            recognizedChar.addStroke(temp);
+            recognizedChar.setSymbolChar('\u00b1');
+
+            //list.add(recognizedChar);
+        }
 
         if (list.size() == 0 || verifyContext(recognizedChar, (RecognizedSymbol) list.get(list.size() - 1))) {
             RecognizedSymbol pre = new RecognizedSymbol('0');
@@ -459,6 +475,9 @@ public class Recognizer {
             }
             recognizedChar = checkSimilarSymbols(recognizedChar, pre, candidate);
             list.add(recognizedChar);
+            if (StructuralAnalyser.openFences.contains(recognizedChar.getSymbolChar())){
+                brackets.add(recognizedChar.getSymbolChar());
+            }
 
             return true;
         } else {
@@ -499,6 +518,10 @@ public class Recognizer {
                 recognizedChar.setSymbolChar((char) 215);
                 switchChar(candidate, lastChar, recognizedChar);
             }
+        }else if (StructuralAnalyser.closeFences.contains(lastChar) && !brackets.isEmpty()){
+            recognizedChar.setSymbolChar(StructuralAnalyser.getClose(brackets.get(brackets.size()-1)));
+            switchChar(candidate, lastChar, recognizedChar);
+            brackets.remove(brackets.size()-1);
         }
         return recognizedChar;
     }
@@ -547,7 +570,7 @@ public class Recognizer {
 
         mResult= removeDuplicates(mResult);
 
-        if (ConstantData.doTest) {
+        if (!ConstantData.doTest) {
             Toast.makeText(context,
                     "Time after SVM recognition is : " + SVMtime + "\n"
                             + "Result from SVM: " + svmResult + "\n"
@@ -598,6 +621,7 @@ public class Recognizer {
         if (result.getSymbolChar() == '.' || result.getSymbolChar() == '\u221a'){
             return true;
         }
+
         int pos = _structuralAnalyser.boundingBoxDetermination(last, result);
         return SymbolClassifier.checkContext(pos, last, result);
 
@@ -703,9 +727,9 @@ public class Recognizer {
                 } else if (symbol.equals(String.valueOf('\u00d7'))) {
                     asciiString += "xx";
                 } else if (symbol.equals(String.valueOf('\u00f7'))) {
-                    asciiString += "-:";
+                    asciiString += "(-:)";
                 } else if (symbol.equals(String.valueOf('\u00b1'))) {
-                    asciiString += "+-";
+                    asciiString += "(+-)";
                 } else if (symbol.equals(String.valueOf('\u222b'))) {
                     asciiString += "int";
                 } else if (symbol.equals(String.valueOf('\u2211'))) {

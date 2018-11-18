@@ -186,7 +186,7 @@ public class SymbolClassifier {
         }
     }
 
-    //added by quxi 2009.12.30
+
     //handle case when last symbol is - and above/under other operator
     private static boolean checkNext(RecognizedSymbol relate, RecognizedSymbol last) {
         String lastString = last.getSymbolCharString();

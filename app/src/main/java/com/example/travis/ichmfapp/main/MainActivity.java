@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     static Recognizer objreg;
     private Trainer trainer;
 
-    //TODO: undo button vs clear all strokes and expressions
+
     //TODO: erase current expression, with time control overlay input method
     //TODO: store expression string
     //TODO: brackets and expression, syntax check

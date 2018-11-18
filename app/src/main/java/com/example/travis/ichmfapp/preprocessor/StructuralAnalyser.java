@@ -20,12 +20,12 @@ public class StructuralAnalyser {
             "arcsin", "arccos", "arctan", "arccot", "lim", "log", "ln"};
     private static ArrayList groupingList = new ArrayList(
             Arrays.asList(groupingListArr));
-    private static String[] closeFenceArr = {")", "}", "]"};
-    private static ArrayList closeFences = new ArrayList(
-            Arrays.asList(closeFenceArr));
-    private static String[] openFenceArr = {"(", "{", "["};
-    private static ArrayList openFences = new ArrayList(
-            Arrays.asList(openFenceArr));
+
+    public static ArrayList closeFences = new ArrayList(
+            Arrays.asList(')', '}', ']'));
+
+    public static ArrayList openFences = new ArrayList(
+            Arrays.asList('(','{', '['));
     private static int maxGroupingLength = 6;
     public static final byte PRE_SUPER_SCRIPT = 0;
     public static final byte ABOVE = 1;
@@ -42,7 +42,10 @@ public class StructuralAnalyser {
     List<Baseline> baseLine;
 
     boolean fracHandling;
+
     List<Integer> sqrtHandling = new ArrayList<Integer>();
+
+
     static boolean matrixHandling;
 
     //tell if the formula is a matrix or an normal equation
@@ -219,7 +222,7 @@ public class StructuralAnalyser {
             //Node equation = relatedSymbol.getNode().getChildNodes().item(pos);
 
             //remove ?
-            //TODO:fraction have abit of problem the minus sign and fraction
+            //TODO:fraction have abit of problem the minus one as denominator
             if (fracHandling){
                 Node equation = closestSymbol.getNode().getChildNodes().item(BELOW);
                 if (equation.hasChildNodes() && ((Element) (equation.getFirstChild())).getAttribute("identity").equals("?")){
@@ -245,7 +248,7 @@ public class StructuralAnalyser {
                 if (!checkOutside(sqrtBox, lastRecSymbol)) {
                     RecognizedSymbol relatedSymbol = getSymbolByID(recognizedSymbolList, sqrtHandling.get(sqrtHandling.size() - 1));
                     Node equation = relatedSymbol.getNode().getChildNodes().item(INSIDE);
-                    //TODO: error when square  root is not the first in nested`also in nested
+                    //TODO: error when square  root is not the first in nested
                     if (equation.hasChildNodes() && ((Element) (equation.getFirstChild())).getAttribute("identity").equals("?")) {
                         equation.removeChild(equation.getFirstChild());
                         equation.appendChild(newLastRecSymbolNode);
@@ -1471,6 +1474,19 @@ public class StructuralAnalyser {
             return "[";
         }
         return "";
+    }
+
+    public static char getClose(char s) {
+        if (s == ('(')) {
+            return ')';
+        }
+        if (s == ('{')) {
+            return '}';
+        }
+        if (s == ('[')) {
+            return ']';
+        }
+        return ' ';
     }
 
     private Box getBoxByID (List<RecognizedSymbol> list ,int index){

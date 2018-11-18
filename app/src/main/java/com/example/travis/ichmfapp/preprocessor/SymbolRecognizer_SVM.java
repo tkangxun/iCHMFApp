@@ -24,7 +24,6 @@ public class SymbolRecognizer_SVM {
             if (validStroke[count - 1] == false) {
                 continue;
             }
-            //might to add back the stroke, test and check for j
             StrokeList _strokeListLocal = new StrokeList();
             for (int k = 0; k < count; k++) {
                 _strokeListLocal.add(_strokeListMemory.get(
@@ -60,6 +59,13 @@ public class SymbolRecognizer_SVM {
                     result.remove(result.size()-1);
                     result.add(new RecognizedSymbol(':',dot,0.1));
                     i++;
+                } else if(i+2< _strokeListMemory.size() && _strokeListMemory.get(i+2).getTotalStrokePoints() <5){
+                    dot.add(_strokeListMemory.get(i+1));
+                    dot.add(_strokeListMemory.get(i+2));
+                    //result.remove(result.size()-1);
+                    result.remove(result.size()-1);
+                    result.add(new RecognizedSymbol('\u00f7',dot,0.01));
+
                 }
 
             }
