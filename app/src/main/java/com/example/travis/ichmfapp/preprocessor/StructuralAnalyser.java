@@ -16,14 +16,13 @@ import org.w3c.dom.*;
  */
 
 public class StructuralAnalyser {
+    //TODO: groupings
     private static String[] groupingListArr = {"sin", "cos", "tan", "sec", "cot",
             "arcsin", "arccos", "arctan", "arccot", "lim", "log", "ln"};
     private static ArrayList groupingList = new ArrayList(
             Arrays.asList(groupingListArr));
-
     public static ArrayList closeFences = new ArrayList(
             Arrays.asList(')', '}', ']'));
-
     public static ArrayList openFences = new ArrayList(
             Arrays.asList('(','{', '['));
     private static int maxGroupingLength = 6;
@@ -222,7 +221,6 @@ public class StructuralAnalyser {
             //Node equation = relatedSymbol.getNode().getChildNodes().item(pos);
 
             //remove ?
-            //TODO:fraction have abit of problem the minus one as denominator
             if (fracHandling){
                 Node equation = closestSymbol.getNode().getChildNodes().item(BELOW);
                 if (equation.hasChildNodes() && ((Element) (equation.getFirstChild())).getAttribute("identity").equals("?")){
@@ -238,43 +236,36 @@ public class StructuralAnalyser {
                     return;
                 }
             }
-            if (!sqrtHandling.isEmpty()) {
-                /**
-                 * check if the new symbol is out side of sqrt box.
-                 * if true, off sqrt handing and continue
-                 * if new symbol still inside, add inside the sqrt
-                 */
-                Box sqrtBox = getBoxByID(recognizedSymbolList, sqrtHandling.get(sqrtHandling.size()-1));
-                if (!checkOutside(sqrtBox, lastRecSymbol)) {
+
+            if (!sqrtHandling.isEmpty()){
+                Box sqrtBox = getBoxByID(recognizedSymbolList, sqrtHandling.get(sqrtHandling.size()-(1)));
+                if (!checkOutside(sqrtBox, lastRecSymbol)) { //inside current sqrt
+                    Toast.makeText(MainActivity.getAppContext(), "in sqrt: " + (sqrtHandling.size()-1), Toast.LENGTH_SHORT).show();
                     RecognizedSymbol relatedSymbol = getSymbolByID(recognizedSymbolList, sqrtHandling.get(sqrtHandling.size() - 1));
                     Node equation = relatedSymbol.getNode().getChildNodes().item(INSIDE);
-                    //TODO: error when square  root is not the first in nested
                     if (equation.hasChildNodes() && ((Element) (equation.getFirstChild())).getAttribute("identity").equals("?")) {
                         equation.removeChild(equation.getFirstChild());
                         equation.appendChild(newLastRecSymbolNode);
                         baseLine.add(new Baseline(lastRecSymbol, center(lastRecSymbol)));
-                        baseLine.get(i).addSymbol(lastRecSymbol);
-                        if (lastRecSymbol.getSymbolChar() =='\u221a' ) {
+                        //baseLine.get(i).addSymbol(lastRecSymbol);
+                        if (lastRecSymbol.getSymbolChar() == '\u221a') {
                             sqrtHandling.add(lastRecSymbol.getId());
                             Element sqr = createSymbolNode(new RecognizedSymbol('?'), rawExpressionTree);
                             newLastRecSymbolNode.getChildNodes().item(INSIDE).appendChild(sqr);
                         }
-                        return;
-                    } else {
-                        closestSymbol = getSymbolByID(recognizedSymbolList, sqrtHandling.get(sqrtHandling.size() - 1));
-                        pos = boundingBoxDetermination(closestSymbol, lastRecSymbol);
+                        return; //added symbol in new baseline
                     }
-                } else{  // add as row
+                    Node symbolParentNode = baseLine.get(i).getSymbol().getNode().getParentNode();
+                    symbolParentNode.appendChild(newLastRecSymbolNode);
+                    break;
+                    // in this current sqrtroot but already have a baseline
+                }else{ //not in current sqrt check next one
                     closestSymbol = getSymbolByID(recognizedSymbolList, sqrtHandling.get(sqrtHandling.size() - 1));
                     pos = boundingBoxDetermination(closestSymbol, lastRecSymbol);
                     sqrtHandling.remove(sqrtHandling.size()-1);
-                    if (!sqrtHandling.isEmpty()){
-                        doBaseLine(recognizedSymbolList, lastRecSymbol, rawExpressionTree);
-                        return;
-                    }
+                }
+            }
 
-                } //end of squareroot relation
-            }//fall thru as symbol not added
 
 
             if (Math.abs(pos) == ROW && !symbolHandled) {

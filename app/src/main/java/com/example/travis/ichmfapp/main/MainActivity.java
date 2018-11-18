@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
 
     //TODO: erase current expression, with time control overlay input method
     //TODO: store expression string
-    //TODO: brackets and expression, syntax check
 
 
 
