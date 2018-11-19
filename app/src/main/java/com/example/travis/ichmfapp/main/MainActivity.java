@@ -333,6 +333,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //show buttons
                 correct.setVisibility(view.GONE);
+                undo.setVisibility(view.GONE);
                 correctionpanal(true);
 
 
@@ -416,7 +417,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "clear", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "clear", Snackbar.LENGTH_SHORT)
                         .setAction("Action", null).show();
 
                 /** place icon action here! */

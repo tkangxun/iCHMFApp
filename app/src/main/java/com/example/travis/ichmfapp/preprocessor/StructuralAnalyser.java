@@ -285,7 +285,7 @@ public class StructuralAnalyser {
                             Node parentNodeOfClosestSymbol = closestSymbol.getNode().getParentNode();
                             parentNodeOfClosestSymbol.appendChild(newLastRecSymbolNode);
                         } //matrix close bracket
-                        else if (closeFences.indexOf(lastRecSymbol.getSymbolCharString()) > -1) {
+                        else if (closeFences.contains(lastRecSymbol.getSymbolChar())) {
                             matrixHandling = false;
                             Node refMatrixRoot = closestSymbol.getNode().getParentNode().getParentNode();
                             Node newCloseBraceNode = rawExpressionTree.createElement("matrixCB");
@@ -419,7 +419,7 @@ public class StructuralAnalyser {
             }
 
             //handle matrix found 2009.09.08
-            else if (openFences.indexOf(relatedSymbol.getSymbolCharString()) > -1 && pos == SUPER_SCRIPT) {
+            else if (openFences.contains(relatedSymbol.getSymbolChar())&& pos == SUPER_SCRIPT) {
                 matrixHandling = true;
                 Node matrixRoot = rawExpressionTree.createElement("matrix");
                 Node openBraceRootNode = rawExpressionTree.createElement("matrixOB");
@@ -502,7 +502,7 @@ public class StructuralAnalyser {
 
         //handle new column condition in matrix
         for (int j = 0; j < mstSymbols.size(); j++) {
-            if (openFences.indexOf(mstSymbols.get(j).getSymbolCharString()) > -1 && matrixHandling == true) {
+            if (openFences.contains(mstSymbols.get(j).getSymbolChar()) && matrixHandling == true) {
                 RecognizedSymbol matrixElement = get1stElement(recognizedSymbolList, mstSymbols.get(j));
                 if (!mstSymbols.contains(matrixElement)) {
                     mstSymbols.add(matrixElement);
@@ -547,7 +547,7 @@ public class StructuralAnalyser {
                 //handle exception: new matrix column
                 if (pos == BELOW && matrixHandling == true) {
                     for (int j = 0; j < tempList.size(); j++) {
-                        if (openFences.indexOf(tempList.get(j).getSymbolCharString()) > -1) {
+                        if (openFences.contains(tempList.get(j).getSymbolChar())) {
                             return tempList.get(i);
                         }
                     }
@@ -619,7 +619,7 @@ public class StructuralAnalyser {
             return true; //matrix finished
         } else if (tempNode.getParentNode().getParentNode().getNodeName().equals("matrixrow") && !checkIntersect(symbolList, lastRecSymbol, baseLineSymbol)) {
             return true; //matrix element
-        } else if (tempNode.getParentNode().getNodeName().equals("matrixOB") && matrixHandling && closeFences.indexOf(lastRecSymbol.getSymbolCharString()) > -1) {
+        } else if (tempNode.getParentNode().getNodeName().equals("matrixOB") && matrixHandling && closeFences.contains(lastRecSymbol.getSymbolChar())) {
             return true; //matrix close bracket and open bracket
         } else if (tempNode.getParentNode().getParentNode().getNodeName().equals("symbolnode")) {
             String id = ((Element) (tempNode.getParentNode().getParentNode())).getAttribute("id");
