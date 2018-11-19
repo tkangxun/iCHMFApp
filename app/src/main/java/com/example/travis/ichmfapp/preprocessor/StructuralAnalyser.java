@@ -240,7 +240,6 @@ public class StructuralAnalyser {
             if (!sqrtHandling.isEmpty()){
                 Box sqrtBox = getBoxByID(recognizedSymbolList, sqrtHandling.get(sqrtHandling.size()-(1)));
                 if (!checkOutside(sqrtBox, lastRecSymbol)) { //inside current sqrt
-                    Toast.makeText(MainActivity.getAppContext(), "in sqrt: " + (sqrtHandling.size()-1), Toast.LENGTH_SHORT).show();
                     RecognizedSymbol relatedSymbol = getSymbolByID(recognizedSymbolList, sqrtHandling.get(sqrtHandling.size() - 1));
                     Node equation = relatedSymbol.getNode().getChildNodes().item(INSIDE);
                     if (equation.hasChildNodes() && ((Element) (equation.getFirstChild())).getAttribute("identity").equals("?")) {

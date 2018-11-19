@@ -239,7 +239,9 @@ public class SymbolFeature {
             out.write(featureString);
             out.write("\n");
             out.close();
+            Toast.makeText(MainActivity.getAppContext(), "Success!", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {//Catch exception if any
+            Toast.makeText(MainActivity.getAppContext(), "Error writing to file", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
     }

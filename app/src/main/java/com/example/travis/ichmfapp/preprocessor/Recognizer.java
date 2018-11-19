@@ -570,7 +570,7 @@ public class Recognizer {
 
         mResult= removeDuplicates(mResult);
 
-        if (!ConstantData.doTest) {
+        if (ConstantData.doTest) {
             Toast.makeText(context,
                     "Time after SVM recognition is : " + SVMtime + "\n"
                             + "Result from SVM: " + svmResult + "\n"

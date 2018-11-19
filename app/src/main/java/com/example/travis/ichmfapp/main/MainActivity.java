@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
     //TODO: erase current expression, with time control overlay input method
     //TODO: store expression string
+    //TODO: make writeview not jump
 
 
 
@@ -256,9 +257,7 @@ public class MainActivity extends AppCompatActivity {
         trainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // for SVM, Sampling is collected, preprocessed , feature extraction,
-                // then train and model created
-                // input symbol only feature extraction then SVM classification
+
                 Toast.makeText(MainActivity.getAppContext(), "Training symbol: " + toTrain+ ", strokes: " + writeView.getStrokes().size(), Toast.LENGTH_SHORT).show();
 
                 //Training for elastic matching

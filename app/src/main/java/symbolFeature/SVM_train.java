@@ -180,7 +180,9 @@ public class SVM_train {
                 }
             }
             fp.close();
+            Toast.makeText(MainActivity.getAppContext(), "new SVM model created", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
+            Toast.makeText(MainActivity.getAppContext(), "error", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
     }

@@ -211,7 +211,7 @@ public class Trainer{
     }
 
 
-
+    //input ? to train svm, secret key
     public void trainSymbolSVM(char sym, StrokeList strokes) {
 
 
@@ -219,7 +219,6 @@ public class Trainer{
             //create new svm file base on new symbol input
             SVM_train svm = new SVM_train();
             svm.run();
-            Toast.makeText(context, "new SVM model created", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -241,7 +240,7 @@ public class Trainer{
 
         if (SymbolRecognizer_SVM.checkStrokeNO(sbl.getSymbolCharDecimal(), sbl.getStrokes().size())) {
             SymbolFeature.writeFeatures(SymbolFeature.getFeature(sbl.getSymbolCharDecimal(), PreprocessorSVM.preProcessing(sbl.getStrokes())));
-            Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
+
         } else {
             Toast.makeText(context, "invalid number of strokes", Toast.LENGTH_SHORT).show();
         }
