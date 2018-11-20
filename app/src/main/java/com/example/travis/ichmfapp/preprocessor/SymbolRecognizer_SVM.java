@@ -18,6 +18,8 @@ public class SymbolRecognizer_SVM {
         //long startTime = System.currentTimeMillis();
         boolean[] validStroke = oneSymbol(_strokeListMemory);
         validStroke = checkColon(validStroke, _strokeListMemory);
+        validStroke = closeenough(validStroke, _strokeListMemory);
+
 
 
         for (int count = _strokeListMemory.size(); count > 0; count--) {
@@ -325,6 +327,17 @@ public class SymbolRecognizer_SVM {
                 }
 
             }
+        return valid;
+    }
+    private boolean[] closeenough(boolean[] valid, StrokeList mem){
+        for (int i =0; i< mem.size(); i++){
+            if (i+1 < mem.size()){
+                if (PreprocessorSVM.preClassify(mem.get(i),mem.get(i+1))){
+                    valid[i] = true;
+                    valid [i+1] =true;
+                }
+            }
+        }
         return valid;
     }
 }

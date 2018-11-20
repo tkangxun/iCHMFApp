@@ -44,7 +44,7 @@ public class SymbolRecognizer {
                 }
             }
             finalDistance = Math.pow(distance, 1 - recognizedList.get(i).getError());
-            //finalDistance2 = distance * Math.pow(10, 1 - recognizedList.get(i).getError());
+            //finalDistance= distance * Math.pow(10, 1 - recognizedList.get(i).getError());
 
             resultList.add(new RecognizedSymbol(symbolChar, sList, finalDistance));
             if (ConstantData.doTest) {

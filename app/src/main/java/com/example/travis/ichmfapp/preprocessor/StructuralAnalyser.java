@@ -17,10 +17,9 @@ import org.w3c.dom.*;
 
 public class StructuralAnalyser {
     //TODO: groupings
-    private static String[] groupingListArr = {"sin", "cos", "tan", "sec", "cot",
-            "arcsin", "arccos", "arctan", "arccot", "lim", "log", "ln"};
     private static ArrayList groupingList = new ArrayList(
-            Arrays.asList(groupingListArr));
+            Arrays.asList("sin", "cos", "tan", "sec", "cot",
+                    "arcsin", "arccos", "arctan", "arccot", "lim", "log", "ln"));
     public static ArrayList closeFences = new ArrayList(
             Arrays.asList(')', '}', ']'));
     public static ArrayList openFences = new ArrayList(
@@ -217,11 +216,15 @@ public class StructuralAnalyser {
             List<RecognizedSymbol> baseLineNodeList = baseLine.get(i).getSymbolList();
             RecognizedSymbol closestSymbol = (RecognizedSymbol) (this.findClosest(baseLineNodeList, lastRecSymbol));
             int pos = boundingBoxDetermination(closestSymbol, lastRecSymbol);
+            if (closestSymbol.getSymbolChar() == '\u2192' && pos == SUB_SCRIPT){
+                pos = ROW;
+            }
             //RecognizedSymbol relatedSymbol = findRelatedSymbol(recognizedSymbolList, lastRecSymbol);
             //Node equation = relatedSymbol.getNode().getChildNodes().item(pos);
 
             //remove ?
             if (fracHandling){
+
                 Node equation = closestSymbol.getNode().getChildNodes().item(BELOW);
                 if (equation.hasChildNodes() && ((Element) (equation.getFirstChild())).getAttribute("identity").equals("?")){
                     equation.removeChild(equation.getFirstChild());
@@ -235,6 +238,14 @@ public class StructuralAnalyser {
                     }
                     return;
                 }
+                if (pos == SUPER_SCRIPT){
+                    fracHandling = false;
+                    if (matrixHandling){
+                        pos = ROW;
+                        fracHandling = true;
+                    }
+                }
+
             }
 
             if (!sqrtHandling.isEmpty()){
@@ -280,10 +291,17 @@ public class StructuralAnalyser {
                     baseLine.get(i).addSymbol(lastRecSymbol);
 
                     //handle matrix element added in existing row
-                    if (matrixHandling == true && (closestSymbol.getNode().getParentNode().getParentNode().getNodeName().equals("matrixrow") || closestSymbol.getNode().getParentNode().getNodeName().equals("matrixOB"))) {
+                    if (matrixHandling == true && (closestSymbol.getNode().getParentNode().getParentNode().getNodeName().equals("matrixrow") || closestSymbol.getNode().getParentNode().getNodeName().equals("matrixOB")||fracHandling)) {
                         if (SymbolClassifier.oneExpression(pos, closestSymbol, lastRecSymbol)) { //existing element entry
                             Node parentNodeOfClosestSymbol = closestSymbol.getNode().getParentNode();
                             parentNodeOfClosestSymbol.appendChild(newLastRecSymbolNode);
+                            if (lastRecSymbol.getSymbolChar() =='\u221a' ) {
+                                sqrtHandling.add(lastRecSymbol.getId());
+                                if (newLastRecSymbolNode.getChildNodes().item(INSIDE).getChildNodes().getLength() == 0) {
+                                    Element child = createSymbolNode(new RecognizedSymbol('?'), rawExpressionTree);
+                                    newLastRecSymbolNode.getChildNodes().item(INSIDE).appendChild(child);
+                                }
+                            }
                         } //matrix close bracket
                         else if (closeFences.contains(lastRecSymbol.getSymbolChar())) {
                             matrixHandling = false;
@@ -317,6 +335,7 @@ public class StructuralAnalyser {
                             newEquationNode.appendChild(newLastRecSymbolNode);
                             //check for empty column
                             NodeList temp = parentNodeOfClosestSymbol.getChildNodes();
+                            fracHandling = false;
                             for (int j = 0; j < temp.getLength(); j++) {
                                 if (!temp.item(j).hasChildNodes()) {
                                     parentNodeOfClosestSymbol.removeChild(temp.item(j));
@@ -417,6 +436,7 @@ public class StructuralAnalyser {
                 }
                 equationNodeOf2ndLastSymbol.appendChild(frac);
             }
+
 
             //handle matrix found 2009.09.08
             else if (openFences.contains(relatedSymbol.getSymbolChar())&& pos == SUPER_SCRIPT) {
@@ -619,7 +639,9 @@ public class StructuralAnalyser {
             return true; //matrix finished
         } else if (tempNode.getParentNode().getParentNode().getNodeName().equals("matrixrow") && !checkIntersect(symbolList, lastRecSymbol, baseLineSymbol)) {
             return true; //matrix element
-        } else if (tempNode.getParentNode().getNodeName().equals("matrixOB") && matrixHandling && closeFences.contains(lastRecSymbol.getSymbolChar())) {
+        } else if (fracHandling && matrixHandling) { //when one of the element is a fraction
+            return true;
+        }else if (tempNode.getParentNode().getNodeName().equals("matrixOB") && matrixHandling && closeFences.contains(lastRecSymbol.getSymbolChar())) {
             return true; //matrix close bracket and open bracket
         } else if (tempNode.getParentNode().getParentNode().getNodeName().equals("symbolnode")) {
             String id = ((Element) (tempNode.getParentNode().getParentNode())).getAttribute("id");

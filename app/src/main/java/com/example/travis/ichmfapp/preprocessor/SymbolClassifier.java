@@ -22,7 +22,7 @@ public class SymbolClassifier {
     private static ArrayList groupingList =
             new ArrayList(Arrays.asList(groupingListArr));
     private static String[] pre_superscript_list = {String.valueOf('\u221A')};
-    //added by quxi 2009.09.15
+
     //Pai, Sum, f, fraction
     private static String[] belowListArr = {String.valueOf('\u220f'), String.valueOf('\u2211'), String.valueOf('\u222b'),
             String.valueOf('\u2212')};

@@ -62,16 +62,16 @@ public class PreprocessorSVM {
      * @param s2 Second StrokeList to be classified.
      * @return True if two inputs satisfy the condition, False otherwise.
      */
-    public static boolean preClassify(StrokeList s1, StrokeList s2) {
+    public static boolean preClassify(Stroke s1, Stroke s2) {
         //If the two start points are close enough return true;
         //If the throw end points are close enough return true;
         //else return False;
-        if (distance(s1.get(0).getStrokePoint(0), s2.get(0).getStrokePoint(0)) <= closePoint) {
+        if (distance(s1.getStrokePoint(0), s2.getStrokePoint(0)) <= closePoint) {
             return true;
-        } else if (distance(s1.get(s1.size() - 1).getStrokePoint(
-                s1.get(s1.size() - 1).getTotalStrokePoints() - 1),
-                s2.get(s2.size() - 1).getStrokePoint(
-                        s2.get(s2.size() - 1).getTotalStrokePoints() - 1)) <= closePoint) {
+        } else if (distance(s1.getStrokePoint(
+                s1.getTotalStrokePoints() - 1),
+                s2.getStrokePoint(
+                        s2.getTotalStrokePoints() - 1)) <= closePoint) {
             return true;
         } else {
             return false;
