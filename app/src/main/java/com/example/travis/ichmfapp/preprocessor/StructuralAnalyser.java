@@ -213,17 +213,16 @@ public class StructuralAnalyser {
         Element newLastRecSymbolNode = createSymbolNode(lastRecSymbol, rawExpressionTree);
 
         for (int i = 0; i < baseLine.size(); i++) {
-            List<RecognizedSymbol> baseLineNodeList = baseLine.get(i).getSymbolList();
+                List<RecognizedSymbol> baseLineNodeList = baseLine.get(i).getSymbolList();
             RecognizedSymbol closestSymbol = (RecognizedSymbol) (this.findClosest(baseLineNodeList, lastRecSymbol));
             int pos = boundingBoxDetermination(closestSymbol, lastRecSymbol);
             if (closestSymbol.getSymbolChar() == '\u2192' && pos == SUB_SCRIPT){
                 pos = ROW;
             }
-            //RecognizedSymbol relatedSymbol = findRelatedSymbol(recognizedSymbolList, lastRecSymbol);
-            //Node equation = relatedSymbol.getNode().getChildNodes().item(pos);
+
 
             //remove ?
-            if (fracHandling){
+            /*if (fracHandling){
 
                 Node equation = closestSymbol.getNode().getChildNodes().item(BELOW);
                 if (equation.hasChildNodes() && ((Element) (equation.getFirstChild())).getAttribute("identity").equals("?")){
@@ -246,7 +245,7 @@ public class StructuralAnalyser {
                     }
                 }
 
-            }
+            }*/
 
             if (!sqrtHandling.isEmpty()){
                 Box sqrtBox = getBoxByID(recognizedSymbolList, sqrtHandling.get(sqrtHandling.size()-(1)));
@@ -270,7 +269,7 @@ public class StructuralAnalyser {
                     break;
                     // in this current sqrtroot but already have a baseline
                 }else{ //not in current sqrt check next one
-                    closestSymbol = getSymbolByID(recognizedSymbolList, sqrtHandling.get(sqrtHandling.size() - 1));
+                    closestSymbol = (RecognizedSymbol) (this.findClosest(baseLineNodeList, lastRecSymbol));
                     pos = boundingBoxDetermination(closestSymbol, lastRecSymbol);
                     sqrtHandling.remove(sqrtHandling.size()-1);
                 }
@@ -289,7 +288,7 @@ public class StructuralAnalyser {
                     symbolHandled = true;
                     testRow = true;
                     baseLine.get(i).addSymbol(lastRecSymbol);
-
+    //TODO: matrix got prob, even the basic one
                     //handle matrix element added in existing row
                     if (matrixHandling == true && (closestSymbol.getNode().getParentNode().getParentNode().getNodeName().equals("matrixrow") || closestSymbol.getNode().getParentNode().getNodeName().equals("matrixOB")||fracHandling)) {
                         if (SymbolClassifier.oneExpression(pos, closestSymbol, lastRecSymbol)) { //existing element entry
@@ -392,7 +391,9 @@ public class StructuralAnalyser {
 
             //handle fraction
             //fraction to handle inside
-            if ((pos == 5) && lastRecSymbol.getSymbolChar() == '\u2212') {
+
+            //TODO: cannot do to the power
+            if ((pos == 5) && lastRecSymbol.getSymbolChar() == '\u2212' && !fracHandling) {
                 fracHandling = true;
 
                 //handle complex numerator, e.g. a2
@@ -416,6 +417,9 @@ public class StructuralAnalyser {
                 Element frac = newLastRecSymbolNode;
                 NodeList nodeList = relatedSymbol.getNode().getParentNode().getChildNodes();
                 RecognizedSymbol rc = (RecognizedSymbol) recognizedSymbolList.get(Integer.parseInt(((Element) nodeList.item(nodeList.getLength() - 1)).getAttribute("id")));
+
+
+
                 while (rc != null && boundingBoxDetermination(rc, lastRecSymbol) == pos) {
                     Node node = rc.getNode();
                     Element preSibling = (Element) (node.getPreviousSibling());
@@ -476,9 +480,14 @@ public class StructuralAnalyser {
             else {
                 //remove "?"
 
+                if (fracHandling){
+                    fracHandling = false;
+                }
+
                 Node equation = relatedSymbol.getNode().getChildNodes().item(pos);
                 if (equation.hasChildNodes() && ((Element) (equation.getFirstChild())).getAttribute("attribute").equals("")) {
                     equation.removeChild(equation.getFirstChild());
+
                 }
                 equation.appendChild(newLastRecSymbolNode);
                 if (lastRecSymbol.getSymbolChar() =='\u221a' ) {
@@ -500,6 +509,7 @@ public class StructuralAnalyser {
     //return relatedSymbol of lastRecSymbol
     private RecognizedSymbol findRelatedSymbol(List<RecognizedSymbol> recognizedSymbolList, RecognizedSymbol lastRecSymbol) {
         RecognizedSymbol closestSymbol = (RecognizedSymbol) (findClosest(recognizedSymbolList, lastRecSymbol));
+
         List<RecognizedSymbol> templist = findMSTSymbols(recognizedSymbolList, lastRecSymbol);
         List<RecognizedSymbol> mstSymbols = new ArrayList();
         for (int i = 0; i < templist.size(); i++) {
@@ -536,7 +546,7 @@ public class StructuralAnalyser {
             }
         }
         //put closestSymbol at first
-        if (!mstSymbols.get(0).equals(closestSymbol)) {
+        if (!mstSymbols.isEmpty() && !mstSymbols.get(0).equals(closestSymbol)) {
             mstSymbols.remove(closestSymbol);
             mstSymbols.add(0, closestSymbol);
         }
@@ -725,6 +735,7 @@ public class StructuralAnalyser {
             if (!sqrtHandling.isEmpty() && symbolList.get(i).getSymbolChar() == '\u221a'){
                 return symbolList.get(i);
             }*/
+
             dx = ((StrokePoint) center(Last)).X - ((StrokePoint) center(symbolList.get(i))).X;
             dy = ((StrokePoint) center(Last)).Y - ((StrokePoint) center(symbolList.get(i))).Y;
             d = Math.sqrt(dx * dx + dy * dy);
@@ -837,6 +848,7 @@ public class StructuralAnalyser {
         }
     }
 
+    //TODO: adjust subscript
     private int boundingBoxDeterminations(Box secondLastBBox, StrokePoint secondLastCenter,
                                          RecognizedSymbol lastRecSymbol) {
 
@@ -1155,8 +1167,8 @@ public class StructuralAnalyser {
 
     private StrokePoint center(RecognizedSymbol recgSymbol) {
         String[] array1 = {"t","f", "b", "d", "h", "k", "l"};
-        String[] array2 = { "g", "j", "p", "q", "y"};
-        String[] array3 = {"a","c","e","e","m","n","o","r","s","u","v","w","x","z"};
+        String[] array2 = { "g", "j","i", "p", "q", "y"};
+        String[] array3 = {"a","c","e","m","n","o","r","s","u","v","w","x","z",String.valueOf('\u03b8')};
 
         StrokePoint center;
 
@@ -1165,19 +1177,22 @@ public class StructuralAnalyser {
         /**
          * [1] For character t,f,b,d,h,k,l and 0-9 and capital letters
          * take x=0.5 and y=1- 0.55 location. Almost to the center
-         * [2] For character g,j,p,q and y take center to be = 1- 0.65
-         * [3] the rest of the small letters, take center to be = 1- 0.75
+         * [2] For character g,p,q and y take center to be = 0.65
+         * [3] the rest of the small letters and theta, take center to be = 0.65
+         * [4] i and j is 0.2
          * [4] For rest of the characters, take take x=0.5 and y=1- 0.5,
+         * for '.' center cannot be determine here, must be based on neighbouring characters
          */
+
         if (SymbolClassifier.inArray(recgSymbol.getSymbolCharString(), array1) || Character.isDigit(recgSymbol.getSymbolCharString().charAt(0)) || Character.isUpperCase(recgSymbol.getSymbolChar())) {
             center = new StrokePoint((int) (rec.getX() + 0.5 * rec.getWidth()),
                     (int) (rec.getY() + 0.45 * rec.getHeight()));
-        } else if (SymbolClassifier.inArray(recgSymbol.getSymbolCharString(), array2)) {
+        } else if (SymbolClassifier.inArray(recgSymbol.getSymbolCharString(), array2) || SymbolClassifier.inArray(recgSymbol.getSymbolCharString(), array3)) {
             center = new StrokePoint((int) (rec.getX() + 0.5 * rec.getWidth()),
-                    (int) (rec.getY() + 0.35 * rec.getHeight()));
-        } else if (SymbolClassifier.inArray(recgSymbol.getSymbolCharString(), array3)) {
+                    (int) rec.getY() - 0.1 * rec.getHeight());
+        } else if (recgSymbol.getSymbolCharString() == "i"||recgSymbol.getSymbolCharString() == "j"){
             center = new StrokePoint((int) (rec.getX() + 0.5 * rec.getWidth()),
-                    (int) (rec.getY() + 0.25 * rec.getHeight()));
+                    (int) rec.getY() + 0.2 * rec.getHeight());
         }
         //center of sqrt should be at the left side hook part
         else if ( recgSymbol.getSymbolCharString().equals(String.valueOf('\u221A'))) {

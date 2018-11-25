@@ -250,6 +250,7 @@ public class Recognizer {
      * @return MathML string of corrected recognized expression.
      * @throws java.lang.Exception
      */
+    //TODO: after correcting, the symbol strokes are lost, unable to get pos after correcton of the symbol is done for multiple variation symbol is also tricky
     public String MakeCorrection(int position) throws Exception {
         String result = "";
         RecognizedSymbol symbolForReplacement = (RecognizedSymbol) _recognitionList.get(position);
@@ -257,9 +258,9 @@ public class Recognizer {
 
 
         //add to sample file
-        if (SymbolRecognizer_SVM.checkStrokeNO(symbolForReplacement.getSymbolCharDecimal(), symbolForReplacement.getStrokes().size())) {
+        /*if (SymbolRecognizer_SVM.checkStrokeNO(symbolForReplacement.getSymbolCharDecimal(), symbolForReplacement.getStrokes().size())) {
             symbolFeature.SymbolFeature.writeFeatures(symbolFeature.SymbolFeature.getFeature(symbolForReplacement.getSymbolCharDecimal(), PreprocessorSVM.preProcessing(symbolForReplacement.getStrokes())));
-        }
+        }*/
 
         int affectedSymbolCount = 0, count = 0;
         baseLineList.removeAll(baseLineList);

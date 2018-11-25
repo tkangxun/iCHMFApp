@@ -470,6 +470,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return result;
     }
+    //TODO: after undo correction panel is not updated
     private void correctionpanal(Boolean show){
 
         for (int i =0;i< correction.length; i++){
