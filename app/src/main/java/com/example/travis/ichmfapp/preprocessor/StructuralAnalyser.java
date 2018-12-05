@@ -271,6 +271,12 @@ public class StructuralAnalyser {
                 }else{ //not in current sqrt check next one
                     closestSymbol = (RecognizedSymbol) (this.findClosest(baseLineNodeList, lastRecSymbol));
                     pos = boundingBoxDetermination(closestSymbol, lastRecSymbol);
+
+                    if (sqrtHandling.size() ==1 ){
+                        closestSymbol = getSymbolByID(recognizedSymbolList, sqrtHandling.get(0));
+                        pos = boundingBoxDetermination(closestSymbol, lastRecSymbol);
+                    }
+
                     sqrtHandling.remove(sqrtHandling.size()-1);
                 }
             }
@@ -393,57 +399,70 @@ public class StructuralAnalyser {
             //fraction to handle inside
 
             //TODO: cannot do to the power
-            if ((pos == 5) && lastRecSymbol.getSymbolChar() == '\u2212' && !fracHandling) {
-                fracHandling = true;
+            if ((pos == 5) && lastRecSymbol.getSymbolChar() == '\u2212') {
+                if (fracHandling) {
+                    //remove "?"
+                    Node equation = relatedSymbol.getNode().getChildNodes().item(pos);
+                    if (equation.hasChildNodes() && ((Element) (equation.getFirstChild())).getAttribute("attribute").equals("")) {
+                        equation.removeChild(equation.getFirstChild());
 
-                //handle complex numerator, e.g. a2
-                Node parentOfRelatedSymbol = relatedSymbol.getNode().getParentNode();
-                while (!parentOfRelatedSymbol.getNodeName().equals("rootequation")) {
-                    parentOfRelatedSymbol = parentOfRelatedSymbol.getParentNode();
-                    if (parentOfRelatedSymbol.getNodeName().equals("symbolnode")) {
-                        RecognizedSymbol parentSymbol = (RecognizedSymbol) recognizedSymbolList.get(Integer.parseInt(((Element) parentOfRelatedSymbol).getAttribute("id")));
-                        if (boundingBoxDetermination(parentSymbol, lastRecSymbol) == pos) {
-                            if (parentSymbol.getSymbolChar() == '\u2212' && parentSymbol.getBox().getWidth() > lastRecSymbol.getBox().getWidth()) {
+                    }
+                    equation.appendChild(newLastRecSymbolNode);
+                //add a new baseLine
+                baseLine.add(new Baseline(lastRecSymbol, center(lastRecSymbol)));
+                return;
+            }
+                    fracHandling = true;
+
+                    //handle complex numerator, e.g. a2
+                    Node parentOfRelatedSymbol = relatedSymbol.getNode().getParentNode();
+                    while (!parentOfRelatedSymbol.getNodeName().equals("rootequation")) {
+                        parentOfRelatedSymbol = parentOfRelatedSymbol.getParentNode();
+                        if (parentOfRelatedSymbol.getNodeName().equals("symbolnode")) {
+                            RecognizedSymbol parentSymbol = (RecognizedSymbol) recognizedSymbolList.get(Integer.parseInt(((Element) parentOfRelatedSymbol).getAttribute("id")));
+                            if (boundingBoxDetermination(parentSymbol, lastRecSymbol) == pos) {
+                                if (parentSymbol.getSymbolChar() == '\u2212' && parentSymbol.getBox().getWidth() > lastRecSymbol.getBox().getWidth()) {
+                                    break;
+                                }
+                                relatedSymbol = parentSymbol;
+                            } else {
                                 break;
                             }
-                            relatedSymbol = parentSymbol;
-                        } else {
-                            break;
                         }
                     }
-                }
-                //-------------------------
-                Node equationNodeOf2ndLastSymbol = relatedSymbol.getNode().getParentNode();
-                Element frac = newLastRecSymbolNode;
-                NodeList nodeList = relatedSymbol.getNode().getParentNode().getChildNodes();
-                RecognizedSymbol rc = (RecognizedSymbol) recognizedSymbolList.get(Integer.parseInt(((Element) nodeList.item(nodeList.getLength() - 1)).getAttribute("id")));
+                    //-------------------------
+                    Node equationNodeOf2ndLastSymbol = relatedSymbol.getNode().getParentNode();
+                    Element frac = newLastRecSymbolNode;
+                    NodeList nodeList = relatedSymbol.getNode().getParentNode().getChildNodes();
+                    RecognizedSymbol rc = (RecognizedSymbol) recognizedSymbolList.get(Integer.parseInt(((Element) nodeList.item(nodeList.getLength() - 1)).getAttribute("id")));
 
 
+                    while (rc != null && boundingBoxDetermination(rc, lastRecSymbol) == pos) {
+                        Node node = rc.getNode();
+                        Element preSibling = (Element) (node.getPreviousSibling());
+                        equationNodeOf2ndLastSymbol.removeChild(node);
 
-                while (rc != null && boundingBoxDetermination(rc, lastRecSymbol) == pos) {
-                    Node node = rc.getNode();
-                    Element preSibling = (Element) (node.getPreviousSibling());
-                    equationNodeOf2ndLastSymbol.removeChild(node);
-
-                    frac.getChildNodes().item(ABOVE).
-                            insertBefore(node, frac.getChildNodes().item(ABOVE).getFirstChild());
-                    //handle the empty denominator
-                    if (frac.getChildNodes().item(BELOW).getChildNodes().getLength() == 0) {
-                        Element denominator = createSymbolNode(new RecognizedSymbol('?'), rawExpressionTree);
-                        frac.getChildNodes().item(BELOW).appendChild(denominator);
+                        frac.getChildNodes().item(ABOVE).
+                                insertBefore(node, frac.getChildNodes().item(ABOVE).getFirstChild());
+                        //handle the empty denominator
+                        if (frac.getChildNodes().item(BELOW).getChildNodes().getLength() == 0) {
+                            Element denominator = createSymbolNode(new RecognizedSymbol('?'), rawExpressionTree);
+                            frac.getChildNodes().item(BELOW).appendChild(denominator);
+                        }
+                        if (preSibling == null) {
+                            rc = null;
+                        } else {
+                            rc = (RecognizedSymbol) recognizedSymbolList.get(Integer.parseInt(preSibling.getAttribute("id")));
+                        }
                     }
-                    if (preSibling == null) {
-                        rc = null;
-                    } else {
-                        rc = (RecognizedSymbol) recognizedSymbolList.get(Integer.parseInt(preSibling.getAttribute("id")));
-                    }
+                    equationNodeOf2ndLastSymbol.appendChild(frac);
+
                 }
-                equationNodeOf2ndLastSymbol.appendChild(frac);
-            }
+
 
 
             //handle matrix found 2009.09.08
-            else if (openFences.contains(relatedSymbol.getSymbolChar())&& pos == SUPER_SCRIPT) {
+            else if (openFences.contains(relatedSymbol.getSymbolChar())&& (pos == SUPER_SCRIPT || pos == ABOVE)) {
                 matrixHandling = true;
                 Node matrixRoot = rawExpressionTree.createElement("matrix");
                 Node openBraceRootNode = rawExpressionTree.createElement("matrixOB");
@@ -479,11 +498,6 @@ public class StructuralAnalyser {
             } //normal case
             else {
                 //remove "?"
-
-                if (fracHandling){
-                    fracHandling = false;
-                }
-
                 Node equation = relatedSymbol.getNode().getChildNodes().item(pos);
                 if (equation.hasChildNodes() && ((Element) (equation.getFirstChild())).getAttribute("attribute").equals("")) {
                     equation.removeChild(equation.getFirstChild());
@@ -498,6 +512,11 @@ public class StructuralAnalyser {
             }
             //add a new baseLine
             baseLine.add(new Baseline(lastRecSymbol, center(lastRecSymbol)));
+            if (lastRecSymbol.getSymbolChar() == '\u221a') {
+                sqrtHandling.add(lastRecSymbol.getId());
+                Element sqr = createSymbolNode(new RecognizedSymbol('?'), rawExpressionTree);
+                newLastRecSymbolNode.getChildNodes().item(INSIDE).appendChild(sqr);
+            }
 
             //matrixDetectStep(lastRecSymbol, mdt, rawExpressionTree, recognizedSymbolList);
         }
@@ -649,7 +668,7 @@ public class StructuralAnalyser {
             return true; //matrix finished
         } else if (tempNode.getParentNode().getParentNode().getNodeName().equals("matrixrow") && !checkIntersect(symbolList, lastRecSymbol, baseLineSymbol)) {
             return true; //matrix element
-        } else if (fracHandling && matrixHandling) { //when one of the element is a fraction
+        } else if (matrixHandling) { //when one of the element is a fraction
             return true;
         }else if (tempNode.getParentNode().getNodeName().equals("matrixOB") && matrixHandling && closeFences.contains(lastRecSymbol.getSymbolChar())) {
             return true; //matrix close bracket and open bracket

@@ -292,6 +292,7 @@ public class Recognizer {
             count--;
         }
         _aryLMemoryRecognizedString.add(symbolForReplacement);
+        _aryLMemoryRecognizedString.add(symbolForReplacement);
         result = doAnalysis(_aryLMemoryRecognizedString, true);
         return result;
     }
@@ -308,6 +309,7 @@ public class Recognizer {
         _rawExpressionTree = xmlDocBuilder.newDocument();
         brackets.clear();
 
+
         RecognizedSymbol rc = (RecognizedSymbol) (_aryLMemoryRecognizedString.get(_aryLMemoryRecognizedString.size() - 1));
         _aryLMemoryRecognizedString.remove(_aryLMemoryRecognizedString.size() - 1);
 
@@ -316,7 +318,9 @@ public class Recognizer {
 
         for (int i = 0; i < _aryLMemoryRecognizedString.size(); i++) {
             if (i == _aryLMemoryRecognizedString.size() - 1) {
+                //_recognitionList = doRecognition(_aryLMemoryRecognizedString.subList(0,i+1).get(i).getStrokes(),_aryLMemoryRecognizedString.subList(0,i),_manualRecognizer,_svmRecognizer);
                 result = doAnalysis(_aryLMemoryRecognizedString.subList(0, i + 1), true);
+                break;
             } else {
                 doAnalysis(_aryLMemoryRecognizedString.subList(0, i + 1), false);
             }
@@ -331,6 +335,7 @@ public class Recognizer {
             pos--;
         }
         _strokeListMemory.remove(_strokeListMemory.size() - 1);
+
 
         return result;
     }

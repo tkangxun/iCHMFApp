@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private Button addSymbolButton;
     private Button removeButton;
     private Button svmButton;
-    private Button checker;
+    private Button check;
     private Button correct;
     private Button correction[] = new Button[5];
     private Button undo;
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                         result = objreg.Recognize(currentstroke);
                         correct.setVisibility(View.VISIBLE);
                         undo.setVisibility(View.VISIBLE);
-                        correctionpanal(false);
+                        correctionpanel(false);
                         expression.setText("Expression: " + result);
                         //api.getAnswer();
 
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 try{
                     result = objreg.MakeCorrection(1);
-                    correctionpanal(false);
+                    correctionpanel(false);
                     expression.setText("Expression: " + result);
 
                 }catch (Exception e){
@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 try{
                     result = objreg.MakeCorrection(2);
-                    correctionpanal(false);
+                    correctionpanel(false);
                     expression.setText("Expression: " + result);
                 }catch (Exception e){
                     e.printStackTrace();
@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 try{
                     result = objreg.MakeCorrection(3);
-                    correctionpanal(false);
+                    correctionpanel(false);
                     expression.setText("Expression: " + result);
                 }catch (Exception e){
                     e.printStackTrace();
@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 try{
                     result = objreg.MakeCorrection(4);
-                    correctionpanal(false);
+                    correctionpanel(false);
                     expression.setText("Expression: " + result);
                 }catch (Exception e){
                     e.printStackTrace();
@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 try{
                     result = objreg.MakeCorrection(5);
-                    correctionpanal(false);
+                    correctionpanel(false);
                     expression.setText("Expression: " + result);
                 }catch (Exception e){
                     e.printStackTrace();
@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
         });
 // </editor-fold>
 
-        correctionpanal(false);
+        correctionpanel(false);
 
         final Switch simpleswitch = (Switch) findViewById(R.id.simpleswitch);
 
@@ -202,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
         //remove strokes existing symbol in library
         removeButton = (Button) findViewById(R.id.remove);
         svmButton = (Button) findViewById(R.id.svm);
-        checker = (Button) findViewById(R.id.check);
+        check = (Button) findViewById(R.id.check);
         correct = (Button) findViewById(R.id.correct);
         undo = (Button) findViewById(R.id.undo);
         AlertDialog.Builder builder = new AlertDialog.Builder(
@@ -247,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
         //addSymbolButton.setVisibility(View.GONE);
         removeButton.setVisibility(View.GONE);
         svmButton.setVisibility(View.GONE);
-        checker.setVisibility(View.GONE);
+        check.setVisibility(View.GONE);
         correct.setVisibility(View.GONE);
         undo.setVisibility(View.GONE);
         if (saved) {
@@ -317,7 +317,7 @@ public class MainActivity extends AppCompatActivity {
                 simpleswitch.setChecked(false);
             }
         });
-        checker.setOnClickListener(new View.OnClickListener() {
+        check.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 StrokeList displayStrokes = trainer.getTrainsymbol(toTrain).getStrokes();
@@ -334,7 +334,7 @@ public class MainActivity extends AppCompatActivity {
                 //show buttons
                 correct.setVisibility(view.GONE);
                 undo.setVisibility(view.GONE);
-                correctionpanal(true);
+                correctionpanel(true);
 
 
             }
@@ -347,9 +347,10 @@ public class MainActivity extends AppCompatActivity {
                 if (writeView.getStrokeSize()==1){
                     writeView.clear();
                     objreg.ClearRecognitionMemory();
-                    correctionpanal(false);
-                    correct.setVisibility(View.GONE);
+                    correctionpanel(false);
+
                     undo.setVisibility(View.GONE);
+                    correct.setVisibility(View.GONE);
                     expression.setText("");
                     return;
                 }
@@ -359,6 +360,7 @@ public class MainActivity extends AppCompatActivity {
                     result = objreg.UndoLastStroke();
                     writeView.undoLastStroke();
                     expression.setText("Expression: " + result);
+                    correct.setVisibility(View.VISIBLE);
 
                 }catch (Exception e){
                     Toast.makeText(MainActivity.this, "Can't undo!", Toast.LENGTH_SHORT).show();
@@ -386,14 +388,14 @@ public class MainActivity extends AppCompatActivity {
                     saveButton.setVisibility(View.GONE);
                     removeButton.setVisibility(View.VISIBLE);
                     svmButton.setVisibility(View.VISIBLE);
-                    checker.setVisibility(View.VISIBLE);
+                    check.setVisibility(View.VISIBLE);
                     expression.setText("");
                     correct.setVisibility(View.GONE);
 
                     //TODO: might wanna add back for training undo
                     undo.setVisibility(View.GONE);
 
-                    correctionpanal(false);
+                    correctionpanel(false);
 
                 }else {
                     training = false;
@@ -401,7 +403,7 @@ public class MainActivity extends AppCompatActivity {
                     //addSymbolButton.setVisibility(View.GONE);
                     removeButton.setVisibility(View.GONE);
                     svmButton.setVisibility(View.GONE);
-                    checker.setVisibility(View.GONE);
+                    check.setVisibility(View.GONE);
                     if (saved) {
                         saveButton.setVisibility(View.GONE);
                     }else{saveButton.setVisibility(View.VISIBLE);}
@@ -423,7 +425,7 @@ public class MainActivity extends AppCompatActivity {
                 /** place icon action here! */
                 writeView.clear();
                 objreg.ClearRecognitionMemory();
-                correctionpanal(false);
+                correctionpanel(false);
                 correct.setVisibility(View.GONE);
                 undo.setVisibility(View.GONE);
                 expression.setText("");
@@ -471,7 +473,7 @@ public class MainActivity extends AppCompatActivity {
         return result;
     }
     //TODO: after undo correction panel is not updated
-    private void correctionpanal(Boolean show){
+    private void correctionpanel(Boolean show){
 
         for (int i =0;i< correction.length; i++){
             if (show){
