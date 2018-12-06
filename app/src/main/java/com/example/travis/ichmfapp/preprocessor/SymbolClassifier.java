@@ -214,9 +214,11 @@ public class SymbolClassifier {
             case StructuralAnalyser.ROW:
                 double distance = lastBox.getX() - relateBox.getX() - relateBox.getWidth();
                 double checkDistance = StructuralAnalyser.getMatrixElementDistance() == 0 ? lastBox.getWidth() : 0.8 * StructuralAnalyser.getMatrixElementDistance();
-                if (StructuralAnalyser.getMatrixHandling() && distance > 0.8 * checkDistance) {
+                if (StructuralAnalyser.getMatrixHandling() && distance > 0.7 * checkDistance) {
                     return false;
-                } else if ((!StructuralAnalyser.getMatrixHandling()) && distance > 0.8 * lastBox.getWidth()) {
+                }else if (StructuralAnalyser.openFences.contains(relateSymbol.getSymbolChar())||StructuralAnalyser.closeFences.contains(lastRecSymbol.getSymbolChar())){
+                    return false;
+                } else if ((!StructuralAnalyser.getMatrixHandling()) && distance > 0.7 * lastBox.getWidth()) {
                     return false;
                 } else {
                     return true;

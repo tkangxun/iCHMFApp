@@ -57,9 +57,6 @@ public class MainActivity extends AppCompatActivity {
     private Trainer trainer;
 
 
-    //TODO: erase current expression, with time control overlay input method
-    //TODO: store expression string
-    //TODO: make writeview not jump
 
 
 
@@ -391,8 +388,7 @@ public class MainActivity extends AppCompatActivity {
                     check.setVisibility(View.VISIBLE);
                     expression.setText("");
                     correct.setVisibility(View.GONE);
-
-                    //TODO: might wanna add back for training undo
+                    //training undo?
                     undo.setVisibility(View.GONE);
 
                     correctionpanel(false);
@@ -472,7 +468,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return result;
     }
-    //TODO: after undo correction panel is not updated
+
     private void correctionpanel(Boolean show){
 
         for (int i =0;i< correction.length; i++){

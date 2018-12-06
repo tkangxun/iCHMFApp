@@ -250,7 +250,7 @@ public class Recognizer {
      * @return MathML string of corrected recognized expression.
      * @throws java.lang.Exception
      */
-    //TODO: after correcting, the symbol strokes are lost, unable to get pos after correcton of the symbol is done for multiple variation symbol is also tricky
+
     public String MakeCorrection(int position) throws Exception {
         String result = "";
         RecognizedSymbol symbolForReplacement = (RecognizedSymbol) _recognitionList.get(position);
@@ -307,9 +307,8 @@ public class Recognizer {
     public String UndoLastStroke() throws Exception {
         String result = " ";
         _rawExpressionTree = xmlDocBuilder.newDocument();
-        brackets.clear();
 
-
+        //wrongly recognise symbol
         RecognizedSymbol rc = (RecognizedSymbol) (_aryLMemoryRecognizedString.get(_aryLMemoryRecognizedString.size() - 1));
         _aryLMemoryRecognizedString.remove(_aryLMemoryRecognizedString.size() - 1);
 
@@ -727,7 +726,13 @@ public class Recognizer {
                         asciiString += "-";
                     }
                 } else if (symbol.equals(String.valueOf('\u2192'))) {
-                    asciiString += "vec(?)";
+                    if (node.getChildNodes().item(5).hasChildNodes()||node.getChildNodes().item(6).hasChildNodes()){
+                        asciiString += "vec(?)";
+                    } else{
+                        asciiString += "->";
+                    }
+
+
                 } else if (symbol.equals(String.valueOf('\u002f'))) {
                     asciiString += "//";
                 } else if (symbol.equals(String.valueOf('\u00d7'))) {

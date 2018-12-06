@@ -16,12 +16,6 @@ import com.example.travis.ichmfapp.symbollib.StrokeList;
 import com.example.travis.ichmfapp.symbollib.StrokePoint;
 
 
-
-
-
-
-
-
 /**
  * Created by Travis on 7/8/2018.
  */
@@ -61,7 +55,7 @@ public class WriteView extends View {
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
-        mPaint.setStrokeWidth(50);
+        mPaint.setStrokeWidth(30);
 
 
         mPath = new Path();
