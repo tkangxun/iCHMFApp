@@ -224,35 +224,29 @@ public class StructuralAnalyser {
             }
 
 
-            if (!sqrtHandling.isEmpty()){
+            if (!sqrtHandling.isEmpty() && closestSymbol.getSymbolChar() == '\u221a' ){
                 Box sqrtBox = getBoxByID(recognizedSymbolList, sqrtHandling.get(sqrtHandling.size()-(1)));
                 if (!checkOutside(sqrtBox, lastRecSymbol)) { //inside current sqrt
                     RecognizedSymbol relatedSymbol = getSymbolByID(recognizedSymbolList, sqrtHandling.get(sqrtHandling.size() - 1));
                     Node equation = relatedSymbol.getNode().getChildNodes().item(INSIDE);
+
+                    //if child is '?' remove and add new baseline
                     if (equation.hasChildNodes() && ((Element) (equation.getFirstChild())).getAttribute("identity").equals("?")) {
                         equation.removeChild(equation.getFirstChild());
                         equation.appendChild(newLastRecSymbolNode);
                         baseLine.add(new Baseline(lastRecSymbol, center(lastRecSymbol)));
+
                         if (lastRecSymbol.getSymbolChar() == '\u221a') {
                             sqrtHandling.add(lastRecSymbol.getId());
                             Element sqr = createSymbolNode(new RecognizedSymbol('?'), rawExpressionTree);
                             newLastRecSymbolNode.getChildNodes().item(INSIDE).appendChild(sqr);
+
                         }
-                        return; //added symbol in new baseline
+                        //
+                        return;
                     }
+                    continue;
 
-
-                   equation.appendChild(newLastRecSymbolNode);
-                    if (lastRecSymbol.getSymbolChar() == '\u221a') {
-                        sqrtHandling.add(lastRecSymbol.getId());
-                        Element sqr = createSymbolNode(new RecognizedSymbol('?'), rawExpressionTree);
-                        newLastRecSymbolNode.getChildNodes().item(INSIDE).appendChild(sqr);
-                    }
-                    return;
-
-                    //break;
-
-                    // in this current sqrtroot but already have a baseline
                 }else{ //not in current sqrt check next one
 
                     if (sqrtHandling.size() ==1 ){
@@ -285,10 +279,8 @@ public class StructuralAnalyser {
                             parentNodeOfClosestSymbol.appendChild(newLastRecSymbolNode);
                             if (lastRecSymbol.getSymbolChar() =='\u221a' ) {
                                 sqrtHandling.add(lastRecSymbol.getId());
-                                if (newLastRecSymbolNode.getChildNodes().item(INSIDE).getChildNodes().getLength() == 0) {
-                                    Element child = createSymbolNode(new RecognizedSymbol('?'), rawExpressionTree);
-                                    newLastRecSymbolNode.getChildNodes().item(INSIDE).appendChild(child);
-                                }
+                                Element sqr = createSymbolNode(new RecognizedSymbol('?'), rawExpressionTree);
+                                newLastRecSymbolNode.getChildNodes().item(INSIDE).appendChild(sqr);
                             }
                         } //matrix close bracket
                         else if (closeFences.contains(lastRecSymbol.getSymbolChar())) {
@@ -443,8 +435,6 @@ public class StructuralAnalyser {
                 }
 
 
-
-            //handle matrix found 2009.09.08
             else if (openFences.contains(relatedSymbol.getSymbolChar())&& (pos == SUPER_SCRIPT || pos == ABOVE)) {
                 matrixHandling = true;
                 Node matrixRoot = rawExpressionTree.createElement("matrix");
@@ -489,11 +479,6 @@ public class StructuralAnalyser {
 
                 }
                 equation.appendChild(newLastRecSymbolNode);
-                if (lastRecSymbol.getSymbolChar() =='\u221a' ) {
-                    sqrtHandling.add(lastRecSymbol.getId());
-                    Element sqr = createSymbolNode(new RecognizedSymbol('?'), rawExpressionTree);
-                    newLastRecSymbolNode.getChildNodes().item(INSIDE).appendChild(sqr);
-                }
             }
             //add a new baseLine
             baseLine.add(new Baseline(lastRecSymbol, center(lastRecSymbol)));

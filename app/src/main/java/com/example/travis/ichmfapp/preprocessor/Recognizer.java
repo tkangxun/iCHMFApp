@@ -257,25 +257,25 @@ public class Recognizer {
         brackets.clear();
 
 
-        //add to sample file
+        //add to sample file for personalization
         /*if (SymbolRecognizer_SVM.checkStrokeNO(symbolForReplacement.getSymbolCharDecimal(), symbolForReplacement.getStrokes().size())) {
             symbolFeature.SymbolFeature.writeFeatures(symbolFeature.SymbolFeature.getFeature(symbolForReplacement.getSymbolCharDecimal(), PreprocessorSVM.preProcessing(symbolForReplacement.getStrokes())));
         }*/
 
-        int affectedSymbolCount = 0, count = 0;
+        int count = 0;
         baseLineList.removeAll(baseLineList);
         _structuralAnalyser.resetFlags();
 
         while (count < symbolForReplacement.getNumberOfStrokes()) {
             RecognizedSymbol symbolToBeReplaced = (RecognizedSymbol) (_aryLMemoryRecognizedString.get(_aryLMemoryRecognizedString.size() - 1));
             _aryLMemoryRecognizedString.remove(symbolToBeReplaced);
-            affectedSymbolCount++;
+
             count += symbolToBeReplaced.getNumberOfStrokes();
         }
         count = count - symbolForReplacement.getNumberOfStrokes();
         for (int i = 0; i < _aryLMemoryRecognizedString.size(); i++) {
             if (i == _aryLMemoryRecognizedString.size() - 1) {
-                result = doAnalysis(_aryLMemoryRecognizedString.subList(0, i + 1), true);
+               doAnalysis(_aryLMemoryRecognizedString.subList(0, i + 1), true);
             } else {
                 doAnalysis(_aryLMemoryRecognizedString.subList(0, i + 1), false);
             }
@@ -292,7 +292,7 @@ public class Recognizer {
             count--;
         }
         _aryLMemoryRecognizedString.add(symbolForReplacement);
-        _aryLMemoryRecognizedString.add(symbolForReplacement);
+
         result = doAnalysis(_aryLMemoryRecognizedString, true);
         return result;
     }
