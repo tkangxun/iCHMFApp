@@ -462,7 +462,7 @@ public class Recognizer {
             strokes++;
         }
 
-        if (list.size()>0  &&recognizedChar.getSymbolChar() == '\u2212' && list.get(list.size() - 1).getSymbolChar() == '+'
+            if (list.size()>0  &&recognizedChar.getSymbolChar() == '\u2212' && list.get(list.size() - 1).getSymbolChar() == '+'
                 && _structuralAnalyser.boundingBoxDetermination(list.get(list.size() - 1), recognizedChar) == 5){
             recognizedChar.setStrokes(list.get(list.size() - 1).getStrokes());
             list.remove(list.size()-1);

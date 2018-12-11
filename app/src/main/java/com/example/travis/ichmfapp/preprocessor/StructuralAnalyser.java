@@ -339,6 +339,7 @@ public class StructuralAnalyser {
                             newLastRecSymbolNode.getChildNodes().item(INSIDE).appendChild(sqr);
                         }
                     }
+                    //TODO: handlethis fraction doesnt enter here
 
                     //handle fraction case e.g. 2^3 and lastRecSymbol is -
                     if (lastRecSymbol.getSymbolChar() == '\u2212' && closestSymbol.getNode().getChildNodes().item(SUPER_SCRIPT).hasChildNodes()) {
@@ -849,9 +850,10 @@ public class StructuralAnalyser {
 
         //assuming second last symbol is sqrt
         //the 1.1 width of the symbol doesn't exceed the sqrt width
-        //and the height doesn't exceed more than 1.1 times of the sqrt
+        //and the height doesn't exceed more than 1 times of the sqrt
         if (secondLastBBox.getX()+secondLastBBox.getWidth() >= lastBBox.getX() + lastBBox.getWidth()*1.1 &&
-                secondLastBBox.getY()+ 1.1 * secondLastBBox.getHeight() >= lastBBox.getY() + lastBBox.getHeight()){
+                 secondLastBBox.getY() <=  lastBBox.getY() &&
+                secondLastBBox.getY() +secondLastBBox.getHeight()* 1.1 >= lastBBox.getY() + lastBBox.getHeight()){
             return INSIDE;
         }
 
@@ -882,14 +884,26 @@ public class StructuralAnalyser {
         // When last box's center Y is lower (Y value greater) than
         // 2nd last box's center. Second Last Symbol is ABOVE the Last Symbol.
         // other wise. Second Last Symbol is BELOW the Last Symbol.
-        if ((lastBBox.getY() + 0.8 * lastBBox.getHeight() <= secondLastBBox.getY() ||
+        /*if ((lastBBox.getY() + 0.8 * lastBBox.getHeight() <= secondLastBBox.getY() ||
                 secondLastBBox.getY() + 0.8 * secondLastBBox.getHeight() <= lastBBox.getY()) &&
                 ((lastBBox.getX() - 0.2 * lastBBox.getWidth() <=
                         secondLastBBox.getX() && lastBBox.getX() + 1.2 * lastBBox.getWidth() >=
                         secondLastBBox.getX() + secondLastBBox.getWidth()) ||
                         (secondLastBBox.getX() - 0.2 * secondLastBBox.getWidth() <=
                                 lastBBox.getX() && secondLastBBox.getX() + 1.2 * secondLastBBox.getWidth()
-                                >= lastBBox.getX() + lastBBox.getWidth()))) {
+                                >= lastBBox.getX() + lastBBox.getWidth()))) */
+
+        //check the Y coordinates of second last is above or below of lastsymbol
+        // check the width of lastsym is within the width of second last
+        // last symbol height must be at least half of second last height to prevent 2^1 etc. fractions will not be affected since minus height is small
+
+        if ((lastBBox.getY() + lastBBox.getHeight() < secondLastBBox.getY() ||
+                lastBBox.getY()> secondLastBBox.getY() + secondLastBBox.getHeight()) &&
+                lastBBox.getX() >= secondLastBBox.getX() &&
+                lastBBox.getX() +lastBBox.getWidth() <= secondLastBBox.getX() + secondLastBBox.getWidth() *0.95
+                && lastBBox.getHeight() >= secondLastBBox.getHeight()*0.5)
+
+        {
             if (lastCenter.Y >= secondLastCenter.Y) {
                 return BELOW; // above 5
             } else {
@@ -923,11 +937,11 @@ public class StructuralAnalyser {
                     }
                     return SUB_SCRIPT;//4
                 } //subscript
-                else if (angle < -Math.PI / 8 && angle > -3 * Math.PI / 8) {
+                else if (angle < -Math.PI / 8 && angle > (-3 * Math.PI / 8 -0.15)) {
                     System.out.println("bb:8");
                     return SUPER_SCRIPT;
                 } //superscript
-                else if (angle >= 3 * Math.PI / 8 && angle <= Math.PI / 2) {
+                else if (angle >= (3 * Math.PI / 8 -0.15) && angle <= Math.PI / 2) {
                     System.out.println("bb:9");
                     return BELOW;//5
                 } //above
