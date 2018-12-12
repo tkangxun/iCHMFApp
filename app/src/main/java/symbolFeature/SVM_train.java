@@ -1,12 +1,17 @@
 package symbolFeature;
 
 
+import android.widget.Toast;
+
+import com.example.travis.ichmfapp.main.MainActivity;
 import com.example.travis.ichmfapp.symbollib.*;
 
 import libsvm.*;
 
 import java.util.*;
 import java.io.*;
+
+import static com.example.travis.ichmfapp.symbollib.ConstantData.mydir;
 
 public class SVM_train {
 
@@ -70,10 +75,13 @@ public class SVM_train {
             do_cross_validation();
         } else {
             model = svm.svm_train(prob, param);
+            System.out.print("model created");
+            Toast.makeText(MainActivity.getAppContext(), "model created", Toast.LENGTH_SHORT).show();
             try {
                 svm.svm_save_model(model_file_name, model);
+                Toast.makeText(MainActivity.getAppContext(), "new SVM model created", Toast.LENGTH_SHORT).show();
             } catch (IOException e) {
-                System.err.println("Error: " + e.getMessage());
+                e.printStackTrace();
             }
         }
     }
@@ -116,7 +124,8 @@ public class SVM_train {
     // read in a problem (in svmlight format)
     private void read_problem() {
         try {
-            BufferedReader fp = new BufferedReader(new FileReader(input_file_name));
+            File f = new File(mydir, input_file_name);
+            BufferedReader fp = new BufferedReader(new FileReader(f));
             Vector<Double> vy = new Vector<Double>();
             Vector<svm_node[]> vx = new Vector<svm_node[]>();
             int max_index = 0;
@@ -171,8 +180,10 @@ public class SVM_train {
                 }
             }
             fp.close();
+            Toast.makeText(MainActivity.getAppContext(), "new SVM model created", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
-            System.err.println("Error: " + e.getMessage());
+            Toast.makeText(MainActivity.getAppContext(), "error", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
         }
     }
 }

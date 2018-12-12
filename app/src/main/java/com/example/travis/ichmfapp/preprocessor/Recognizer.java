@@ -50,7 +50,7 @@ public class Recognizer {
      * (NOT MATH EXPRESSION) based on the trained symbol library.
      */
     SymbolRecognizer _manualRecognizer;
-    //added by quxi 2009.12.22
+
     SymbolRecognizer_SVM _svmRecognizer;
     /**
      * The object which is responbislbe for analyzing the symbol relations
@@ -78,7 +78,10 @@ public class Recognizer {
      * Document builder object to create XML document.
      */
     DocumentBuilder xmlDocBuilder;
-    //added by quxi 2009.09.01
+
+    //To keep track of brackets
+    List<Character> brackets = new ArrayList<Character>();
+
     List<Baseline> baseLineList;
     //MapleConnection mapleConn;
     // </editor-fold>
@@ -87,11 +90,8 @@ public class Recognizer {
      * @param theLibrary SymbolLib object with loaded symbol library.
      */
     public Recognizer(SymbolLib theLibrary) {
-        //added by quxi 2009.09.01
         baseLineList = new ArrayList();
         _symbolLib = theLibrary;
-
-
         objDocumentBuilderFactory = DocumentBuilderFactory.newInstance();
         //mapleConn = new MapleConnection();
         try {
@@ -103,13 +103,12 @@ public class Recognizer {
 
     }
 
-    // <editor-fold defaultstate="collapsed" desc="Public Methods">
     /**
      * Retrieve the candidate list of symbols arrange
      * in ascending order of recognition error rate.
      * @return List of RecognizedSymbol objects.
      */
-    public ArrayList getOptionalRecognitionList() {
+    public ArrayList<RecognizedSymbol> getOptionalRecognitionList() {
         return _recognitionList;
     }
 
@@ -118,7 +117,6 @@ public class Recognizer {
      * in ascending order of recognition error rate.
      * @return List of RecognizedSymbol objects.
      */
-    //added by quxi 2009.08.27
     public List<RecognizedSymbol> getRecognizedSymboList() {
         return _aryLMemoryRecognizedString;
     }
@@ -146,7 +144,7 @@ public class Recognizer {
         if (_strokeListMemory == null) {
             _strokeListMemory = new StrokeList();
         }
-        //added by quxi 2009.09.08
+
         if (baseLineList == null) {
             baseLineList = new ArrayList();
           this._structuralAnalyser.setBaseLine(baseLineList);
@@ -161,8 +159,6 @@ public class Recognizer {
 
         /// Initialize expression tree, if not yet been done so
         /// and create a Method wide local reference object.
-
-
         if (_rawExpressionTree == null) {
             _rawExpressionTree = xmlDocBuilder.newDocument();
             _rawExpressionTree.appendChild(_rawExpressionTree.createElement("root"));
@@ -176,7 +172,7 @@ public class Recognizer {
             manualRecognizer = new SymbolRecognizer(_symbolLib);
         }
 
-        //added by quxi 2009.12.22
+
         SymbolRecognizer_SVM svmRecognizer = _svmRecognizer;
         if (svmRecognizer == null) {
             svmRecognizer = new SymbolRecognizer_SVM();
@@ -203,8 +199,8 @@ public class Recognizer {
         ArrayList recognitionList = doRecognition(recognizedStringList,
                 manualRecognizer, svmRecognizer);
 
-        //System.out.println("Time after recognition is" + (System.currentTimeMillis() - startTime));
-        Toast.makeText(MainActivity.getAppContext(), "Time after Symbol recognition is" + (System.currentTimeMillis() - startTime), Toast.LENGTH_SHORT).show();
+
+        long symbolRecognition = System.currentTimeMillis() - startTime;
         //FOR TESTING
         //for (int c = 0; c < recognizedStringList.size(); c++)
         //{
@@ -220,7 +216,8 @@ public class Recognizer {
         String result = "";//MathML String
 
         result = doAnalysis(recognizedStringList, true);
-        Toast.makeText(MainActivity.getAppContext(), "Time after analyser is" + (System.currentTimeMillis() - startTime), Toast.LENGTH_SHORT).show();
+        long structureAnalyse = System.currentTimeMillis() - symbolRecognition;
+
 
         _recognitionList = recognitionList;
         _aryLMemoryRecognizedString = recognizedStringList;
@@ -230,6 +227,16 @@ public class Recognizer {
 
 
         //String result = Character.toString(_recognitionList.get(0).getSymbolChar());
+        long totalTime = System.currentTimeMillis() - startTime;
+
+        if(ConstantData.doTest) {
+            Toast.makeText(context,
+                    "Time for symbol recognition : " + symbolRecognition + "\n" +
+                            "symbol recognised: " + recognitionList + "\n" +
+                            "----------------------------------" + "\n" +
+                            "Time for structural analyse: " + structureAnalyse + "\n" +
+                            "Total time: " + totalTime, Toast.LENGTH_SHORT).show();
+        }
 
 
         return result;
@@ -243,30 +250,32 @@ public class Recognizer {
      * @return MathML string of corrected recognized expression.
      * @throws java.lang.Exception
      */
+
     public String MakeCorrection(int position) throws Exception {
         String result = "";
         RecognizedSymbol symbolForReplacement = (RecognizedSymbol) _recognitionList.get(position);
+        brackets.clear();
 
-        //add to sample file
-        if (SymbolRecognizer_SVM.checkStrokeNO(symbolForReplacement.getSymbolCharDecimal(), symbolForReplacement.getStrokes().size())) {
+
+        //add to sample file for personalization
+        /*if (SymbolRecognizer_SVM.checkStrokeNO(symbolForReplacement.getSymbolCharDecimal(), symbolForReplacement.getStrokes().size())) {
             symbolFeature.SymbolFeature.writeFeatures(symbolFeature.SymbolFeature.getFeature(symbolForReplacement.getSymbolCharDecimal(), PreprocessorSVM.preProcessing(symbolForReplacement.getStrokes())));
-        }
+        }*/
 
-        int affectedSymbolCount = 0, count = 0;
-        //added by quxi 2009.12.27
+        int count = 0;
         baseLineList.removeAll(baseLineList);
         _structuralAnalyser.resetFlags();
 
         while (count < symbolForReplacement.getNumberOfStrokes()) {
             RecognizedSymbol symbolToBeReplaced = (RecognizedSymbol) (_aryLMemoryRecognizedString.get(_aryLMemoryRecognizedString.size() - 1));
             _aryLMemoryRecognizedString.remove(symbolToBeReplaced);
-            affectedSymbolCount++;
+
             count += symbolToBeReplaced.getNumberOfStrokes();
         }
         count = count - symbolForReplacement.getNumberOfStrokes();
         for (int i = 0; i < _aryLMemoryRecognizedString.size(); i++) {
             if (i == _aryLMemoryRecognizedString.size() - 1) {
-                result = doAnalysis(_aryLMemoryRecognizedString.subList(0, i + 1), true);
+               doAnalysis(_aryLMemoryRecognizedString.subList(0, i + 1), true);
             } else {
                 doAnalysis(_aryLMemoryRecognizedString.subList(0, i + 1), false);
             }
@@ -283,7 +292,8 @@ public class Recognizer {
             count--;
         }
         _aryLMemoryRecognizedString.add(symbolForReplacement);
-        //result = doAnalysis(_aryLMemoryRecognizedString, true);
+
+        result = doAnalysis(_aryLMemoryRecognizedString, true);
         return result;
     }
 
@@ -298,16 +308,18 @@ public class Recognizer {
         String result = " ";
         _rawExpressionTree = xmlDocBuilder.newDocument();
 
+        //wrongly recognise symbol
         RecognizedSymbol rc = (RecognizedSymbol) (_aryLMemoryRecognizedString.get(_aryLMemoryRecognizedString.size() - 1));
         _aryLMemoryRecognizedString.remove(_aryLMemoryRecognizedString.size() - 1);
 
-        //added by quxi 2009.12.27
         baseLineList.removeAll(baseLineList);
         _structuralAnalyser.resetFlags();
 
         for (int i = 0; i < _aryLMemoryRecognizedString.size(); i++) {
             if (i == _aryLMemoryRecognizedString.size() - 1) {
+                //_recognitionList = doRecognition(_aryLMemoryRecognizedString.subList(0,i+1).get(i).getStrokes(),_aryLMemoryRecognizedString.subList(0,i),_manualRecognizer,_svmRecognizer);
                 result = doAnalysis(_aryLMemoryRecognizedString.subList(0, i + 1), true);
+                break;
             } else {
                 doAnalysis(_aryLMemoryRecognizedString.subList(0, i + 1), false);
             }
@@ -322,6 +334,9 @@ public class Recognizer {
             pos--;
         }
         _strokeListMemory.remove(_strokeListMemory.size() - 1);
+        //_recognitionList = doRecognition(_aryLMemoryRecognizedString.get(_aryLMemoryRecognizedString.size()-1).getStrokes(),
+        //        _aryLMemoryRecognizedString, _manualRecognizer,_svmRecognizer);
+
 
         return result;
     }
@@ -335,13 +350,13 @@ public class Recognizer {
      */
     public void ClearRecognitionMemory() {
         _strokeListMemory = null;
-        //added by quxi 2009.09.08
         baseLineList = null;
         _aryLMemoryRecognizedString = null;
         _rawExpressionTree = null;
         _mathMLDocTree = null;
         _recognitionList = null;
         _structuralAnalyser = new StructuralAnalyser(baseLineList);
+        brackets.clear();
     }
 
     /**
@@ -422,7 +437,6 @@ public class Recognizer {
                 node.getParentNode().removeChild(node);
 
             }
-            //added by quxi 2009.09.01
             //update the baseLine symbols
             for (int i = 0; i < baseLineList.size(); i++) {
                 List<RecognizedSymbol> symbolList = baseLineList.get(i).getSymbolList();
@@ -437,7 +451,7 @@ public class Recognizer {
                 }
             }
         }
-        //added by quxi 2009.12.29
+
         while (strokes < 1) {
             List<Stroke> tempStrokeList1 = _strokeListMemory.subList(0,
                     _strokeListMemory.size() - recognizedChar.getNumberOfStrokes() + strokes);
@@ -450,27 +464,39 @@ public class Recognizer {
             strokes++;
         }
 
-        //modified by quxi 2009.12.29
+            if (list.size()>0  &&recognizedChar.getSymbolChar() == '\u2212' && list.get(list.size() - 1).getSymbolChar() == '+'
+                && _structuralAnalyser.boundingBoxDetermination(list.get(list.size() - 1), recognizedChar) == 5){
+            recognizedChar.setStrokes(list.get(list.size() - 1).getStrokes());
+            list.remove(list.size()-1);
+            Stroke temp = recognizedChar.getStroke(0);
+            recognizedChar.addStroke(temp);
+            recognizedChar.setSymbolChar('\u00b1');
+
+            //list.add(recognizedChar);
+        }
 
         if (list.size() == 0 || verifyContext(recognizedChar, (RecognizedSymbol) list.get(list.size() - 1))) {
             RecognizedSymbol pre = new RecognizedSymbol('0');
-            if (list.size() != 0) {
+            if (list.size() != 0 ) {
                 pre = (RecognizedSymbol) list.get(list.size() - 1);
             }
             recognizedChar = checkSimilarSymbols(recognizedChar, pre, candidate);
             list.add(recognizedChar);
+            if (StructuralAnalyser.openFences.contains(recognizedChar.getSymbolChar())){
+                brackets.add(recognizedChar.getSymbolChar());
+            }
+
             return true;
         } else {
-            if (list.size() != 0 && ConstantData.doTest) {
+            if (list.size() != 0){
                 Toast.makeText(context, "Blocked by checkContext!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", Toast.LENGTH_SHORT).show();
             }
+            Toast.makeText(context, "false", Toast.LENGTH_SHORT).show();
             return false;
         }
 
     }
 
-
-    //added by quxi 2010.1.15
     //check if the symbol is similar symbol and choose the correct one
     private RecognizedSymbol checkSimilarSymbols(RecognizedSymbol recognizedChar, RecognizedSymbol previous, List<RecognizedSymbol> candidate) {
         char lastChar = recognizedChar.getSymbolChar();
@@ -499,6 +525,10 @@ public class Recognizer {
                 recognizedChar.setSymbolChar((char) 215);
                 switchChar(candidate, lastChar, recognizedChar);
             }
+        }else if (StructuralAnalyser.closeFences.contains(lastChar) && !brackets.isEmpty()){
+            recognizedChar.setSymbolChar(StructuralAnalyser.getClose(brackets.get(brackets.size()-1)));
+            switchChar(candidate, lastChar, recognizedChar);
+            brackets.remove(brackets.size()-1);
         }
         return recognizedChar;
     }
@@ -524,16 +554,16 @@ public class Recognizer {
             SymbolRecognizer mRecognizer, SymbolRecognizer_SVM svmRecognizer) throws Exception {
 
 
-        long SVMStartTime = System.currentTimeMillis();
-        //using svm to recognise
-        ArrayList mResult = svmRecognizer.recognizing(_strokeListMemory.GetLast4Strokes());
-        long elasticStartTime = System.currentTimeMillis() - SVMStartTime;
-        Toast.makeText(context, "Time after SVM recognition is : " + elasticStartTime , Toast.LENGTH_SHORT).show();
-        Toast.makeText(context, "Result from SVM: " + mResult, Toast.LENGTH_LONG).show();
+        long symbolStartTime = System.currentTimeMillis();
+        //using svm to recognise, get and recognise all 4
+        ArrayList svmResult = svmRecognizer.recognizing(_strokeListMemory.GetLast4Strokes());
+        long SVMtime = System.currentTimeMillis() - symbolStartTime;
+
         //using elastic match
-        mResult = mRecognizer.recognizing(mResult);
-        Toast.makeText(context, "Time after elastic is" + (System.currentTimeMillis() - elasticStartTime), Toast.LENGTH_SHORT).show();
-        //mResult = verifyContext(mResult);
+
+        ArrayList mResult = mRecognizer.recognizing(svmResult);
+        long elasticTime = System.currentTimeMillis() - symbolStartTime - SVMtime;
+
 
         /// Take the first (with closet similarity distance) character
         /// as recognized symbol.
@@ -543,7 +573,20 @@ public class Recognizer {
         while (i < mResult.size() && !addToList(recognizedChar, mResult, recognizedStringList)) {
             recognizedChar = (RecognizedSymbol) mResult.get(++i);
         }
-        System.out.println("Time after addToList is" + (System.currentTimeMillis() - elasticStartTime));
+        long listTime = System.currentTimeMillis()- symbolStartTime - elasticTime - SVMtime;
+
+        mResult= removeDuplicates(mResult);
+
+        if (ConstantData.doTest) {
+            Toast.makeText(context,
+                    "Time after SVM recognition is : " + SVMtime + "\n"
+                            + "Result from SVM: " + svmResult + "\n"
+                            + "----------------------------------\n"
+                            + "Time after elastic is : " + elasticTime + "\n"
+                            + "Result from elastic: " + mResult + "\n"
+                            + "----------------------------------\n"
+                            + "Time after addToList time is : " + listTime, Toast.LENGTH_SHORT).show();
+        }
 
         return mResult;
     }
@@ -574,16 +617,18 @@ public class Recognizer {
         RecognizedSymbol recognizedChar = (RecognizedSymbol) mResult.get(0);
 
         int i = 0;
-        //do we have to do the add to list here?
+
         while (i < mResult.size() && !addToList(recognizedChar, mResult, recognizedStringList)) {
             recognizedChar = (RecognizedSymbol) mResult.get(++i);
         }
         return mResult;
     }
 
-
-    //added by quxi 2009.12.29
     private boolean verifyContext(RecognizedSymbol result, RecognizedSymbol last) {
+        if (result.getSymbolChar() == '.' || result.getSymbolChar() == '\u221a'){
+            return true;
+        }
+
         int pos = _structuralAnalyser.boundingBoxDetermination(last, result);
         return SymbolClassifier.checkContext(pos, last, result);
 
@@ -609,7 +654,9 @@ public class Recognizer {
             try {
                 String asciimath = treeToascii(_rawExpressionTree.getFirstChild().cloneNode(true));
                 //return asciiToMathMl(asciimath);
-                Toast.makeText(context, asciimath, Toast.LENGTH_SHORT).show();
+
+                //prints the expression
+                //Toast.makeText(context, asciimath, Toast.LENGTH_SHORT).show();
                 return asciimath;
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -617,8 +664,6 @@ public class Recognizer {
         }
         return null;
      }
-
-
 
     /**private String asciiToMathMl(String formula) {
         Process p = null;
@@ -660,7 +705,6 @@ public class Recognizer {
         }
         return -1;
     }
-    //added by quxi 2010.
 
     private String treeToascii(Node rootEquationNode) {
         String asciiString = "";
@@ -675,7 +719,7 @@ public class Recognizer {
             String symbol = ((Element) (node)).getAttribute("identity");
             if (nodeType.equals("symbolnode")) {
                 if (symbol.equals(String.valueOf('\u221a'))) { //root
-                    asciiString += "root()";
+                    asciiString += "root";
                     lastOperator = "root";
                 } else if (symbol.equals(String.valueOf('\u2212'))) {
                     if (node.getChildNodes().item(5).hasChildNodes() || node.getChildNodes().item(1).hasChildNodes()) {
@@ -684,15 +728,21 @@ public class Recognizer {
                         asciiString += "-";
                     }
                 } else if (symbol.equals(String.valueOf('\u2192'))) {
-                    asciiString += "vec(?)";
+                    if (node.getChildNodes().item(5).hasChildNodes()||node.getChildNodes().item(6).hasChildNodes()){
+                        asciiString += "vec(?)";
+                    } else{
+                        asciiString += "->";
+                    }
+
+
                 } else if (symbol.equals(String.valueOf('\u002f'))) {
                     asciiString += "//";
                 } else if (symbol.equals(String.valueOf('\u00d7'))) {
                     asciiString += "xx";
                 } else if (symbol.equals(String.valueOf('\u00f7'))) {
-                    asciiString += "-:";
+                    asciiString += "(-:)";
                 } else if (symbol.equals(String.valueOf('\u00b1'))) {
-                    asciiString += "+-";
+                    asciiString += "(+-)";
                 } else if (symbol.equals(String.valueOf('\u222b'))) {
                     asciiString += "int";
                 } else if (symbol.equals(String.valueOf('\u2211'))) {
@@ -758,6 +808,7 @@ public class Recognizer {
                         case StructuralAnalyser.ROW:
                             break;
                         case StructuralAnalyser.SUB_SCRIPT:
+                            //this is causing the "." to be subscript
                             asciiString += "_(";
                             stack.push(node);
                             break;
@@ -824,23 +875,6 @@ public class Recognizer {
                 node = node.getNextSibling();
             }
         }
-/**
-        //added by quxi 2010.1.10 --computation engine
-        if (asciiString.length() > 1 && asciiString.charAt(asciiString.length() - 1) == '=') {
-            String mapleCmd = mapleConn.convertToMapleInstruction(asciiString.substring(0, asciiString.length() - 1));
-            String result = mapleConn.compute(mapleCmd, mapleConn.getEngine());
-            if (result != null) {
-                try {
-                    double resu = Double.parseDouble(result);
-                    DecimalFormat formatter = new DecimalFormat("0.00");
-                    asciiString = asciiString.concat(formatter.format(resu));
-                } catch (NumberFormatException e) {
-                    System.err.println("Could not parse maple result");
-                    asciiString = asciiString.concat(result);
-                }
-            }
-        }
-        System.out.println(asciiString);*/
         return asciiString;
     }
 
@@ -860,5 +894,31 @@ public class Recognizer {
         }
         return;
     }
-    // </editor-fold>*/
+
+    private static ArrayList removeDuplicates(ArrayList<RecognizedSymbol> result){
+
+        for (int i = 0; i< result.size();i++){
+            for(int j = 0; j< result.size();j++){
+                if (i!=j && result.get(i).getSymbolChar() == result.get(j).getSymbolChar()){
+                    result.remove(j);
+                    removeDuplicates(result);
+                }
+            }
+        }
+        return result;
+    }
+
+    private static List<RecognizedSymbol> removeDuplicates(List<RecognizedSymbol> result){
+
+        for (int i = 0; i< result.size();i++){
+            for(int j = 0; j< result.size();j++){
+                if (i!=j && result.get(i).getSymbolChar() == result.get(j).getSymbolChar()){
+                    result.remove(j);
+                    removeDuplicates(result);
+                }
+            }
+        }
+        return result;
+    }
+
 }

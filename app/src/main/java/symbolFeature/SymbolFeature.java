@@ -1,9 +1,17 @@
 package symbolFeature;
 
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.support.v4.content.ContextCompat;
+import android.widget.Toast;
+
+import com.example.travis.ichmfapp.main.MainActivity;
 import com.example.travis.ichmfapp.symbollib.*;
 
 import java.io.*;
+
+import static com.example.travis.ichmfapp.symbollib.ConstantData.mydir;
 
 public class SymbolFeature {
 
@@ -32,14 +40,13 @@ public class SymbolFeature {
     to the y axis direction (sine ?(x)), (e) curvature
     according to x axis, (f) curvature according to y axis
     and (g) the position of stylus (up or down).*/
-
     /*coordinates
     of the resampled points, sines and cosines of the
     angle made by the line segments joining the points in the
     stroke, and the sines and cosines of the turning angle between
     the line segments and centre of gravity of the symbol.
     The centre of gravity of the symbol is sum(xi)/Nx , sum(yi)/Ny .*/
-    public static int[] oneStroke = {48, 49, 50, 51, 52, 54, 55, 56, 57, 67, 71, 76, 77, 78, 79, 83,
+    /**public static int[] oneStroke = {48, 49, 50, 51, 52, 54, 55, 56, 57, 67, 71, 76, 77, 78, 79, 83,
             85, 86, 87, 90, 97, 98, 99, 100, 101, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114,
             115, 117, 118, 119, 121, 122, 40, 41, 46, 47, 60, 62, 91, 93, 94, 123, 125, 126, 945, 946, 949,
             952, 956, 961, 963, 966, 8721, 8722, 8730, 8733, 8734, 8747};
@@ -48,7 +55,18 @@ public class SymbolFeature {
             43, 58, 60, 61, 62, 91, 93, 94, 215, 952, 955, 956, 8594, 8721, 8776, 8804, 8805};
     public static int[] threeStroke = {65, 69, 70, 72, 73, 75, 78, 89, 107, 37, 42, 177, 247, 8719, 8721,
             8800, 8804, 8805};
-    public static int[] fourStroke = {69, 77, 87, 8721,};
+    public static int[] fourStroke = {69, 77, 87, 8721,};*/
+
+    public static int[] oneStroke = {48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 66, 67, 68, 71, 74, 76, 77, 78, 79, 80, 82, 83,
+            85, 86, 87, 90, 97, 98, 99, 100, 101, 103, 104, 108, 109, 110, 111, 112, 113, 114,
+            115, 117, 118, 119, 121, 122, 40, 41, 46, 47, 60, 62, 91, 93, 94, 123, 125, 126, 945, 946, 949,
+            952, 956, 961, 963, 8721, 8722, 8730, 8733, 8734, 8747}; //, 105,  106
+    public static int[] twoStroke = {52, 53, 55, 57, 66, 68, 71, 74, 75, 77, 78, 80, 81, 82, 84, 86, 88,
+            89, 90, 98, 100, 102, 105, 106, 107, 116, 118, 120, 121, 122,
+            43, 58, 61, 94, 215, 955, 956, 966, 8594, 8721, 8776, 8804, 8805};
+    public static int[] threeStroke = {65, 70, 72, 73, 75, 78, 89, 37, 42, 91, 93, 177, 247, 8719,
+            8800};
+    public static int[] fourStroke = {69, 77, 87, 8721};
 
     public SymbolFeature(int classID, double[] feature) {
         classNo = classID;
@@ -64,7 +82,7 @@ public class SymbolFeature {
         int dotStrokeCount = 0; //count the number of stroke that has only 1 point
         int unusedStroke = 0;
 
-        //added by quxi 2009.12.26
+
         //ignore the strokes with stroke points less than 2
         for (int i = 0; i < strokelist.size(); i++) {
             if (strokelist.get(i).getTotalStrokePoints() == 2) {
@@ -75,8 +93,10 @@ public class SymbolFeature {
                 dotStrokeCount += 1;
             }
         }
-        angleWithHorizon = new double[symbolPointCount - strokeCount + unusedStroke - dotStrokeCount];
-        turningAngle = new double[angleWithHorizon.length - strokeCount + unusedStroke];
+        angleWithHorizon = new double[symbolPointCount - strokeCount
+        + unusedStroke - dotStrokeCount];
+        turningAngle = new double[angleWithHorizon.length - strokeCount
+                + unusedStroke];
 
         double vectorX, vectorY;
         int indexH = 0;
@@ -196,15 +216,33 @@ public class SymbolFeature {
     }
 
     public static void writeFeatures(String featureString) {
+        if (ContextCompat.checkSelfPermission(MainActivity.getAppContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(MainActivity.getAppContext(), "permission denied, please enable it", Toast.LENGTH_SHORT).show();
+        } else{
+            //Toast.makeText(MainActivity.getAppContext(), "permission granted", Toast.LENGTH_SHORT).show();
+        }
+
+        if (!mydir.exists()) {
+            mydir.mkdirs();
+
+            if (!mydir.mkdirs()) {
+                Toast.makeText(MainActivity.getAppContext(), "dir not made", Toast.LENGTH_SHORT).show();
+            }
+        }
+
         try {
-            File file = new File(ConstantData.trainFile);
+            File file = new File(mydir,ConstantData.trainFile);
             FileWriter fstream = new FileWriter(file, file.exists());
             BufferedWriter out = new BufferedWriter(fstream);
             out.write(featureString);
             out.write("\n");
             out.close();
+            Toast.makeText(MainActivity.getAppContext(), "Success!", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {//Catch exception if any
-            System.err.println("Error: " + e.getMessage());
+            Toast.makeText(MainActivity.getAppContext(), "Error writing to file", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
         }
     }
 }

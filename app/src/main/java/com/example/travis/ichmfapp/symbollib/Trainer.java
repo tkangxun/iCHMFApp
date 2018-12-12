@@ -1,7 +1,10 @@
 package com.example.travis.ichmfapp.symbollib;
 
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
 import com.example.travis.ichmfapp.main.MainActivity;
@@ -9,9 +12,15 @@ import com.example.travis.ichmfapp.preprocessor.PreprocessorSVM;
 import com.example.travis.ichmfapp.preprocessor.SymbolRecognizer_SVM;
 
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 import symbolFeature.*;
+
+import static com.example.travis.ichmfapp.symbollib.ConstantData.mydir;
 
 
 /**
@@ -21,12 +30,16 @@ import symbolFeature.*;
 public class Trainer{
 
     private SymbolLib objSymbolLib;
+    private SymbolLib svmlib;
     private String fileSymbolLib = null;
     private SymbolList jList1 = null;
     private Context context = MainActivity.getAppContext();
 
     public Trainer (){
-        this.generateDefaultSetSVM();
+
+        ConstantData.savetophone();
+
+
     }
 
 
@@ -34,34 +47,45 @@ public class Trainer{
 
     private void generateDefaultSetSVM() {
 
+        if (objSymbolLib == null) {
+            return;
+        }
 
         try {
-            this.objSymbolLib = SymbolLib.GenerateDefaultSetSVM(SymbolLib.LibraryTypes.Binary);
-            //An array of all the basic symbols
-            jList1 = objSymbolLib.getSymbols();
+            this.svmlib = SymbolLib.GenerateDefaultSetSVM(SymbolLib.LibraryTypes.Binary);
+            //An array of all the basic symbols and create file
+            jList1 = svmlib.getSymbols();
+            List<Integer> indexes;
+            for (int i = 0; i< jList1.size();i++){
 
-            //Toast.makeText(context, "trainer size: " + jList1.size(), Toast.LENGTH_SHORT).show();
+                indexes = objSymbolLib.findSymbol(jList1.get(i).getSymbolCharDecimal());
+                for (int j =0; j< indexes.size();j++){
+                    symbolFeature.SymbolFeature.writeFeatures(
+                            symbolFeature.SymbolFeature.getFeature(jList1.get(i).getSymbolCharDecimal(),
+                            objSymbolLib.getSymbol(indexes.get(j)).getStrokes()));
+                }
+            }
+
+
+
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-
-    //SVM doesn't require saving button, save when write features
-    public void trainSymbolSVM( int index) {
-        if (jList1.get(index) == null) {
-            return;
+    public Symbol getTrainsymbol(char sym){
+        if (objSymbolLib == null) {
+            return null;
         }
-        Symbol sbl = (Symbol) jList1.get(index);
-        if (SymbolRecognizer_SVM.checkStrokeNO(sbl.getSymbolCharDecimal(), sbl.getStrokes().size())) {
 
-            SymbolFeature.writeFeatures(SymbolFeature.getFeature(sbl.getSymbolCharDecimal(), sbl.getStrokes()));
-
-            Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(context, "Invalid Stroke Number", Toast.LENGTH_SHORT).show();
+        int unicode = ((int)sym);
+        List<Integer> indexes = objSymbolLib.findSymbol(unicode);
+        if (indexes.size() == 0){
+            Toast.makeText(context, "Symbol not found, try again", Toast.LENGTH_SHORT).show();
+            return null;
         }
+        return objSymbolLib.getSymbol(indexes.get(0));
     }
 
     public void generateDefaultSetElastic() {
@@ -78,7 +102,11 @@ public class Trainer{
         } catch (Exception ex) {
             ex.printStackTrace();
             }
+
         }
+
+
+
 
 
     public  void openSymbolLib() throws Exception{
@@ -115,30 +143,29 @@ public class Trainer{
     }
 
     public void removeSymbol(char sym) {
+        try{openSymbolLib();}
+        catch (Exception e){e.printStackTrace();}
+        fileSymbolLib = ConstantData.ElasticFileString;
         if (objSymbolLib == null) {
             return;
         }
 
-        int unicode = ((int)sym);
+        int unicode = ((int) sym);
         List<Integer> indexes = objSymbolLib.findSymbol(unicode);
-        if (indexes.size() == 0){
+        if (indexes.size() == 0) {
             Toast.makeText(context, "Symbol not found, try again", Toast.LENGTH_SHORT).show();
             return;
         }
         StrokeList empty = new StrokeList();
-        for (int i = 0; i< indexes.size(); i++){
+        for (int i = 0; i < indexes.size(); i++) {
             objSymbolLib.getSymbol(indexes.get(i)).setStrokes(empty);
         }
         Toast.makeText(context, "symbol strokes have been removed from : " + indexes, Toast.LENGTH_SHORT).show();
-
-
-
-
-
-
     }
 
     public void addElasticSymbol(char sym, StrokeList strokes){
+        try{openSymbolLib();}
+        catch (Exception e){e.printStackTrace();}
         if (objSymbolLib == null) {
             return;
         }
@@ -162,11 +189,14 @@ public class Trainer{
 
     // adds a brand new symbol apart from the default list
     public void addSymbol(char sym) {
-        if (objSymbolLib == null) {
+
+        int unicode = ((int)sym);
+        List<Integer> indexes = objSymbolLib.findSymbol(unicode);
+        if (indexes.size() == 0){
+            Toast.makeText(context, "Symbol not found, try again", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        int unicode = ((int)sym);
         if (sym != 0) {
             try {
                 Symbol sbl = new Symbol(SymbolLib.getHexToChar(unicode));
@@ -180,18 +210,46 @@ public class Trainer{
         }
     }
 
-    /**private void trainSymbolSVM() {
-        if (jList1.getSelectedValue() == null) {
+
+    //input ? to train svm, secret key
+    public void trainSymbolSVM(char sym, StrokeList strokes) {
+
+
+        if( sym == '?'){
+            //create new svm file base on new symbol input
+            SVM_train svm = new SVM_train();
+            svm.run();
             return;
         }
-        Symbol sbl = (Symbol) jList1.getSelectedValue();
-        if (SymbolRecognizer_SVM.checkStrokeNO(sbl.getSymbolCharDecimal(), sbl.getStrokes().size())) {
-            SymbolFeature.writeFeatures(SymbolFeature.getFeature(sbl.getSymbolCharDecimal(), sbl.getStrokes()));
-            this.jLabel4.setText("Success");
-        } else {
-            jLabel4.setText("Invalid Stroke Number");
+
+        File file = new File(mydir, ConstantData.trainFile);
+        //String s = file.getPath().toString();
+        if (!file.exists()){
+            this.generateDefaultSetSVM();}
+
+
+        int unicode = ((int)sym);
+
+        List<Integer> indexes = objSymbolLib.findSymbol(unicode);
+        if (indexes.size() == 0){
+            Toast.makeText(context, "Symbol not found, try again", Toast.LENGTH_SHORT).show();
+            return;
         }
-    }*/
+        Symbol sbl = new Symbol(sym);
+        sbl.setStrokes(strokes);
+
+        if (SymbolRecognizer_SVM.checkStrokeNO(sbl.getSymbolCharDecimal(), sbl.getStrokes().size())) {
+            SymbolFeature.writeFeatures(SymbolFeature.getFeature(sbl.getSymbolCharDecimal(), PreprocessorSVM.preProcessing(sbl.getStrokes())));
+
+        } else {
+            Toast.makeText(context, "invalid number of strokes", Toast.LENGTH_SHORT).show();
+        }
+
+
+
+
+
+    }
 
 
 

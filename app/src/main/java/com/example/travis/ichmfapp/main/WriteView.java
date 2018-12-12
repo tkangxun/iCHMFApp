@@ -16,15 +16,6 @@ import com.example.travis.ichmfapp.symbollib.StrokeList;
 import com.example.travis.ichmfapp.symbollib.StrokePoint;
 
 
-import java.util.ArrayList;
-
-import java.util.List;
-
-
-
-
-
-
 /**
  * Created by Travis on 7/8/2018.
  */
@@ -64,7 +55,7 @@ public class WriteView extends View {
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
-        mPaint.setStrokeWidth(50);
+        mPaint.setStrokeWidth(30);
 
 
         mPath = new Path();
@@ -148,10 +139,6 @@ public class WriteView extends View {
     }
 
 
-    //widgets
-
-
-    // can clear but doesn't reset the canvas. not shown visually
     public void clear() {
         mPath = new Path();
         mCanvas = new Canvas();
@@ -180,20 +167,77 @@ public class WriteView extends View {
     }
 
     public void undoLastStroke() {
-        if (this.getStrokeSize()<2){
+        if (_strokes.size()<2){
             mPath.reset();
             this.clear();
+            return;
         }
-        this._strokes.remove(_strokes.size() - 1);
-        mPath.setLastPoint(mX,mY);
 
-
+        _strokes.remove(_strokes.size()-1);
+        mPath = new Path();
         invalidate();
+
+        for (int i =0; i<_strokes.size();i++){
+            for (int j=0; j<_strokes.get(i).getTotalStrokePoints();j++){
+                if (_strokes.get(i).getTotalStrokePoints()==1){
+                    touchStart((float)_strokes.get(i).getStrokePoint(j).X,
+                            (float)_strokes.get(i).getStrokePoint(j).Y);
+                    touchMove((float)_strokes.get(i).getStrokePoint(j).X,
+                            (float)_strokes.get(i).getStrokePoint(j).Y);
+                    touchUp();
+                    continue;
+                }
+                if (j==0){
+                    touchStart((float)_strokes.get(i).getStrokePoint(j).X,
+                            (float)_strokes.get(i).getStrokePoint(j).Y);
+                    continue;
+                }
+                if (j== _strokes.get(i).getTotalStrokePoints()-1){
+                    touchUp();
+                    continue;
+                }
+                touchMove((float)_strokes.get(i).getStrokePoint(j).X,
+                        (float)_strokes.get(i).getStrokePoint(j).Y);
+            }
+        }
+
+
+
+    }
+
+    public void displaySymbol (StrokeList symbolStrokes){
+        this.clear();
+        mPaint.setColor(Color.RED);
+        mPaint.setStrokeWidth(20);
+
+        for (int i =0; i<symbolStrokes.size();i++){
+            for (int j=0; j<symbolStrokes.get(i).getTotalStrokePoints();j++){
+                if (symbolStrokes.get(i).getTotalStrokePoints()==1){
+                    touchStart((float)symbolStrokes.get(i).getStrokePoint(j).X +500,
+                            (float)symbolStrokes.get(i).getStrokePoint(j).Y+500);
+                    touchMove((float)symbolStrokes.get(i).getStrokePoint(j).X +500,
+                            (float)symbolStrokes.get(i).getStrokePoint(j).Y+500);
+                    touchUp();
+                    continue;
+                }
+                if (j==0){
+                    touchStart((float)symbolStrokes.get(i).getStrokePoint(j).X +500,
+                            (float)symbolStrokes.get(i).getStrokePoint(j).Y+500);
+                    continue;
+                }
+                if (j== symbolStrokes.get(i).getTotalStrokePoints()-1){
+                    touchUp();
+                    continue;
+                }
+                touchMove((float)symbolStrokes.get(i).getStrokePoint(j).X+500,
+                        (float)symbolStrokes.get(i).getStrokePoint(j).Y+500);
+            }
+        }
+
     }
 
     public void addWriteViewListener(WriteViewListener eventListener){
         this.wvlistener = eventListener;
-        //Toast.makeText(MainActivity.getAppContext(), "listener added", Toast.LENGTH_SHORT).show();
     }
 
 

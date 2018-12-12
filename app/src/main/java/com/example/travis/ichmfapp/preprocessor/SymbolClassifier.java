@@ -22,7 +22,7 @@ public class SymbolClassifier {
     private static ArrayList groupingList =
             new ArrayList(Arrays.asList(groupingListArr));
     private static String[] pre_superscript_list = {String.valueOf('\u221A')};
-    //added by quxi 2009.09.15
+
     //Pai, Sum, f, fraction
     private static String[] belowListArr = {String.valueOf('\u220f'), String.valueOf('\u2211'), String.valueOf('\u222b'),
             String.valueOf('\u2212')};
@@ -186,7 +186,7 @@ public class SymbolClassifier {
         }
     }
 
-    //added by quxi 2009.12.30
+
     //handle case when last symbol is - and above/under other operator
     private static boolean checkNext(RecognizedSymbol relate, RecognizedSymbol last) {
         String lastString = last.getSymbolCharString();
@@ -214,9 +214,11 @@ public class SymbolClassifier {
             case StructuralAnalyser.ROW:
                 double distance = lastBox.getX() - relateBox.getX() - relateBox.getWidth();
                 double checkDistance = StructuralAnalyser.getMatrixElementDistance() == 0 ? lastBox.getWidth() : 0.8 * StructuralAnalyser.getMatrixElementDistance();
-                if (StructuralAnalyser.getMatrixHandling() && distance > 0.8 * checkDistance) {
+                if (StructuralAnalyser.getMatrixHandling() && distance > 0.7 * checkDistance) {
                     return false;
-                } else if ((!StructuralAnalyser.getMatrixHandling()) && distance > 0.8 * lastBox.getWidth()) {
+                }else if (StructuralAnalyser.openFences.contains(relateSymbol.getSymbolChar())||StructuralAnalyser.closeFences.contains(lastRecSymbol.getSymbolChar())){
+                    return false;
+                } else if ((!StructuralAnalyser.getMatrixHandling()) && distance > 0.7 * lastBox.getWidth()) {
                     return false;
                 } else {
                     return true;

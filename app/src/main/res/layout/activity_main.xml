@@ -6,14 +6,6 @@
     android:layout_height="match_parent"
     tools:context="com.example.travis.ichmfapp.main.MainActivity">
 
-    <com.example.travis.ichmfapp.main.WriteView
-        android:id="@+id/writeView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-
-
-
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -32,10 +24,16 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="bottom|right"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="16dp"
+        android:elevation="8dp"
+        app:srcCompat="@android:drawable/ic_menu_delete" />
+
+
+
+
 
 </android.support.design.widget.CoordinatorLayout>

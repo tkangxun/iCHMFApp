@@ -12,19 +12,14 @@ import com.example.travis.ichmfapp.symbollib.Stroke;
 
 public class PreprocessorSVM {
 
-    // <editor-fold defaultstate="collapsed" desc="Private variables">
+
     private static int thresHold = 5;
     private static int desiredPointNum = 50;
     private static int closePoint = 20;
     private static Box standardRec = new Box(0, 0, 100, 100);
-    // </editor-fold>
 
-    // <editor-fold defaultstate="collapsed" desc="Constructor">
-    public PreprocessorSVM() {
-    }
-    // </editor-fold>
 
-    // <editor-fold defaultstate="collapsed" desc="Public Methods">
+    public PreprocessorSVM() {}
     /**
      * The wrapper method to call the series of pre-processing steps.
      * @param _inputStrokeList StrokeList to be processed.
@@ -32,6 +27,32 @@ public class PreprocessorSVM {
      * @see StrokeList
      */
     public static StrokeList preProcessing(StrokeList _inputStrokeList) {
+        int pts =0 ;
+        for (int i = 0; i < _inputStrokeList.size(); i++) {
+            pts +=_inputStrokeList.get(i).getTotalStrokePoints();
+        }
+
+        if (pts<5){
+
+            StrokeList dot = new StrokeList();
+            Stroke s = new Stroke();
+            StrokePoint pt = new StrokePoint(50,50);
+            s.addStrokePoint(pt);
+            dot.add(s);
+
+            if (_inputStrokeList.size()==2){
+                if (Math.abs(_inputStrokeList.get(0).getStrokePoint(0).X -
+                        _inputStrokeList.get(1).getStrokePoint(0).X) <= 20) {
+                    StrokePoint ptpt = new StrokePoint(50, 150);
+                    Stroke dotdot = new Stroke();
+                    dotdot.addStrokePoint(ptpt);
+                    dot.add(dotdot);
+                }
+            }
+            //return dot;
+            return _inputStrokeList;
+
+        }
         return normallizePoint(reSampling(smoothing(normalizing(_inputStrokeList))));
     }
 
@@ -41,24 +62,22 @@ public class PreprocessorSVM {
      * @param s2 Second StrokeList to be classified.
      * @return True if two inputs satisfy the condition, False otherwise.
      */
-    public static boolean preClassify(StrokeList s1, StrokeList s2) {
+    public static boolean preClassify(Stroke s1, Stroke s2) {
         //If the two start points are close enough return true;
-        //If the trow end points are close enough return true;
+        //If the throw end points are close enough return true;
         //else return False;
-        if (distance(s1.get(0).getStrokePoint(0), s2.get(0).getStrokePoint(0)) <= closePoint) {
+        if (distance(s1.getStrokePoint(0), s2.getStrokePoint(0)) <= closePoint) {
             return true;
-        } else if (distance(s1.get(s1.size() - 1).getStrokePoint(
-                s1.get(s1.size() - 1).getTotalStrokePoints() - 1),
-                s2.get(s2.size() - 1).getStrokePoint(
-                        s2.get(s2.size() - 1).getTotalStrokePoints() - 1)) <= closePoint) {
+        } else if (distance(s1.getStrokePoint(
+                s1.getTotalStrokePoints() - 1),
+                s2.getStrokePoint(
+                        s2.getTotalStrokePoints() - 1)) <= closePoint) {
             return true;
         } else {
             return false;
         }
     }
 
-    // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="Private Methods">
     /**
      * Resample each stroke in given list to have averagely same
      * distance between the stroke points.
@@ -270,5 +289,5 @@ public class PreprocessorSVM {
     private static double distance(StrokePoint p1, StrokePoint p2) {
         return Math.sqrt((p1.X - p2.X) * (p1.X - p2.X) + (p1.Y - p2.Y) * (p1.Y - p2.Y));
     }
-    // </editor-fold>
+
 }

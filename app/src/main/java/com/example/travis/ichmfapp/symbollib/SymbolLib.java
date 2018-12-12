@@ -138,7 +138,7 @@ public class SymbolLib implements Serializable {
         return (char) hexCode;
     }
 
-    public static char unicodeToChar(String unicode){
+    public static char unicodeToChar(String unicode) throws Exception{
         unicode = unicode.replace("\\","");
         unicode = unicode.replace("u","");
         int hexVal = Integer.parseInt(unicode, 16);
@@ -221,7 +221,6 @@ public class SymbolLib implements Serializable {
                 40, //(
                 41, //)
                 42, //* Asterisk
-                42,
                 42,
                 43, //+
                 43, //+
@@ -367,8 +366,6 @@ public class SymbolLib implements Serializable {
 
             File file = new File(mydir, fname);
             String s = file.getPath().toString();
-            //Toast.makeText(MainActivity.getAppContext(), s, Toast.LENGTH_SHORT).show();
-
             if (file.exists()){
                 file.delete();
                 Toast.makeText(MainActivity.getAppContext(), s + " is overwritten", Toast.LENGTH_SHORT).show();
@@ -399,7 +396,8 @@ public class SymbolLib implements Serializable {
 
             java.io.FileInputStream fis =
                     new java.io.FileInputStream(
-                            new File(ConstantData.mydir.toString()+filePathLibrary));
+                            new File(ConstantData.getAssest(ConstantData.ElasticFileString)));
+            //                new File(ConstantData.mydir.toString()+filePathLibrary));
 
             ObjectInputStream ois = new ObjectInputStream(fis);
 

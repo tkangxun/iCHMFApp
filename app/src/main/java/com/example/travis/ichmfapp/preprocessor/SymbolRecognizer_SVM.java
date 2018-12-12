@@ -5,7 +5,6 @@ import android.widget.Toast;
 import com.example.travis.ichmfapp.main.MainActivity;
 import com.example.travis.ichmfapp.symbollib.*;
 import java.util.*;
-
 import symbolFeature.*;
 
 //* Created by Travis on 23/8/2018.
@@ -16,9 +15,12 @@ public class SymbolRecognizer_SVM {
         ArrayList result = new ArrayList();
         SVM_predict sp = new SVM_predict();
         char symbolChar;
-        long startTime = System.currentTimeMillis();
+        //long startTime = System.currentTimeMillis();
         boolean[] validStroke = oneSymbol(_strokeListMemory);
-        //Toast.makeText(MainActivity.getAppContext(), "created SVM", Toast.LENGTH_SHORT).show();
+        validStroke = checkColon(validStroke, _strokeListMemory);
+        validStroke = closeenough(validStroke, _strokeListMemory);
+
+
 
         for (int count = _strokeListMemory.size(); count > 0; count--) {
             if (validStroke[count - 1] == false) {
@@ -31,9 +33,11 @@ public class SymbolRecognizer_SVM {
             }
 
             StrokeList preProcessedStrokeList = PreprocessorSVM.preProcessing(_strokeListLocal);
-            //compare storkelist with each symbol in symbol library _quxi
+            //compare storkelist with each symbol in symbol library
+
+
             String featureString = SymbolFeature.getFeature(0, preProcessedStrokeList);
-            //Toast.makeText(MainActivity.getAppContext(), "processed and get featured", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(MainActivity.getAppContext(),featureString , Toast.LENGTH_SHORT).show();
 
             List<SVMResult> svmResult = sp.run(featureString, 1);
             //System.out.println("For round" + count + " Time after SVM is" + (System.currentTimeMillis() - startTime));
@@ -45,6 +49,30 @@ public class SymbolRecognizer_SVM {
                 }
             }
         }
+        for (int i = 0; i< _strokeListMemory.size();i++){
+            if (_strokeListMemory.get(i).getTotalStrokePoints() <5){
+                StrokeList dot = new StrokeList();
+                dot.add(_strokeListMemory.get(i));
+                result.add(new RecognizedSymbol('.',dot,0.1));
+
+                if (i+1< _strokeListMemory.size() && _strokeListMemory.get(i+1).getTotalStrokePoints() <5){
+                    dot.add(_strokeListMemory.get(i+1));
+                    //result.remove(result.size()-1);
+                    result.remove(result.size()-1);
+                    result.add(new RecognizedSymbol(':',dot,0.1));
+                    i++;
+                } else if(i+2< _strokeListMemory.size() && _strokeListMemory.get(i+2).getTotalStrokePoints() <5){
+                    dot.add(_strokeListMemory.get(i+1));
+                    dot.add(_strokeListMemory.get(i+2));
+                    //result.remove(result.size()-1);
+                    result.remove(result.size()-1);
+                    result.add(new RecognizedSymbol('\u00f7',dot,0.01));
+
+                }
+
+            }
+        }
+
         return result;
     }
 
@@ -67,7 +95,7 @@ public class SymbolRecognizer_SVM {
             case 2:
                 if (!checkStrokeClose(copyArray(strokeNo, 0, 0), copyArray(strokeNo, 1, 1))) {
                     validStroke[0] = true;
-                } else {
+                }else{
                     if (!intersect(strokeNo[0], strokeNo[1])) {
                         validStroke[0] = true;
                     }
@@ -279,5 +307,37 @@ public class SymbolRecognizer_SVM {
             }
         }
         return false;
+    }
+
+    private boolean[] checkColon(boolean[] valid, StrokeList mem){
+        for(int i = 0; i <mem.size(); i++)
+            if (mem.get(i).getTotalStrokePoints() < 5 ){
+                if (i+1 <mem.size() && mem.get(i+1).getTotalStrokePoints()<5){
+                    if(Math.abs(mem.get(i).getStrokePoint(0).X - mem.get(i+1).getStrokePoint(0).X )<30) {
+                        valid[i] = true;
+                        valid[1 + i] = true;
+                    }
+
+                }else if (i+2 <mem.size() && mem.get(i+2).getTotalStrokePoints()<5) {
+                    if (Math.abs(mem.get(i).getStrokePoint(0).X - mem.get(i + 1).getStrokePoint(0).X) < 30) {
+                        valid[i] = true;
+                        valid[1 + i] = true;
+                        valid[2 + i] = true;
+                    }
+                }
+
+            }
+        return valid;
+    }
+    private boolean[] closeenough(boolean[] valid, StrokeList mem){
+        for (int i =0; i< mem.size(); i++){
+            if (i+1 < mem.size()){
+                if (PreprocessorSVM.preClassify(mem.get(i),mem.get(i+1))){
+                    valid[i] = true;
+                    valid [i+1] =true;
+                }
+            }
+        }
+        return valid;
     }
 }

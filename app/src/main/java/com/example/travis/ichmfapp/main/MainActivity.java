@@ -26,11 +26,9 @@ import com.example.travis.ichmfapp.R;
 import com.example.travis.ichmfapp.preprocessor.*;
 import com.example.travis.ichmfapp.symbollib.*;
 
+import java.util.*;
 
-
-import java.util.ArrayList;
-
-
+import symbolFeature.SymbolFeature;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,20 +43,23 @@ public class MainActivity extends AppCompatActivity {
     private Button  saveButton;
     private Button addSymbolButton;
     private Button removeButton;
+    private Button svmButton;
+    private Button check;
+    private Button correct;
+    private Button correction[] = new Button[5];
+    private Button undo;
 
-
-    private String recognizedSymbol;
+    private String result;
     private Stroke currentstroke;
-
-
+    private NewtonAPI api;
 
     static Recognizer objreg;
-    private SymbolRecognizer _manualRecognizer;
-    private SymbolRecognizer_SVM _svmRecognizer;
-
-
-    //private EditText result;
     private Trainer trainer;
+
+
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,173 +68,150 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         trainer = new Trainer();
-
+        //api = new NewtonAPI();
+        final TextView expression = (TextView)findViewById(R.id.result);
+        writeView = (WriteView) findViewById(R.id.writeView);
 
         try{
             trainer.openSymbolLib();
             objreg = new Recognizer(
                 SymbolLib.Load(ConstantData.ElasticFileString,
                 SymbolLib.LibraryTypes.Binary));
-
-
-
-
-
-         } catch (Exception e) {
-            //Toast.makeText(context, "New Default elastic file created", Toast.LENGTH_SHORT).show();
-
+        } catch (Exception e) {
             trainer.generateDefaultSetElastic();
+            Toast.makeText(context, "Error! Elastic file not found!", Toast.LENGTH_SHORT).show();
+        }
 
-            //TODO: if elastic file not found maybe use SVM only?
-         }
-
-     writeView = (WriteView) findViewById(R.id.writeView);
         writeView.addWriteViewListener(new WriteViewListener() {
             @Override
             public void StrokeEnd() {
-
-                //Toast.makeText(MainActivity.this, "Getting strokes: " + writeView.getStrokes().size(), Toast.LENGTH_SHORT).show();
                 currentstroke = writeView.getLastStroke();
+                if (training == false) {
+                    try {
+                        //objreg might not be initialise
+                        result = objreg.Recognize(currentstroke);
+                        correct.setVisibility(View.VISIBLE);
+                        undo.setVisibility(View.VISIBLE);
+                        correctionpanel(false);
+                        expression.setText("Expression: " + result);
+                        //api.getAnswer();
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        //Correction panel
+
+        correction[0] = (Button) findViewById(R.id.correct0);
+        correction[1] = (Button) findViewById(R.id.correct1);
+        correction[2] = (Button) findViewById(R.id.correct2);
+        correction[3] = (Button) findViewById(R.id.correct3);
+        correction[4] = (Button) findViewById(R.id.correct4);
 
 
+        //Correction button onclick initialisation, index 0 is skipped since it is the current exp shown
+        // <editor-fold defaultstate="collapsed">
+        correction[0].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 try{
-                    //objreg might not be initialise
-                    recognizedSymbol = objreg.Recognize(currentstroke);
-                    Toast.makeText(MainActivity.this, recognizedSymbol, Toast.LENGTH_SHORT).show();
-                }catch(Exception e){
+                    result = objreg.MakeCorrection(1);
+                    correctionpanel(false);
+                    expression.setText("Expression: " + result);
+
+                }catch (Exception e){
                     e.printStackTrace();
-                    //maybe use SVM only
                 }
 
             }
         });
 
-        //for SVM, Sampling is collected, preprocessed , feature extraction, then train and model created
-        //input symbol only feature extraction then SVM classification
+        correction[1].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try{
+                    result = objreg.MakeCorrection(2);
+                    correctionpanel(false);
+                    expression.setText("Expression: " + result);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
 
+            }
+        });
 
+        correction[2].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try{
+                    result = objreg.MakeCorrection(3);
+                    correctionpanel(false);
+                    expression.setText("Expression: " + result);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
 
+            }
+        });
 
+        correction[3].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try{
+                    result = objreg.MakeCorrection(4);
+                    correctionpanel(false);
+                    expression.setText("Expression: " + result);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
 
+            }
+        });
 
+        correction[4].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try{
+                    result = objreg.MakeCorrection(5);
+                    correctionpanel(false);
+                    expression.setText("Expression: " + result);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
 
+            }
+        });
+// </editor-fold>
+
+        correctionpanel(false);
 
         final Switch simpleswitch = (Switch) findViewById(R.id.simpleswitch);
 
-
         //train elastic symbol add strokes to the current list of symbol
-        trainButton = (Button) findViewById(R.id.button1);
+        trainButton = (Button) findViewById(R.id.train);
         //save current library
-        saveButton = (Button) findViewById(R.id.button2);
-        //add symbol add symbols on top of the default list
-        addSymbolButton = (Button) findViewById(R.id.button3);
-        //remove current symbol
-        removeButton = (Button) findViewById(R.id.button4);
-
-        trainButton.setVisibility(View.GONE);
-        addSymbolButton.setVisibility(View.GONE);
-        if (saved) {
-            saveButton.setVisibility(View.GONE);
-        }else{saveButton.setVisibility(View.VISIBLE);}
-
-        //add symbol add symbols on top of the default list
-
-
-
-
-
-
-        trainButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-
-                //for SVM, Sampling is collected, preprocessed , feature extraction, then train and model created
-                //input symbol only feature extraction then SVM classification
-
-                training = true;
-                Toast.makeText(MainActivity.getAppContext(), "Training symbol, strokes: " + writeView.getStrokes().size(), Toast.LENGTH_SHORT).show();
-
-
-                //Training for elastic matching
-                saved = Boolean.FALSE;
-                trainer.addElasticSymbol(toTrain, writeView.getStrokes());
-
-
-
-
-
-                /** for training for SVM
-                //send for processing, should account for symbol training only 4 strokes (not added yet)
-                StrokeList processedStrokes = getprocessed(writeView.getStrokes());
-                Toast.makeText(MainActivity.this, "Before: "+ PreprocessorSVM.countTotalPoint(writeView.getStrokes())
-                + ". After: " + PreprocessorSVM.countTotalPoint(processedStrokes), Toast.LENGTH_SHORT).show();
-
-                //send for feature extraction
-                String featureString = SymbolFeature.getFeature(0, processedStrokes);
-                Toast.makeText(context, featureString, Toast.LENGTH_SHORT).show();
-                 */
-
-                simpleswitch.setChecked(false);
-                training = false;
-
-
-                Toast.makeText(MainActivity.getAppContext(), "to be passed :" + toTrain, Toast.LENGTH_SHORT).show();
-                simpleswitch.setChecked(false);
-
-
-            }
-        });
-
-        addSymbolButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        trainer.addSymbol(toTrain);
-
-                    }
-                });
-
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                trainer.saveSymbolLib();
-                saved = Boolean.TRUE;
-                saveButton.setVisibility(view.GONE);
-
-            }
-        });
-
-        removeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //TODO: need create another dialog box
-
-                trainer.removeSymbol(toTrain);
-
-
-            }
-        });
-
-
-
-
-        //training mode
-
-
-
+        saveButton = (Button) findViewById(R.id.save);
+        //add symbol add symbols on top of the default list not used
+        //addSymbolButton = (Button) findViewById(R.id.add);
+        //remove strokes existing symbol in library
+        removeButton = (Button) findViewById(R.id.remove);
+        svmButton = (Button) findViewById(R.id.svm);
+        check = (Button) findViewById(R.id.check);
+        correct = (Button) findViewById(R.id.correct);
+        undo = (Button) findViewById(R.id.undo);
         AlertDialog.Builder builder = new AlertDialog.Builder(
                 this);
-
+        //alert dialog
         LayoutInflater li = LayoutInflater.from(context);
         View promptsView = li.inflate(R.layout.prompts, null);
         builder.setTitle("Symbol Trainer");
-        builder.setMessage("Please key unicode of new symbol");
+        builder.setMessage("Please key unicode of the symbol you want to train or remove");
         builder.setView(promptsView);
         final EditText userInput = (EditText) promptsView
                 .findViewById(R.id.editTextDialogUserInput);
-
         // set dialog message
         builder
                 .setCancelable(false)
@@ -241,13 +219,15 @@ public class MainActivity extends AppCompatActivity {
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog,int id) {
                                 // get user input and set it to result
-                                // edit text
+                                try {
+                                    toTrain = SymbolLib.unicodeToChar(userInput.getText().toString());
+                                    Toast.makeText(MainActivity.this, "Symbol: " + toTrain, Toast.LENGTH_SHORT).show();
+                                }catch (Exception e){
+                                    Toast.makeText(MainActivity.this, "Please enter only unicode!", Toast.LENGTH_SHORT).show();
+                                    simpleswitch.setChecked(false);
 
-                                toTrain = SymbolLib.unicodeToChar(userInput.getText().toString());
-                                Toast.makeText(MainActivity.this, "Symbol to train: " + toTrain , Toast.LENGTH_SHORT).show();
-                                //writeView.getStrokes();
-                                //trainer.trainSymbolSVM(toTrain);
-
+                                }
+                                Toast.makeText(MainActivity.this, "Symbol: " + toTrain, Toast.LENGTH_SHORT).show();
                             }
                         })
                 .setNegativeButton("Cancel",
@@ -257,34 +237,136 @@ public class MainActivity extends AppCompatActivity {
                                 simpleswitch.setChecked(false);
                             }
                         });
-
         // create alert dialog
         final AlertDialog alertDialog = builder.create();
 
+        trainButton.setVisibility(View.GONE);
+        //addSymbolButton.setVisibility(View.GONE);
+        removeButton.setVisibility(View.GONE);
+        svmButton.setVisibility(View.GONE);
+        check.setVisibility(View.GONE);
+        correct.setVisibility(View.GONE);
+        undo.setVisibility(View.GONE);
+        if (saved) {
+            saveButton.setVisibility(View.GONE);
+        }else{saveButton.setVisibility(View.VISIBLE);}
 
-        simpleswitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    training = Boolean.TRUE;
-                    trainButton.setVisibility(View.VISIBLE);
-                    addSymbolButton.setVisibility(View.VISIBLE);
-                    saveButton.setVisibility(View.GONE);
-                    removeButton.setVisibility(View.GONE);
+        trainButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-                    //TODO: tidy up diff btw train and add symbol, remove symbol
-                    //TODO: also control input, currently only accept unicode
-                    //TODO: add all the symbols. yay!
+                Toast.makeText(MainActivity.getAppContext(), "Training symbol: " + toTrain+ ", strokes: " + writeView.getStrokes().size(), Toast.LENGTH_SHORT).show();
 
-                    alertDialog.show();
+                //Training for elastic matching
+                trainer.addElasticSymbol(toTrain, writeView.getStrokes());
+                saved = Boolean.FALSE;
+                simpleswitch.setChecked(false);
+                training = false;
+            }
+        });
 
-                }else {
-                    trainButton.setVisibility(View.GONE);
-                    addSymbolButton.setVisibility(View.GONE);
-                    if (saved) {
-                        saveButton.setVisibility(View.GONE);
-                    }else{saveButton.setVisibility(View.VISIBLE);}
-                    removeButton.setVisibility(View.VISIBLE);
+        /**
+        addSymbolButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        alertDialog.show();
+                        trainer.addSymbol(toTrain);
+                        simpleswitch.setChecked(false);
+                        Toast.makeText(MainActivity.this, "Symbol "+ toTrain + " added", Toast.LENGTH_SHORT).show();
+
+                    }
+                });*/
+
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                trainer.saveSymbolLib();
+                saved = Boolean.TRUE;
+                saveButton.setVisibility(view.GONE);
+
+                try{
+                    objreg = new Recognizer(
+                            SymbolLib.Load(ConstantData.ElasticFileString,
+                                    SymbolLib.LibraryTypes.Binary));
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
+
+            }
+        });
+
+        removeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                trainer.removeSymbol(toTrain);
+                simpleswitch.setChecked(false);
+            }
+        });
+        svmButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                trainer.trainSymbolSVM(toTrain, writeView.getStrokes());
+                simpleswitch.setChecked(false);
+            }
+        });
+        check.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                StrokeList displayStrokes = trainer.getTrainsymbol(toTrain).getStrokes();
+                writeView.displaySymbol(displayStrokes);
+
+                Toast.makeText(MainActivity.this,"Number of Strokes: " + displayStrokes.size() , Toast.LENGTH_SHORT).show();
+
+            }
+        });
+        correct.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //show buttons
+                correct.setVisibility(view.GONE);
+                undo.setVisibility(view.VISIBLE);
+                correctionpanel(true);
+
+
+            }
+        });
+
+        undo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                correctionpanel(false);
+                if (writeView.getStrokeSize()==1){
+                    writeView.clear();
+                    objreg.ClearRecognitionMemory();
+                    correctionpanel(false);
+
+                    undo.setVisibility(View.GONE);
+                    correct.setVisibility(View.GONE);
+                    expression.setText("");
+                    return;
+                }
+
+
+                try{
+                    //undo stroke for recogniser
+                    result = objreg.UndoLastStroke();
+                    writeView.undoLastStroke();
+                    expression.setText("Expression: " + result);
+                    correct.setVisibility(View.GONE);
+
+                }catch (Exception e){
+                    Toast.makeText(MainActivity.this, "Can't undo!", Toast.LENGTH_SHORT).show();
+                }
+
+
+
             }
         });
 
@@ -292,57 +374,41 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        TextView txtcontent = (TextView)findViewById(R.id.tv1);
-/**
-        try {
-            StrokeList preProcessedStrokeList = PreprocessorSVM.preProcessing(writeView.getStrokes());
-            Toast.makeText(context, "preprocessed", Toast.LENGTH_SHORT).show();
-            //compare storkelist with each symbol in symbol library
-            String featureString = SymbolFeature.getFeature(0, preProcessedStrokeList);
-            SVM_predict sp = new SVM_predict();
-            sp.run(featureString, 1);
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
-*/
-        /**
-            Recognizer objreg = new Recognizer(
-                    SymbolLib.Load(ConstantData.ElasticFileString,
-                            SymbolLib.LibraryTypes.Binary));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-         */
 
 
-        ////////////////////////
-        /**
-        try {
-            objreg = new Recognizer(
-                    SymbolLib.Load(ConstantData.ElasticFileString,
-                            SymbolLib.LibraryTypes.Binary));
+        simpleswitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    writeView.clear();
+                    alertDialog.show();
+                    training = true;
+                    trainButton.setVisibility(View.VISIBLE);
+                    //addSymbolButton.setVisibility(View.VISIBLE);
+                    saveButton.setVisibility(View.GONE);
+                    removeButton.setVisibility(View.VISIBLE);
+                    svmButton.setVisibility(View.VISIBLE);
+                    check.setVisibility(View.VISIBLE);
+                    expression.setText("");
+                    correct.setVisibility(View.GONE);
+                    //training undo?
+                    undo.setVisibility(View.GONE);
 
-            String pointList = "";
-            Stroke receivedStroke = new Stroke();
-            int pointNum = Integer.parseInt(st.nextToken());
+                    correctionpanel(false);
 
-            for (int i = 0; i < pointNum; i++) {
-                StrokePoint sp = new StrokePoint(Double.parseDouble(st2.nextToken()), Double.parseDouble(st2.nextToken()));
-                receivedStroke.addStrokePoint(sp);
+                }else {
+                    training = false;
+                    trainButton.setVisibility(View.GONE);
+                    //addSymbolButton.setVisibility(View.GONE);
+                    removeButton.setVisibility(View.GONE);
+                    svmButton.setVisibility(View.GONE);
+                    check.setVisibility(View.GONE);
+                    if (saved) {
+                        saveButton.setVisibility(View.GONE);
+                    }else{saveButton.setVisibility(View.VISIBLE);}
+
+                }
             }
-            objreg.Recognize(receivedStroke);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-
-        */
-        ///////////////////////
-
+        });
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -351,19 +417,21 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "clear", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "clear", Snackbar.LENGTH_SHORT)
                         .setAction("Action", null).show();
 
                 /** place icon action here! */
                 writeView.clear();
-                //objreg.ClearRecognitionMemory();
+                objreg.ClearRecognitionMemory();
+                correctionpanel(false);
+                correct.setVisibility(View.GONE);
+                undo.setVisibility(View.GONE);
+                expression.setText("");
+
 
             }
         });
     }
-
-
-
     public static Context getAppContext(){
         return MainActivity.context;
     }
@@ -390,46 +458,6 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
-    public StrokeList getprocessed (StrokeList rawStroke){
-        StrokeList processed = PreprocessorSVM.preProcessing(rawStroke);
-
-        return processed;
-    }
-
-    private String recognize (StrokeList memory){
-        SymbolRecognizer_SVM svmRecognizer = _svmRecognizer;
-        if (svmRecognizer == null) {
-            svmRecognizer = new SymbolRecognizer_SVM();
-        }
-        _svmRecognizer = svmRecognizer;
-        ArrayList mResult =null;
-        String result = "";
-
-        try{
-            mResult = svmRecognizer.recognizing(memory);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
-
-        for (int i =0; i < mResult.size(); i++){
-            result += mResult.get(i);
-        }
-
-        return result;
-    }
-
-    private String mrecognize (StrokeList memory){
-        SymbolRecognizer manualRecognizer = _manualRecognizer;
-        if (manualRecognizer == null) {
-            //manualRecognizer = new SymbolRecognizer(_symbolLib);
-        }
-        String s = " ";
-
-        return s;
-    }
-
     private static String getOptionalResult() {
         String result = "";
         ArrayList arr = objreg.getOptionalRecognitionList();
@@ -442,6 +470,23 @@ public class MainActivity extends AppCompatActivity {
         }
         return result;
     }
+
+    private void correctionpanel(Boolean show){
+
+        for (int i =0;i< correction.length; i++){
+            if (show){
+                char symbol =objreg.getOptionalRecognitionList().get(i+1    ).getSymbolChar();
+                if (symbol != ' ') {
+                    correction[i].setText(Character.toString(symbol));
+                    correction[i].setVisibility(View.VISIBLE);
+                }
+            }else  {
+                correction[i].setVisibility(View.GONE);
+            }
+        }
+
+    }
+
 
 
 }

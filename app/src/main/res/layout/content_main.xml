@@ -8,19 +8,20 @@
     tools:context="com.example.travis.ichmfapp.main.MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <com.example.travis.ichmfapp.main.WriteView
+        android:id="@+id/writeView"
+        app:layout_constraintTop_toBottomOf="@id/train"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <TextView
-        android:id="@+id/tv1"
+        android:id="@+id/result"
+        android:textSize="30sp"
+        android:textColor="#000"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/undo"/>
 
     <Switch
         android:id="@+id/simpleswitch"
@@ -33,7 +34,7 @@
         android:thumbTint="@color/colorPrimary" />
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/train"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -42,7 +43,7 @@
         android:textStyle="bold"
         android:thumbTint="@color/colorPrimary" />
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -50,34 +51,112 @@
         android:textSize="15sp"
         android:textStyle="bold"
         android:thumbTint="@color/colorPrimary" />
-
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/undo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintLeft_toRightOf="@id/button1"
+        app:layout_constraintLeft_toRightOf="@id/correct"
+        android:text="UNDO"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:thumbTint="@color/colorPrimary" />
+<!--
+    <Button
+        android:id="@+id/add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/train"
         android:text="Add Symbol"
         android:textSize="15sp"
         android:textStyle="bold"
         android:thumbTint="@color/colorPrimary" />
-
+-->
     <Button
-        android:id="@+id/button4"
+        android:id="@+id/remove"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintLeft_toRightOf="@id/button2"
+        app:layout_constraintLeft_toRightOf="@id/train"
         android:text="Remove sbl"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:thumbTint="@color/colorPrimary" />
+    <Button
+        android:id="@+id/svm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/train"
+        android:text="SVM"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:thumbTint="@color/colorPrimary" />
+
+    <Button
+        android:id="@+id/check"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/svm"
+        app:layout_constraintTop_toBottomOf="@id/remove"
+        android:text="Check"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:thumbTint="@color/colorPrimary" />
+    <Button
+        android:id="@+id/correct"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/save"
+        android:text="Correction"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:thumbTint="@color/colorPrimary" />
+    <Button
+        android:id="@+id/correct0"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="a"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:thumbTint="@color/colorPrimary" />
+    <Button
+        android:id="@+id/correct1"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/correct0"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:thumbTint="@color/colorPrimary" />
+    <Button
+        android:id="@+id/correct2"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/correct1"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:thumbTint="@color/colorPrimary" />
+    <Button
+        android:id="@+id/correct3"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/correct2"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:thumbTint="@color/colorPrimary" />
+    <Button
+        android:id="@+id/correct4"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/correct3"
         android:textSize="15sp"
         android:textStyle="bold"
         android:thumbTint="@color/colorPrimary" />
 
 
 
-
-    <com.example.travis.ichmfapp.main.WriteView
-        android:id="@+id/writeView"
-        app:layout_constraintTop_toBottomOf="@id/simpleswitch"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 
 </android.support.constraint.ConstraintLayout>

@@ -29,6 +29,7 @@ public class SymbolRecognizer {
         double finalDistance;
         StrokeList sList;
         for (int i = 0; i < recognizedList.size(); i++) {
+
             distance = Double.MAX_VALUE;
             symbolChar = recognizedList.get(i).getSymbolChar();
 
@@ -43,7 +44,7 @@ public class SymbolRecognizer {
                 }
             }
             finalDistance = Math.pow(distance, 1 - recognizedList.get(i).getError());
-            //finalDistance2 = distance * Math.pow(10, 1 - recognizedList.get(i).getError());
+            //finalDistance= distance * Math.pow(10, 1 - recognizedList.get(i).getError());
 
             resultList.add(new RecognizedSymbol(symbolChar, sList, finalDistance));
             if (ConstantData.doTest) {
@@ -75,6 +76,8 @@ public class SymbolRecognizer {
             for (int i = 0; i < slModel.size(); i++) {
                 finalDistance += distance(slModel.get(i), slSymbol.get(i));
             }
+        }else if (slModel.size() != slSymbol.size()){
+            return Double.MAX_VALUE;
         }
         return finalDistance;
     }

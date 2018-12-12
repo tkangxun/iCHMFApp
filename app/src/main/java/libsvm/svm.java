@@ -1,9 +1,17 @@
 package libsvm;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.support.v4.content.ContextCompat;
+import android.widget.Toast;
+
+import com.example.travis.ichmfapp.main.MainActivity;
 import com.example.travis.ichmfapp.symbollib.ConstantData;
 
 import java.io.*;
 import java.util.*;
+
+import static com.example.travis.ichmfapp.symbollib.ConstantData.mydir;
 
 /**
  * Created by Travis on 23/8/2018.
@@ -2404,7 +2412,31 @@ public class svm {
 
     public static void svm_save_model(String model_file_name, svm_model model) throws IOException
     {
-        DataOutputStream fp = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(model_file_name)));
+        if (ContextCompat.checkSelfPermission(MainActivity.getAppContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(MainActivity.getAppContext(), "permission denied, please enable it", Toast.LENGTH_SHORT).show();
+        } else{
+            //Toast.makeText(MainActivity.getAppContext(), "permission granted", Toast.LENGTH_SHORT).show();
+        }
+
+
+        if (!mydir.exists()) {
+            mydir.mkdirs();
+
+            if (!mydir.mkdirs()) {
+                Toast.makeText(MainActivity.getAppContext(), "dir not made", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        File file = new File(mydir, model_file_name);
+        String s = file.getPath().toString();
+        if (file.exists()){
+            file.delete();
+            Toast.makeText(MainActivity.getAppContext(), s + " is overwritten", Toast.LENGTH_SHORT).show();
+        }
+
+        DataOutputStream fp = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
 
         svm_parameter param = model.param;
 
@@ -2499,8 +2531,19 @@ public class svm {
 
     public static svm_model svm_load_model(String model_file_name) throws IOException
     {
+        BufferedReader fp;
 
-        BufferedReader fp = new BufferedReader(new FileReader (ConstantData.getAssest(model_file_name)));
+        File file = new File(ConstantData.mydir,ConstantData.modelFile);
+        if (file.exists()){
+            fp = new BufferedReader(new FileReader (file));
+            //Toast.makeText(MainActivity.getAppContext(), "svm file from internal storage", Toast.LENGTH_SHORT).show();
+
+        }else{
+            fp = new BufferedReader(new FileReader (ConstantData.getAssest(model_file_name)));
+            //Toast.makeText(MainActivity.getAppContext(), "svm file from asset", Toast.LENGTH_SHORT).show();
+        }
+
+        //fp = new BufferedReader(new FileReader (ConstantData.getAssest(model_file_name)));
 
         // read parameters
 

@@ -9,7 +9,6 @@ import java.util.EventListener;
 public interface WriteViewListener extends EventListener {
 
 
-    //public void StrokeStart(WriteViewEvent evt);
+
     void StrokeEnd();
-    //public void CanvasCleared(WriteViewEvent evt);
 }
