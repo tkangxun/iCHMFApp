@@ -330,7 +330,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //show buttons
                 correct.setVisibility(view.GONE);
-                undo.setVisibility(view.GONE);
+                undo.setVisibility(view.VISIBLE);
                 correctionpanel(true);
 
 
@@ -341,6 +341,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                correctionpanel(false);
                 if (writeView.getStrokeSize()==1){
                     writeView.clear();
                     objreg.ClearRecognitionMemory();
@@ -352,12 +353,13 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
+
                 try{
                     //undo stroke for recogniser
                     result = objreg.UndoLastStroke();
                     writeView.undoLastStroke();
                     expression.setText("Expression: " + result);
-                    correct.setVisibility(View.VISIBLE);
+                    correct.setVisibility(View.GONE);
 
                 }catch (Exception e){
                     Toast.makeText(MainActivity.this, "Can't undo!", Toast.LENGTH_SHORT).show();

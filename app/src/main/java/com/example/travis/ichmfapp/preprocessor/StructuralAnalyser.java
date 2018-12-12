@@ -339,7 +339,6 @@ public class StructuralAnalyser {
                             newLastRecSymbolNode.getChildNodes().item(INSIDE).appendChild(sqr);
                         }
                     }
-                    //TODO: handlethis fraction doesnt enter here
 
                     //handle fraction case e.g. 2^3 and lastRecSymbol is -
                     if (lastRecSymbol.getSymbolChar() == '\u2212' && closestSymbol.getNode().getChildNodes().item(SUPER_SCRIPT).hasChildNodes()) {
@@ -863,11 +862,14 @@ public class StructuralAnalyser {
             //When absolute distance between tow centers is lesser than
             //1/4 of possible maximum 2nd last symbol height/width or
             //last symbol height/width. It is determined as SAME ROW.
-            if (Math.abs(lastCenter.Y - secondLastCenter.Y) <= Math.max(Math.max((double) secondLastBBox.getHeight() / 4,
+            // added the symbols cannot be on top of each other
+            if ((Math.abs(lastCenter.Y - secondLastCenter.Y) <= Math.max(Math.max((double) secondLastBBox.getHeight() / 4,
                     (double) lastBBox.getHeight() / 4),
                     Math.max((double) secondLastBBox.getWidth() / 4,
-                            (double) lastBBox.getWidth() / 4))) {
-                if (lastCenter.X >= secondLastCenter.X) {
+                            (double) lastBBox.getWidth() / 4)))&&
+                    (lastBBox.getX() >= secondLastBBox.getX() + secondLastBBox.getWidth()
+                            ||secondLastBBox.getX() >= lastBBox.getX() +lastBBox.getWidth())) {
+                if (lastCenter.X  >=secondLastCenter.X) {
                     return ROW; //3
                 } else {
                     return ROW_BEFORE;

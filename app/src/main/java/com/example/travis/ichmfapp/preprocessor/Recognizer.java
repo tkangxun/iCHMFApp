@@ -334,6 +334,8 @@ public class Recognizer {
             pos--;
         }
         _strokeListMemory.remove(_strokeListMemory.size() - 1);
+        //_recognitionList = doRecognition(_aryLMemoryRecognizedString.get(_aryLMemoryRecognizedString.size()-1).getStrokes(),
+        //        _aryLMemoryRecognizedString, _manualRecognizer,_svmRecognizer);
 
 
         return result;
